@@ -1,0 +1,12 @@
+{
+    "minimum-stability" : "dev",
+    "require": {
+        "jclg/php-slack-bot": "dev-master"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Slack_project\\": ""
+        }
+    }
+}

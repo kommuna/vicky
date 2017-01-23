@@ -5,6 +5,12 @@ use PhpSlackBot\Webhook\BaseWebhook;
 
 class ToUserHook extends BaseWebhook
 {
+    /**
+     * This function get user id in slack by slack username
+     *
+     * @param $userName
+     * @return string
+     */
     public function getUserIdFromUserName($userName)
     {
         $context = $this->getCurrentContext();
@@ -16,14 +22,30 @@ class ToUserHook extends BaseWebhook
                 break;
             }
         }
+
+        /*
+         * Need to add error throwing in cases 
+         * not finding the user name
+         */
+
         return $userId;
     }
-    
+
+    /**
+     *
+     */
     public function configure()
     {
         $this->setName('touser');
     }
 
+    /**
+     * This function send data from recieved HTTP POST request
+     * to slack
+     *
+     * @param $payload
+     * @param $context
+     */
     public function execute($payload, $context)
     {
         $userId = $this->getUserIdFromUserName($payload['user']);

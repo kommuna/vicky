@@ -11,7 +11,10 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
-$sender = new SlackWebhookSender($config['curlOpt']['url'], 'secret');
+$sender = new SlackWebhookSender(
+    $config['curlOpt']['url'],
+    $config['curlOpt']['auth']
+);
 
 $sender->toChannel('#general', 'To channel from php!');
 $sender->toChannel('#privatetry', 'To private channel from php!');

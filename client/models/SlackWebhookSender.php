@@ -1,5 +1,5 @@
 <?php
-namespace Slack_project\bot\models;
+namespace Vicky\client\models;
 
 
 class SlackWebhookSender

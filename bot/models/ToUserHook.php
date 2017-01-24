@@ -1,5 +1,5 @@
 <?php
-namespace Slack_project\bot\models;
+namespace Vicky\bot\models;
 
 use PhpSlackBot\Webhook\BaseWebhook;
 

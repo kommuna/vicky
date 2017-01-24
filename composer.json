@@ -1,12 +1,13 @@
 {
     "minimum-stability" : "dev",
     "require": {
-        "jclg/php-slack-bot": "dev-master"
+        "jclg/php-slack-bot": "dev-master",
+        "monolog/monolog": "1.22.0"
     },
 
     "autoload": {
         "psr-4": {
-            "Slack_project\\": ""
+            "Vicky\\": ""
         }
     }
 }

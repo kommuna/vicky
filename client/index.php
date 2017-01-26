@@ -16,6 +16,6 @@ $sender = new SlackWebhookSender(
     $config['curlOpt']['auth']
 );
 
-//$sender->toChannel('#general', 'To channel from php!');
+$sender->toChannel('#general', 'To channel "from" php!');
 //$sender->toChannel('#privatetry', 'To private channel from php!');
 $sender->toUser('chewbacca', 'To user from php!');

@@ -3,10 +3,10 @@ namespace Vicky\bot\models;
 
 use PhpSlackBot\Webhook\BaseWebhook;
 
-class ToUserHook extends BaseWebhook
+class ToUserWebhook extends BaseWebhook
 {
     /**
-     * This function get user id in slack by slack username
+     * Get user id in slack by slack username
      *
      * @param $userName
      * @return string
@@ -15,7 +15,7 @@ class ToUserHook extends BaseWebhook
     {
         $context = $this->getCurrentContext();
 
-        $userId = 'unknown';
+        $userId = null;
         foreach ($context['users'] as $user) {
             if ($user['name'] == $userName) {
                 $userId = $user['id'];
@@ -23,16 +23,11 @@ class ToUserHook extends BaseWebhook
             }
         }
 
-        /*
-         * Need to add error throwing in cases 
-         * not finding the user name
-         */
-
         return $userId;
     }
 
     /**
-     *
+     * Set configs for webhook
      */
     public function configure()
     {
@@ -40,7 +35,7 @@ class ToUserHook extends BaseWebhook
     }
 
     /**
-     * This function send data from recieved HTTP POST request
+     * Send data from recieved HTTP POST request
      * to slack
      *
      * @param $payload

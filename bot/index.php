@@ -3,8 +3,8 @@ namespace Vicky;
 
 use PhpSlackBot\Bot;
 use Vicky\bot\models\MyCommand;
-use Vicky\bot\models\ToUserHook;
-use Vicky\bot\models\ToChannelHook;
+use Vicky\bot\models\ToUserWebhook;
+use Vicky\bot\models\ToChannelWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require (isset($argv[1])) ? $argv[1] : 'config.php';
@@ -20,7 +20,7 @@ $bot->loadCommand(new MyCommand());
 $bot->loadInternalCommands();
 
 $bot->loadInternalWebhooks();
-$bot->loadWebhook(new ToUserHook());
-$bot->loadWebhook(new ToChannelHook());
+$bot->loadWebhook(new ToUserWebhook());
+$bot->loadWebhook(new ToChannelWebhook());
 $bot->enableWebserver(8080, $config['botAuth']);
 $bot->run();

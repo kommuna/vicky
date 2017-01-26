@@ -3,10 +3,10 @@ namespace Vicky\bot\models;
 
 use PhpSlackBot\Webhook\BaseWebhook;
 
-class ToChannelHook extends BaseWebhook
+class ToChannelWebhook extends BaseWebhook
 {
     /**
-     *
+     * Set configs for webhook
      */
     public function configure()
     {
@@ -14,7 +14,7 @@ class ToChannelHook extends BaseWebhook
     }
 
     /**
-     * This function send data from recieved HTTP POST request
+     * Send data from recieved HTTP POST request
      * to slack
      *
      * @param $payload

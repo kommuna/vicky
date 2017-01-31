@@ -23,4 +23,4 @@ $sender = new SlackWebhookSender(
 
 $receiver = new JiraWebhookReceiver();
 $data = $receiver->getData();
-var_dump($data);
+$sender->toUser('chewbacca', $data->comment->body);

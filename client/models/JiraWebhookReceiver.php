@@ -17,7 +17,7 @@ class JiraWebhookReceiver
         $this->data = stream_get_contents($f);
 
         if ($this->data) {
-            $this->data = json_encode($this->data);
+            $this->data = json_decode($this->data);
         } else {
             $this->data = null;
         }

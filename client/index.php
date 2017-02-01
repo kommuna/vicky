@@ -12,6 +12,8 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
+error_log('pls log work');
+
 $sender = new SlackWebhookSender(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
@@ -23,4 +25,5 @@ $sender = new SlackWebhookSender(
 
 $receiver = new JiraWebhookReceiver();
 $data = $receiver->getData();
-$sender->toUser('chewbacca', $data->comment->body);
+$sender->toUser('chewbacca', $data->webhookEvent);
+$sender->toUser('chewbacca', $data->issue->fields->assignee->name);

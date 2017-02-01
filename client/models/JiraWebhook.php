@@ -2,7 +2,7 @@
 namespace Vicky\client\models;
 
 
-class JiraWebhookReceiver
+class JiraWebhook
 {
     private $data;
 
@@ -11,13 +11,13 @@ class JiraWebhookReceiver
      * 
      * @return null|string
      */
-    public function getData()
+    public function process()
     {
         $f = fopen('php://input', 'r');
         $this->data = stream_get_contents($f);
 
         if ($this->data) {
-            $this->data = json_encode($this->data);
+            $this->data = json_decode($this->data);
         } else {
             $this->data = null;
         }

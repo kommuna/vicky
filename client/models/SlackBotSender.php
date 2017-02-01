@@ -1,8 +1,9 @@
 <?php
 namespace Vicky\client\models;
 
+use Vicky\client\models\JiraWebhook;
 
-class SlackWebhookSender
+class SlackBotSender
 {
     protected $slackBotUrl;
     protected $auth;
@@ -17,6 +18,36 @@ class SlackWebhookSender
     {
         $this->slackBotUrl = $slackBotUrl;
         $this->auth = $auth;
+    }
+
+    public function parseData()
+    {
+        $receiver = new JiraWebhook();
+        $data = $receiver->process();
+
+        if ($data->issue->fields->prioruty->name == 'Blocker') {
+            $message = '!!! <'.$data->issue->key.'> ('.$data->issue->self.') <'.$data->issue->fields->status.'>: <'.$data->issue->fields->summary.'> ➠ <'.$data->issue->fields->assignee->name.'>';
+            $this->toChannel('#general', $message);
+
+            $message = '<'.$data->issue->fields->comment->author->name.'> ➠ <'.$data->issue->fields->comment->body.'>';
+            $this->toChannel('#general', $message);
+        } elseif ($data->issue->fields->type->name == 'Operations') {
+            if ($data->webhookEvent == 'jira:issue_created' || $data->issue->fields->status == 'Resolved') {
+                $message = '⚙ <'.$data->issue->key.'> ('.$data->issue->self.') <'.$data->issue->fields->status.'>: <'.$data->issue->fields->summary.'> ➠ <'.$data->issue->fields->assignee->name.'>';
+                $this->toChannel('#general', $message);
+
+                $message = '<'.$data->issue->fields->comment->author->name.'> ➠ <'.$data->issue->fields->comment->body.'>';
+                $this->toChannel('#general', $message);
+            }
+        } elseif ($data->issue->fields->type->name == 'Urgent bug') {
+            if ($data->webhookEvent == 'jira:issue_created' || $data->issue->fields->status == 'Resolved') {
+                $message = '⚡ <'.$data->issue->key.'> ('.$data->issue->self.') <'.$data->issue->fields->status.'>: <'.$data->issue->fields->summary.'> ➠ <'.$data->issue->fields->assignee->name.'>';
+                $this->toChannel('#general', $message);
+
+                $message = '<'.$data->issue->fields->comment->author->name.'> ➠ <'.$data->issue->fields->comment->body.'>';
+                $this->toChannel('#general', $message);
+            }
+        }
     }
 
     /**

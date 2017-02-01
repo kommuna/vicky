@@ -1,8 +1,7 @@
 <?php
 namespace Vicky;
 
-use Vicky\client\models\SlackWebhookSender;
-use Vicky\client\models\JiraWebhookReceiver;
+use Vicky\client\models\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require (isset($argv[1])) ? $argv[1] : 'config.php';
@@ -12,9 +11,7 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
-error_log('pls log work');
-
-$sender = new SlackWebhookSender(
+$sender = new SlackBotSender(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
 );
@@ -23,7 +20,8 @@ $sender = new SlackWebhookSender(
 //$sender->toChannel('#privatetry', 'To private channel from php!');
 //$sender->toUser('chewbacca', 'To user from php!');
 
-$receiver = new JiraWebhookReceiver();
-$data = $receiver->getData();
-$sender->toUser('chewbacca', $data->webhookEvent);
-$sender->toUser('chewbacca', $data->issue->fields->assignee->name);
+//$receiver = new JiraWebhookReceiver();
+//$data = $receiver->getData();
+//$sender->toUser('chewbacca', $data->webhookEvent);
+//$sender->toUser('chewbacca', $data->issue->fields->assignee->name);
+$sender->parseData();

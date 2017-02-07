@@ -68,7 +68,7 @@ class SlackBotSender
 
         $priority  = $data->getPriority();
         $issueType = $data->getIssueType();
-        $webhookEvent = $data->getWebHookEvent();
+        $webhookEvent = $data->getWebhookEvent();
 
         if ($priority == 'Blocker') {
             $message = '!!! '.$message;

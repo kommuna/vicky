@@ -54,17 +54,23 @@ class SlackBotSender
         $receiver = new JiraWebhook();
         $data = new Data($receiver->process());
 
+        $status = $data->getStatus();
+
         $message = $this->getMessage(
             $data->getNumber(),
             $data->getURL(),
-            $data->getStatus(),
+            $status,
             $data->getSummary(),
             $data->getAssignee(),
             $data->getCommenterID(),
             $data->getLastComment()
         );
 
-        if ($data->issue->fields->priority->name == 'Blocker') {
+        $priority  = $data->getPriority();
+        $issueType = $data->getIssueType();
+        $webhookEvent = $data->getWebHookEvent();
+
+        if ($priority == 'Blocker') {
             $message = '!!! '.$message;
             $this->toChannel('#general', $message);
 
@@ -73,8 +79,8 @@ class SlackBotSender
 
             $message = '<'.$data->issue->fields->comment->author->name.'> ➠ <'.$data->issue->fields->comment->body.'>';
             $this->toChannel('#general', $message);*/
-        } elseif ($data->issue->fields->type->name == 'Operations') {
-            if ($data->webhookEvent == 'jira:issue_created' || $data->issue->fields->status == 'Resolved') {
+        } elseif ($issueType == 'Operations') {
+            if ($webhookEvent == 'jira:issue_created' || $status == 'Resolved') {
                 $message = '⚙ '.$message;
                 $this->toChannel('#general', $message);
 
@@ -84,8 +90,8 @@ class SlackBotSender
                 $message = '<'.$data->issue->fields->comment->author->name.'> ➠ <'.$data->issue->fields->comment->body.'>';
                 $this->toChannel('#general', $message);*/
             }
-        } elseif ($data->issue->fields->type->name == 'Urgent bug') {
-            if ($data->webhookEvent == 'jira:issue_created' || $data->issue->fields->status == 'Resolved') {
+        } elseif ($issueType == 'Urgent bug') {
+            if ($webhookEvent == 'jira:issue_created' || $status == 'Resolved') {
                 $message = '⚡ '.$message;
                 $this->toChannel('#general', $message);
 

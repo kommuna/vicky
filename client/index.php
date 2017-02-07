@@ -11,6 +11,7 @@ ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
+
 $sender = new SlackBotSender(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']

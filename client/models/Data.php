@@ -10,6 +10,10 @@ class Data
     private $assignee;
     private $commenterID;
     private $lastComment;
+    
+    private $priority;
+    private $issueType;
+    private $webhookEvent;
 
     /**
      * Data constructor.
@@ -20,16 +24,20 @@ class Data
      */
     public function __construct($data)
     {
-        $this->number      = $data->issue->key;
-        $this->URL         = $data->issue->self;
-        $this->status      = $data->issue->fields->status->name;
-        $this->summary     = $data->issue->fields->summary;
-        $this->assignee    = $data->issue->fields->assignee->name;
+        $this->number       = $data->issue->key;
+        $this->URL          = $data->issue->self;
+        $this->status       = $data->issue->fields->status->name;
+        $this->summary      = $data->issue->fields->summary;
+        $this->assignee     = $data->issue->fields->assignee->name;
         
         $n = count($data->issue->fields->comment->comments) - 1;
         
-        $this->commenterID = $data->issue->fields->comment->comments[$n]->author->name;
-        $this->lastComment = $data->issue->fields->comment->comments[$n]->body;
+        $this->commenterID  = $data->issue->fields->comment->comments[$n]->author->name;
+        $this->lastComment  = $data->issue->fields->comment->comments[$n]->body;
+        
+        $this->priority     = $data->issue->fields->priority->name;
+        $this->issueType    = $data->issue->fields->type->name;
+        $this->webhookEvent = $data->webhookEvent;
     }
     
     public function getNumber()
@@ -65,5 +73,20 @@ class Data
     public function getLastComment()
     {
         return $this->lastComment;
+    }
+
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    public function getIssueType()
+    {
+        return $this->issueType;
+    }
+
+    public function getWebhookEvent()
+    {
+        return $this->webhookEvent;
     }
 }

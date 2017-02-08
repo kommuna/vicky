@@ -35,8 +35,10 @@ class JiraWebhookData
         self::$webhookData->setSummary($data['issue']['fields']['summary']);
         self::$webhookData->setAssignee($data['issue']['fields']['assignee']['name']);
         
-        self::$webhookData->setLastCommenterID(array_pop($data['issue']['fields']['comment']['comments'])['author']['name']);
-        self::$webhookData->setLastComment(array_pop($data['issue']['fields']['comment']['comments'])['body']);
+        $lastComment = array_pop($data['issue']['fields']['comment']['comments']);
+        
+        self::$webhookData->setLastCommenterID($lastComment['author']['name']);
+        self::$webhookData->setLastComment($lastComment['body']);
 
         self::$webhookData->setPriority($data['issue']['fields']['priority']['name']);
         self::$webhookData->setIssueType($data['issue']['fields']['issuetype']['name']);

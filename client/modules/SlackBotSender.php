@@ -101,7 +101,7 @@ class SlackBotSender
 
     protected function curlAnswerCheck($answer)
     {
-        if ($answer != 'ok') {
+        if ($answer != 'Ok') {
             throw new CurlException($answer);
         }
 

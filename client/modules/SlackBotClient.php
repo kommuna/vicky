@@ -68,7 +68,8 @@ class SlackBotClient extends SlackBotSender
 
         if ($priority === 'Blocker') {
             $message = '!!! '.$message;
-            $this->toChannel('#general', $message);
+            //$this->toChannel('#general', $message);
+            $this->toUser('chewbacca', $message);
         } elseif ($issueType === 'Operations') {
             if ($webhookEvent === 'jira:issue_created' || $status === 'Resolved') {
                 $message = '⚙ '.$message;

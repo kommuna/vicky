@@ -3,12 +3,14 @@ namespace Vicky\client\modules;
 
 class JiraWebhookData
 {
+    private static $webhookData;
+
     private $number;
     private $URL;
     private $status;
     private $summary;
     private $assignee;
-    private $commenterID;
+    private $lastCommenterID;
     private $lastComment;
     
     private $priority;
@@ -16,34 +18,92 @@ class JiraWebhookData
     private $webhookEvent;
 
     private $issueEvent;
-
-    /**
-     * Data constructor.
-     *
-     * Parsing data from JIRA
-     *
-     * @param $data
-     */
-    public function __construct($data)
-    {
-        $this->number       = $data->issue->key;
-        $this->URL          = $data->issue->self;
-        $this->status       = $data->issue->fields->status->name;
-        $this->summary      = $data->issue->fields->summary;
-        $this->assignee     = $data->issue->fields->assignee->name;
-        
-        $n = count($data->issue->fields->comment->comments) - 1;
-        
-        $this->commenterID  = $data->issue->fields->comment->comments[$n]->author->name;
-        $this->lastComment  = $data->issue->fields->comment->comments[$n]->body;
-        
-        $this->priority     = $data->issue->fields->priority->name;
-        $this->issueType    = $data->issue->fields->issuetype->name;
-        $this->webhookEvent = $data->webhookEvent;
-
-        $this->issueEvent   = $data->issue_event_type_name;
-    }
     
+    public static function parseWebhookData($data = null)
+    {
+        if ($data === null) {
+            return self::$webhookData = new JiraWebhookData();
+        } elseif (self::$webhookData) {
+            return self::$webhookData;
+        }
+
+        self::$webhookData = new JiraWebhookData();
+
+        self::$webhookData->setNumber($data['issue']['key']);
+        self::$webhookData->setURL($data['issue']['self']);
+        self::$webhookData->setStatus($data['issue']['fields']['status']['name']);
+        self::$webhookData->setSummary($data['issue']['fields']['summary']);
+        self::$webhookData->setAssignee($data['issue']['fields']['assignee']['name']);
+        
+        self::$webhookData->setLastCommenterID(array_pop($data['issue']['fields']['comment']['comments'])['author']['name']);
+        self::$webhookData->setLastComment(array_pop($data['issue']['fields']['comment']['comments'])['body']);
+
+        self::$webhookData->setPriority($data['issue']['fields']['priority']['name']);
+        self::$webhookData->setIssueType($data['issue']['fields']['issuetype']['name']);
+        self::$webhookData->setWebhookEvent($data['webhookEvent']);
+
+        self::$webhookData->setIssueEvent($data['issue_event_type_name']);
+
+        return self::$webhookData;
+    }
+
+    public function setNumber($number)
+    {
+        $this->number = $number;
+    }
+
+    public function setURL($URL)
+    {
+        $this->URL = $URL;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    public function setSummary($summary)
+    {
+        $this->summary = $summary;
+    }
+
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
+    }
+
+    public function setLastCommenterID($lastCommenterID)
+    {
+        $this->lastCommenterID = $lastCommenterID;
+    }
+
+    public function setLastComment($lastComment)
+    {
+        $this->lastComment = $lastComment;
+    }
+
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+    }
+
+    public function setIssueType($issueType)
+    {
+        $this->issuetype = $issueType;
+    }
+
+    public function setWebhookEvent($webhookEvent)
+    {
+        $this->webhookEvent = $webhookEvent;
+    }
+
+    public function setIssueEvent($issueEvent)
+    {
+        $this->issueEvent = $issueEvent;
+    }
+
+    /*******************************************/
+
     public function getNumber()
     {
         return $this->number;
@@ -69,9 +129,9 @@ class JiraWebhookData
         return $this->assignee;
     }
 
-    public function getCommenterID()
+    public function getLastCommenterID()
     {
-        return $this->commenterID;
+        return $this->lastCommenterID;
     }
 
     public function getLastComment()

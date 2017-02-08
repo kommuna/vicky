@@ -21,12 +21,12 @@ $sender = new SlackBotClient(
 //$sender->toChannel('#privatetry', 'To private channel from php!');
 //$sender->toUser('chewbacca', 'To user from php!');
 
-$receiver = new JiraWebhook();
-$data = $receiver->process();
+//$receiver = new JiraWebhook();
+//$data = $receiver->process();
 
-error_log(print_r($data, 1));
+//error_log(print_r($data, 1));
 
 //$sender->toUser('chewbacca', $data->webhookEvent);
 //$sender->toUser('chewbacca', $data->issue->fields->comment->comments[0]->body);
 
-//$sender->parseData();
+$sender->parseData();

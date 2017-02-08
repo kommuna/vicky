@@ -7,6 +7,18 @@ use Vicky\client\modules\JiraWebhookData;
 
 class SlackBotClient extends SlackBotSender
 {
+    private static $data;
+
+    public function __construct($slackBotUrl, $auth)
+    {
+        if (!self::$data) {
+            $receiver = new JiraWebhook();
+            self::$data = JiraWebhookData::parseWebhookData($receiver->process());
+        }
+
+        parent::__construct($slackBotUrl, $auth);
+    }
+
     /**
      * Forming the message
      *
@@ -26,10 +38,10 @@ class SlackBotClient extends SlackBotSender
         $status,
         $summary,
         $assignee,
-        $commenterID,
+        $lastCommenterID,
         $lastComment)
     {
-        return "<{$number}> ({$URL}) <{$status}>: <{$summary}> ➠ <@{$assignee}>\n<@{$commenterID}> ➠ <{$lastComment}>";
+        return "<{$number}> ({$URL}) <{$status}>: <{$summary}> ➠ <@{$assignee}>\n<@{$lastCommenterID}> ➠ <{$lastComment}>";
     }
 
     /**
@@ -37,25 +49,22 @@ class SlackBotClient extends SlackBotSender
      */
     public function parseData()
     {
-        $receiver = new JiraWebhook();
-        $data = new JiraWebhookData($receiver->process());
-
-        $status = $data->getStatus();
+        $status = self::$data->getStatus();
 
         $message = $this->getMessage(
-            $data->getNumber(),
-            $data->getURL(),
+            self::$data->getNumber(),
+            self::$data->getURL(),
             $status,
-            $data->getSummary(),
-            $data->getAssignee(),
-            $data->getCommenterID(),
-            $data->getLastComment()
+            self::$data->getSummary(),
+            self::$data->getAssignee(),
+            self::$data->getLastCommenterID(),
+            self::$data->getLastComment()
         );
 
-        $priority  = $data->getPriority();
-        $issueType = $data->getIssueType();
-        $webhookEvent = $data->getWebhookEvent();
-        $issueEvent = $data->getIssueEvent();
+        $priority  = self::$data->getPriority();
+        $issueType = self::$data->getIssueType();
+        $webhookEvent = self::$data->getWebhookEvent();
+        $issueEvent = self::$data->getIssueEvent();
 
         if ($priority === 'Blocker') {
             $message = '!!! '.$message;

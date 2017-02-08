@@ -2,9 +2,9 @@
 namespace Vicky;
 
 use PhpSlackBot\Bot;
-use Vicky\bot\models\MyCommand;
-use Vicky\bot\models\ToUserWebhook;
-use Vicky\bot\models\ToChannelWebhook;
+use Vicky\bot\modules\MyCommand;
+use Vicky\bot\modules\ToUserWebhook;
+use Vicky\bot\modules\ToChannelWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/botConfig.php';

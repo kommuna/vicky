@@ -1,7 +1,7 @@
 <?php
-namespace Vicky\client\models;
+namespace Vicky\client\modules;
 
-class Data
+class JiraWebhookData
 {
     private $number;
     private $URL;
@@ -14,6 +14,8 @@ class Data
     private $priority;
     private $issueType;
     private $webhookEvent;
+
+    private $issueEvent;
 
     /**
      * Data constructor.
@@ -36,8 +38,10 @@ class Data
         $this->lastComment  = $data->issue->fields->comment->comments[$n]->body;
         
         $this->priority     = $data->issue->fields->priority->name;
-        $this->issueType    = $data->issue->fields->type->name;
+        $this->issueType    = $data->issue->fields->issuetype->name;
         $this->webhookEvent = $data->webhookEvent;
+
+        $this->issueEvent   = $data->issue_event_type_name;
     }
     
     public function getNumber()
@@ -88,5 +92,10 @@ class Data
     public function getWebhookEvent()
     {
         return $this->webhookEvent;
+    }
+    
+    public function getIssueEvent()
+    {
+        return $this->issueEvent;
     }
 }

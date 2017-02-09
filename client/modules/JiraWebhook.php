@@ -1,9 +1,12 @@
 <?php
 namespace Vicky\client\modules;
 
+use Vicky\client\modules\JiraWebhookData;
+use Vicky\client\exceptions\SlackBotSenderException;
 
 class JiraWebhook
 {
+    private $rawData;
     private $data;
 
     /**
@@ -11,16 +14,19 @@ class JiraWebhook
      * 
      * @return null|string
      */
-    public function process()
+    public function extractData()
     {
         $f = fopen('php://input', 'r');
-        $this->data = stream_get_contents($f);
+        $data = stream_get_contents($f);
 
-        if ($this->data) {
-            $this->data = json_decode($this->data, true);
+        if ($data) {
+            $this->rawData = json_decode($data, true);
+            // TODO если здесь ошибка json_decode то выкидывать эксепшен
         } else {
-            $this->data = null;
+            throw new SlackBotSenderException('No data.');
         }
+        
+        $this->data = JiraWebhookData::parseWebhookData($this->rawData);
 
         return $this->data;
     }

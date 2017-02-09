@@ -1,7 +1,7 @@
 <?php
 namespace Vicky\client\modules;
 
-use Vicky\client\exceptions\CommunicationException;
+use Vicky\client\exceptions\SlackBotSenderException;
 
 class SlackBotSender
 {
@@ -93,6 +93,7 @@ class SlackBotSender
             CURLOPT_POSTFIELDS => http_build_query($slackRequest)
         ]);
 
+        // TODO добавить вытягивание ошибки из курла, при возврате false
         $answer = curl_exec($curl);
         curl_close($curl);
 
@@ -102,7 +103,7 @@ class SlackBotSender
     protected function curlAnswerCheck($answer)
     {
         if ($answer != 'Ok') {
-            throw new CommunicationException($answer);
+            throw new SlackBotSenderException($answer);
         }
 
         return true;

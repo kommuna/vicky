@@ -1,68 +1,30 @@
 <?php
 namespace Vicky\client\modules;
 
-use Vicky\client\modules\SlackBotSender;
-use Vicky\client\modules\JiraWebhook;
-use Vicky\client\modules\JiraWebhookData;
-
 class SlackBotClient extends SlackBotSender
 {
+    // TODO добавить метод setConverter(), который задает конвертер сообщений
     private $data;
+    private $converter;
 
-    public function __construct($slackBotUrl, $auth)
+    public function setConverter($converter)
     {
-        $receiver = new JiraWebhook();
-        $this->data = JiraWebhookData::parseWebhookData($receiver->process());
-
-        parent::__construct($slackBotUrl, $auth);
+        $this->converter = $converter;
     }
-
-    /**
-     * Forming the message
-     *
-     * @param $number
-     * @param $URL
-     * @param $status
-     * @param $summary
-     * @param $assignee
-     * @param $commenterID
-     * @param $lastComment
-     *
-     * @return string
-     */
-    public function getMessage(
-        $number,
-        $URL,
-        $status,
-        $summary,
-        $assignee,
-        $lastCommenterID,
-        $lastComment)
-    {
-        return "<{$number}> ({$URL}) <{$status}>: <{$summary}> ➠ <@{$assignee}>\n<@{$lastCommenterID}> ➠ <{$lastComment}>";
-    }
+    
 
     /**
      * Receiving data from JIRA, creating message and send it to slack bot
      */
-    public function parseData()
+    public function send($data)
     {
-        $status = $this->data->getStatus();
-
-        $message = $this->getMessage(
-            $this->data->getNumber(),
-            $this->data->getURL(),
-            $status,
-            $this->data->getSummary(),
-            $this->data->getAssignee(),
-            $this->data->getLastCommenterID(),
-            $this->data->getLastComment()
-        );
-
-        $priority  = $this->data->getPriority();
-        $issueType = $this->data->getIssueType();
-        $webhookEvent = $this->data->getWebhookEvent();
-        $issueEvent = $this->data->getIssueEvent();
+        $message = $this->converter->convert($data);
+        
+        $status = $data->getStatus();
+        $priority  = $data->getPriority();
+        $issueType = $data->getIssueType();
+        $webhookEvent = $data->getWebhookEvent();
+        $issueEvent = $data->getIssueEvent();
 
         if ($priority === 'Blocker') {
             $message = '!!! '.$message;

@@ -19,11 +19,12 @@ class JiraWebhookData
     
     public static function parseWebhookData($data = null)
     {
+        $webhookData = new self;
+        
         if ($data === null) {
-            return new JiraWebhookData();
+            return $webhookData;
         }
-
-        $webhookData = new JiraWebhookData();
+        
         $issueFields = $data['issue']['fields'];
 
         $webhookData->setNumber($data['issue']['key']);

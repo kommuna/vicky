@@ -83,7 +83,7 @@ class SlackBotSender
     protected function sendRequest($slackRequest)
     {
         if (!($curl = curl_init())) {
-            return $answer = false;
+            return $answer = 'Cannot init curl session!';
         }
         
         curl_setopt_array($curl, [

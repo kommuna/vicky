@@ -3,8 +3,6 @@ namespace Vicky\client\modules;
 
 class JiraWebhookData
 {
-    private $webhookData;
-
     private $number;
     private $URL;
     private $status;
@@ -22,7 +20,7 @@ class JiraWebhookData
     public static function parseWebhookData($data = null)
     {
         if ($data === null) {
-            return $webhookData = new JiraWebhookData();
+            return new JiraWebhookData();
         }
 
         $webhookData = new JiraWebhookData();
@@ -102,7 +100,7 @@ class JiraWebhookData
         $this->issueEvent = $issueEvent;
     }
 
-    /*******************************************/
+    /**************************************************/
 
     public function getNumber()
     {

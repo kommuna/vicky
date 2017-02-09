@@ -7,14 +7,12 @@ use Vicky\client\modules\JiraWebhookData;
 
 class SlackBotClient extends SlackBotSender
 {
-    private static $data;
+    private $data;
 
     public function __construct($slackBotUrl, $auth)
     {
-        if (!self::$data) {
-            $receiver = new JiraWebhook();
-            self::$data = JiraWebhookData::parseWebhookData($receiver->process());
-        }
+        $receiver = new JiraWebhook();
+        $this->data = JiraWebhookData::parseWebhookData($receiver->process());
 
         parent::__construct($slackBotUrl, $auth);
     }
@@ -49,22 +47,22 @@ class SlackBotClient extends SlackBotSender
      */
     public function parseData()
     {
-        $status = self::$data->getStatus();
+        $status = $this->data->getStatus();
 
         $message = $this->getMessage(
-            self::$data->getNumber(),
-            self::$data->getURL(),
+            $this->data->getNumber(),
+            $this->data->getURL(),
             $status,
-            self::$data->getSummary(),
-            self::$data->getAssignee(),
-            self::$data->getLastCommenterID(),
-            self::$data->getLastComment()
+            $this->data->getSummary(),
+            $this->data->getAssignee(),
+            $this->data->getLastCommenterID(),
+            $this->data->getLastComment()
         );
 
-        $priority  = self::$data->getPriority();
-        $issueType = self::$data->getIssueType();
-        $webhookEvent = self::$data->getWebhookEvent();
-        $issueEvent = self::$data->getIssueEvent();
+        $priority  = $this->data->getPriority();
+        $issueType = $this->data->getIssueType();
+        $webhookEvent = $this->data->getWebhookEvent();
+        $issueEvent = $this->data->getIssueEvent();
 
         if ($priority === 'Blocker') {
             $message = '!!! '.$message;

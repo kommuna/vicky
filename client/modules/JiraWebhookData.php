@@ -24,20 +24,21 @@ class JiraWebhookData
         }
 
         $webhookData = new JiraWebhookData();
+        $issueFields = $data['issue']['fields'];
 
         $webhookData->setNumber($data['issue']['key']);
         $webhookData->setURL($data['issue']['self']);
-        $webhookData->setStatus($data['issue']['fields']['status']['name']);
-        $webhookData->setSummary($data['issue']['fields']['summary']);
-        $webhookData->setAssignee($data['issue']['fields']['assignee']['name']);
+        $webhookData->setStatus($issueFields['status']['name']);
+        $webhookData->setSummary($issueFields['summary']);
+        $webhookData->setAssignee($issueFields['assignee']['name']);
         
-        $lastComment = array_pop($data['issue']['fields']['comment']['comments']);
+        $lastComment = array_pop($issueFields['comment']['comments']);
         
         $webhookData->setLastCommenterID($lastComment['author']['name']);
         $webhookData->setLastComment($lastComment['body']);
 
-        $webhookData->setPriority($data['issue']['fields']['priority']['name']);
-        $webhookData->setIssueType($data['issue']['fields']['issuetype']['name']);
+        $webhookData->setPriority($issueFields['priority']['name']);
+        $webhookData->setIssueType($issueFields['issuetype']['name']);
         $webhookData->setWebhookEvent($data['webhookEvent']);
 
         $webhookData->setIssueEvent($data['issue_event_type_name']);

@@ -123,10 +123,13 @@ class JiraWebhook
                     $this->on('type.UrgentBug', $data);
                 }
             
-                if ($data->isAssignee()) {
-                    $this->on('Assignee', $data);
+                if ($data->getAssignee()) {
+                    $this->on('ticket.Assigned', $data);
                 }
             case 'jira:issue_updated':
+                //For checking issue assignee $data->getIssueEvent must be 'issue_assigned'
+                //For checking new comments $data->getIssueEvent must be 'issue_commented'
+            case 'jira:issue_deleted':
         }
 
 

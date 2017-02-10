@@ -10,6 +10,7 @@ class JiraWebhookData
     private $status;
     private $summary;
     private $assignee;
+    private $comments;
     private $lastCommenterID;
     private $lastComment;
     
@@ -21,6 +22,8 @@ class JiraWebhookData
     
     public static function parseWebhookData($data = null)
     {
+        // TODO need to add check for every data that parsing here
+
         $webhookData = new self;
         
         if ($data === null) {
@@ -65,11 +68,6 @@ class JiraWebhookData
     {
         return $this->issueType === 'Urgent bug';
     }
-    
-    public function isAssignee()
-    {
-        return ($this->assignee) ? true : false;
-    }
 
     /**************************************************/
 
@@ -101,6 +99,11 @@ class JiraWebhookData
     public function setAssignee($assignee)
     {
         $this->assignee = $assignee;
+    }
+
+    public function setComments($comments)
+    {
+        $this->comments = $comments;
     }
 
     public function setLastCommenterID($lastCommenterID)
@@ -163,6 +166,11 @@ class JiraWebhookData
     public function getAssignee()
     {
         return $this->assignee;
+    }
+
+    public function getComments()
+    {
+        return $this->comments;
     }
 
     public function getLastCommenterID()

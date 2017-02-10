@@ -45,7 +45,7 @@ $jiraWebhook->registerEvent('type.UrgentBug', function($event, $data) use ($botC
     $this->toChannel('#general', $message);
 });
 
-$jiraWebhook->registerEvent('Assignee', function($event, $data) use ($botClient)
+$jiraWebhook->registerEvent('ticket.Assigned', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $this->toUser($data->getAssignee(), $message);

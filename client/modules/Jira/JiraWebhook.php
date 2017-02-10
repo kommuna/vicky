@@ -113,14 +113,24 @@ class JiraWebhook
     {
         $data = $this->extractData();
 
-        if ($data->isBlocker()) {
-            $this->on('priority.Blocker', $data);
-        } else {
+        switch ($data->getWebhookEvent()) {
+            case 'jira:issue_created':
+                if ($data->isPriorityBlocker()) {
+                    $this->on('priority.Blocker', $data);
+                } elseif ($data->isTypeOprations()) {
+                    $this->on('type.Operations', $data);
+                } elseif ($data->isTypeUrgentBug()) {
+                    $this->on('type.UrgentBug', $data);
+                }
             
+                if ($data->isAssignee()) {
+                    $this->on('Assignee', $data);
+                }
+            case 'jira:issue_updated':
         }
 
 
-        if ($data->isBlocker()) {
+        /*if ($data->isPriorityBlocker()) {
             $emitter->emit('type.Blocker', $data);
 
 
@@ -137,6 +147,6 @@ class JiraWebhook
                 $message = "⚡ {$message}";
                 $this->toChannel('#general', $message);
             }
-        }
+        }*/
     }
 }

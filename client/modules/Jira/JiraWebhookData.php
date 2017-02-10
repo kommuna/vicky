@@ -3,6 +3,8 @@ namespace Vicky\client\modules\Jira;
 
 class JiraWebhookData
 {
+    private $rawData;
+    
     private $number;
     private $URL;
     private $status;
@@ -24,6 +26,8 @@ class JiraWebhookData
         if ($data === null) {
             return $webhookData;
         }
+        
+        $webhookData->setRawData($data);
         
         $issueFields = $data['issue']['fields'];
 
@@ -47,13 +51,33 @@ class JiraWebhookData
         return $webhookData;
     }
     
-    public function isBlocker()
+    public function isPriorityBlocker()
     {
         return $this->priority === 'Blocker';
+    }
+    
+    public function isTypeOprations()
+    {
+        return $this->issueType === 'Operations';
+    }
+
+    public function isTypeUrgentBug()
+    {
+        return $this->issueType === 'Urgent bug';
+    }
+    
+    public function isAssignee()
+    {
+        return ($this->assignee) ? true : false;
     }
 
     /**************************************************/
 
+    public function setRawData($rawData)
+    {
+        $this->rawData = $rawData;
+    }
+    
     public function setNumber($number)
     {
         $this->number = $number;
@@ -111,6 +135,11 @@ class JiraWebhookData
 
     /**************************************************/
 
+    public function getRawData()
+    {
+        return $this->rawData;
+    }
+    
     public function getNumber()
     {
         return $this->number;

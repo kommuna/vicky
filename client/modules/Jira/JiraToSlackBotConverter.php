@@ -5,7 +5,11 @@ class JiraToSlackBotConverter extends JiraConverter
 {
     public function convert(JiraWebhookData $data)
     {
+        //Old method, delete this after testing new
         //return "<{$number}> ({$URL}) <{$status}>: <{$summary}> ➠ <@{$assignee}>\n<@{$lastCommenterID}> ➠ <{$lastComment}>";
+        
+        // TODO need to check comments, if they are missing send message without them
+
         return sprintf(
             "<%s> (%s) <%s>: <%s> ➠ <@%s>\n<@%s> ➠ <%s>", 
             [

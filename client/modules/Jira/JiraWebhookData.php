@@ -1,5 +1,5 @@
 <?php
-namespace Vicky\client\modules;
+namespace Vicky\client\modules\Jira;
 
 class JiraWebhookData
 {
@@ -46,6 +46,13 @@ class JiraWebhookData
 
         return $webhookData;
     }
+    
+    public function isBlocker()
+    {
+        return $this->priority === 'Blocker';
+    }
+
+    /**************************************************/
 
     public function setNumber($number)
     {

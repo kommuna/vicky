@@ -1,9 +1,9 @@
 <?php
 namespace Vicky;
 
-use Vicky\client\modules\JiraToSlackBotConverter;
-use Vicky\client\modules\SlackBotClient;
-use Vicky\client\modules\JiraWebhook;
+use Vicky\client\modules\Jira\JiraWebhook;
+use Vicky\client\modules\Jira\JiraToSlackBotConverter;
+use Vicky\client\modules\Slack\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/clientConfig.php';
@@ -13,24 +13,21 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
-$botClient = new SlackBotClient(
+$botClient = new SlackBotSender(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
 );
 
-$jiraData = (new JiraWebhook())->extractData();
+$jiraWebhook = new JiraWebhook();
 
-//$sender->toChannel('#general', 'To channel "from" php!');
-//$sender->toChannel('#privatetry', 'To private channel from php!');
-//$sender->toUser('chewbacca', 'To user from php!');
+JiraWebhook::getEmitter();
+JiraWebhook::setConverter('JiraToSlack', new JiraToSlackBotConverter());
 
-//$receiver = new JiraWebhook();
-//$data = $receiver->process();
+$jiraWebhook->registerEvent('priority.Blocker', function($event, $data) use ($botClient) {
+    $message = JiraWebhook::convert('JiraToSlack', $data);
+    $message = "!!! {$message}";
+    //$this->toChannel('#general', $message);
+    $botClient->toUser('chewbacca', $message);
+});
 
-//error_log(print_r($data, 1));
-
-//$sender->toUser('chewbacca', $data->webhookEvent);
-//$sender->toUser('chewbacca', $data->issue->fields->comment->comments[0]->body);
-
-$botClient->setConverter(new JiraToSlackBotConverter());
-$botClient->send($jiraData);
+$jiraWebhook->run();

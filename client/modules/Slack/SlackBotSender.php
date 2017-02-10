@@ -1,5 +1,5 @@
 <?php
-namespace Vicky\client\modules;
+namespace Vicky\client\modules\Slack;
 
 use Vicky\client\exceptions\SlackBotSenderException;
 

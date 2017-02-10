@@ -2,7 +2,8 @@
     "minimum-stability" : "dev",
     "require": {
         "jclg/php-slack-bot": "dev-master",
-        "monolog/monolog": "1.22.0"
+        "monolog/monolog": "1.22.0",
+        "league/event": "2.1.2"
     },
 
     "autoload": {

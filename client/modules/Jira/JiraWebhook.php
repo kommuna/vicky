@@ -79,6 +79,7 @@ class JiraWebhook
      */
     public function on($name, $data = null)
     {
+        // TODO add check for $name is callable
         self::$emitter->emit($name, $data);
     }
 
@@ -102,12 +103,45 @@ class JiraWebhook
                 }
 
                 if ($data->getAssignee()) {
-                    $this->on('ticket.Assigned', $data);
+                    $this->on('issue.Assigned', $data);
                 }
+
+                break;
             case 'jira:issue_updated':
+                if ($data->isPriorityBlocker()) {
+                    $this->on('priority.Blocker', $data);
+                } elseif ($data->isTypeOprations() && $data->isStatusResolved()) {
+                    $this->on('type.Operations', $data);
+                } elseif (($data->isTypeUrgentBug() && $data->isStatusResolved()) || ($data->isTypeUrgentBug() && $data->isIssueCommented())) {
+                    $this->on('type.UrgentBug', $data);
+                }
+
+                if ($data->isIssueAssigned()) {
+                    $this->on('issue.Assigned', $data);
+                }
+
+                if ($data->isIssueCommented()) {
+                    $this->on('issue.Commented', $data);
+
+                    $refStart = $data->isCommentReference();
+
+                    if ($refStart) {
+                        $lastComment = $data->getLastComment();
+                        $refStart += 2;
+                        $refEnd = stripos($lastComment, ']');
+                        $reference = substr($lastComment, $refStart, $refEnd - $refStart);
+                        $data->setCommentReference($reference);
+
+                        $this->on('comment.Reference', $data);
+                    }
+                }
+
                 //For checking issue assignee $data->getIssueEvent must be 'issue_assigned'
                 //For checking new comments $data->getIssueEvent must be 'issue_commented'
+
+                break;
             case 'jira:issue_deleted':
+                break;
         }
 
         //Old structure

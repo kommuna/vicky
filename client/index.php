@@ -45,13 +45,36 @@ $jiraWebhook->addListener('type.UrgentBug', function($event, $data) use ($botCli
     $this->toChannel('#general', $message);
 });
 
-$jiraWebhook->addListener('ticket.Assigned', function($event, $data) use ($botClient)
+$jiraWebhook->addListener('issue.Assigned', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $this->toUser($data->getAssignee(), $message);
 });
 
+$jiraWebhook->addListener('issue.Commented', function($event, $data) use ($botClient)
+{
+    $message = JiraWebhook::convert('JiraToSlack', $data);
+    $this->toUser($data->getAssignee(), $message);
+});
+
+$jiraWebhook->addListener('comment.Reference', function($event, $data, $reference) use ($botClient)
+{
+    $message = JiraWebhook::convert('JiraToSlack', $data);
+    $this->toUser($data->getCommentReference(), $message);
+});
+
 $data = $jiraWebhook->extractData();
 error_log(printf($data->getRawData(), 1));
+
+//Finding reference in comment test
+$refStart = $data->isCommentReference();
+
+$lastComment = $data->getLastComment();
+
+$refStart += 2;
+$refEnd = stripos($lastComment, ']');
+
+$reference = substr($lastComment, $refStart, $refEnd - $refStart);
+error_log($reference);
 
 //$jiraWebhook->run();

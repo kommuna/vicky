@@ -13,6 +13,7 @@ class JiraWebhookData
     private $comments;
     private $lastCommenterID;
     private $lastComment;
+    private $commentReference;
     
     private $priority;
     private $issueType;
@@ -67,6 +68,26 @@ class JiraWebhookData
     public function isTypeUrgentBug()
     {
         return $this->issueType === 'Urgent bug';
+    }
+
+    public function isStatusResolved()
+    {
+        return $this->status === 'Resolved';
+    }
+    
+    public function isIssueCommented()
+    {
+        return $this->issueEvent === 'issue_commented';
+    }
+
+    public function isIssueAssigned()
+    {
+        return $this->issueEvent === 'issue_assigned';
+    }
+
+    public function isCommentReference()
+    {
+        return stripos($this->getLastComment(), '[~');
     }
 
     /**************************************************/
@@ -135,6 +156,11 @@ class JiraWebhookData
     {
         $this->issueEvent = $issueEvent;
     }
+    
+    public function setCommentReference($commentreference)
+    {
+        $this->commentReference = $commentreference;
+    }
 
     /**************************************************/
 
@@ -201,5 +227,10 @@ class JiraWebhookData
     public function getIssueEvent()
     {
         return $this->issueEvent;
+    }
+
+    public function getCommentReference()
+    {
+        return $this->commentReference;
     }
 }

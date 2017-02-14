@@ -66,15 +66,4 @@ $jiraWebhook->addListener('comment.Reference', function($event, $data, $referenc
 $data = $jiraWebhook->extractData();
 error_log(printf($data->getRawData(), 1));
 
-//Finding reference in comment test
-$refStart = $data->isCommentReference();
-
-$lastComment = $data->getLastComment();
-
-$refStart += 2;
-$refEnd = stripos($lastComment, ']');
-
-$reference = substr($lastComment, $refStart, $refEnd - $refStart);
-error_log($reference);
-
 //$jiraWebhook->run();

@@ -136,33 +136,10 @@ class JiraWebhook
                     }
                 }
 
-                //For checking issue assignee $data->getIssueEvent must be 'issue_assigned'
-                //For checking new comments $data->getIssueEvent must be 'issue_commented'
-
                 break;
             case 'jira:issue_deleted':
                 break;
         }
-
-        //Old structure
-        /*if ($data->isPriorityBlocker()) {
-            $emitter->emit('type.Blocker', $data);
-
-
-            $message = "!!! {$message}";
-            //$this->toChannel('#general', $message);
-            $this->toUser('chewbacca', $message);
-        } elseif ($issueType === 'Operations') {
-            if ($webhookEvent === 'jira:issue_created' || $status === 'Resolved') {
-                $message = "⚙ {$message}";
-                $this->toChannel('#general', $message);
-            }
-        } elseif ($issueType === 'Urgent bug') {
-            if ($webhookEvent === 'jira:issue_created' || $status === 'Resolved' || $issueEvent === 'issue_commented') {
-                $message = "⚡ {$message}";
-                $this->toChannel('#general', $message);
-            }
-        }*/
     }
     
     /**

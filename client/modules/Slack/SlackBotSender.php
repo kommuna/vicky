@@ -102,7 +102,8 @@ class SlackBotSender
 
     protected function curlAnswerCheck($answer)
     {
-        if ($answer != 'Ok') {
+        // TODO this is a problem, curl respond 'Ok\n' and '$answer != 'Ok'' doesnt work
+        if (!(strpos($answer, "Ok"))) {
             throw new SlackBotSenderException($answer);
         }
 

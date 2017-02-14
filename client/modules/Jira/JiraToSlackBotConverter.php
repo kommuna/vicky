@@ -16,7 +16,7 @@ class JiraToSlackBotConverter extends JiraWebhookDataConverter
         
         // TODO need to check comments, if they are missing send message without them
 
-        return sprintf(
+        return vsprintf(
             "<%s> (%s) <%s>: <%s> ➠ <@%s>\n<@%s> ➠ <%s>", 
             [
                 $data->getNumber(),

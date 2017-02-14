@@ -23,7 +23,7 @@ $jiraWebhook = new JiraWebhook();
 JiraWebhook::getEmitter();
 JiraWebhook::setConverter('JiraToSlack', new JiraToSlackBotConverter());
 
-$jiraWebhook->registerEvent('priority.Blocker', function($event, $data) use ($botClient) 
+$jiraWebhook->addListener('priority.Blocker', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $message = "!!! {$message}";
@@ -31,21 +31,21 @@ $jiraWebhook->registerEvent('priority.Blocker', function($event, $data) use ($bo
     $botClient->toUser('chewbacca', $message);
 });
 
-$jiraWebhook->registerEvent('type.Operations', function($event, $data) use ($botClient) 
+$jiraWebhook->addListener('type.Operations', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $message = "⚙ {$message}";
     $this->toChannel('#general', $message);
 });
 
-$jiraWebhook->registerEvent('type.UrgentBug', function($event, $data) use ($botClient)
+$jiraWebhook->addListener('type.UrgentBug', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $message = "⚡ {$message}";
     $this->toChannel('#general', $message);
 });
 
-$jiraWebhook->registerEvent('ticket.Assigned', function($event, $data) use ($botClient)
+$jiraWebhook->addListener('ticket.Assigned', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $this->toUser($data->getAssignee(), $message);

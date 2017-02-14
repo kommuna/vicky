@@ -1,8 +1,14 @@
 <?php
 namespace Vicky\client\modules\Jira;
 
-class JiraToSlackBotConverter extends JiraConverter
+class JiraToSlackBotConverter extends JiraWebhookDataConverter
 {
+    /**
+     * Converts $data into message (string)
+     * 
+     * @param JiraWebhookData $data
+     * @return string
+     */
     public function convert(JiraWebhookData $data)
     {
         //Old method, delete this after testing new

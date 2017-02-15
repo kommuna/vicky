@@ -93,8 +93,13 @@ class SlackBotSender
             CURLOPT_POSTFIELDS => http_build_query($slackRequest)
         ]);
 
-        // TODO добавить вытягивание ошибки из курла, при возврате false
         $answer = curl_exec($curl);
+
+        $error = curl_error($curl);
+        if ($error) {
+            $answer = $error;
+        }
+
         curl_close($curl);
 
         return $answer;
@@ -103,7 +108,8 @@ class SlackBotSender
     protected function curlAnswerCheck($answer)
     {
         // TODO this is a problem, curl respond 'Ok\n' and '$answer != 'Ok'' doesnt work
-        if (!(strpos($answer, "Ok"))) {
+        // This should work fine, need to check
+        if (strpos($answer, "Ok")) {
             throw new SlackBotSenderException($answer);
         }
 

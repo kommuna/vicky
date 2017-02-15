@@ -13,20 +13,33 @@ class JiraToSlackBotConverter extends JiraWebhookDataConverter
     {
         //Old method, delete this after testing new
         //return "<{$number}> ({$URL}) <{$status}>: <{$summary}> ➠ <@{$assignee}>\n<@{$lastCommenterID}> ➠ <{$lastComment}>";
-        
-        // TODO need to check comments, if they are missing send message without them
 
-        return vsprintf(
-            "<%s> (%s) <%s>: <%s> ➠ <@%s>\n<@%s> ➠ <%s>", 
-            [
-                $data->getNumber(),
-                $data->getURL(),
-                $data->getStatus(),
-                $data->getSummary(),
-                $data->getAssignee(),
-                $data->getLastCommenterID(),
-                $data->getLastComment()
-            ]
-        );
+        if ($data->getLastComment()) {
+            $message = vsprintf(
+                "<%s> (%s) <%s>: <%s> ➠ <@%s>\n<@%s> ➠ <%s>",
+                [
+                    $data->getNumber(),
+                    $data->getURL(),
+                    $data->getStatus(),
+                    $data->getSummary(),
+                    $data->getAssignee(),
+                    $data->getLastCommenterID(),
+                    $data->getLastComment()
+                ]
+            );
+        } else {
+            $message = vsprintf(
+                "<%s> (%s) <%s>: <%s> ➠ <@%s>",
+                [
+                    $data->getNumber(),
+                    $data->getURL(),
+                    $data->getStatus(),
+                    $data->getSummary(),
+                    $data->getAssignee()
+                ]
+            );
+        }
+
+        return $message;
     }
 }

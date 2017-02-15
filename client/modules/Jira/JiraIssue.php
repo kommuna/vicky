@@ -18,7 +18,7 @@ class JiraIssue
         if ($data === null) {
             return $issueData;
         }
-
+        
         $issueFields = $data['fields'];
 
         $issueData->setNumber($data['issue']['key']);

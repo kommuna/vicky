@@ -1,6 +1,8 @@
 <?php
 namespace Vicky\client\modules\Jira;
 
+use Vicky\client\exceptions\JiraWebhookDataException;
+
 class JiraWebhookData
 {
     private $rawData;
@@ -21,9 +23,26 @@ class JiraWebhookData
         }
         
         $webhookData->setRawData($data);
+
+        if (!isset($data['webhookEvent'])) {
+            throw new JiraWebhookDataException('JIRA webhook event does not exist!');
+        }
+
+        if (!isset($data['issue_event_type_name'])) {
+            throw new JiraWebhookDataException('JIRA issue event type does not exist!');
+        }
+
         $webhookData->setWebhookEvent($data['webhookEvent']);
         $webhookData->setIssueEvent($data['issue_event_type_name']);
-        
+
+        if (!isset($data['issue'])) {
+            throw new JiraWebhookDataException('JIRA issue event type does not exist!');
+        }
+
+        if (!isset($data['issue']['fields'])) {
+            throw new JiraWebhookDataException('JIRA issue fields does not exist!');
+        }
+
         $webhookData->setJiraIssue($data['issue']);
         $webhookData->setJiraIssueComments($data['issue']['fields']['comment']);
 
@@ -90,6 +109,11 @@ class JiraWebhookData
     public function setJiraIssueComments($issueCommentsData)
     {
         $this->jiraIssueComments = JiraIssueComments::parseWebhookData($issueCommentsData);
+    }
+
+    public function setCommentReference($commentreference)
+    {
+        $this->jiraIssueComments->setCommentReference($commentreference);
     }
 
     /**************************************************/

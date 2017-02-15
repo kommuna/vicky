@@ -63,7 +63,7 @@ $jiraWebhook->addListener('comment.Reference', function($event, $data, $referenc
     $this->toUser($data->getCommentReference(), $message);
 });
 
-$data = $jiraWebhook->extractData();
-error_log(printf($data->getRawData(), 1));
+//$data = $jiraWebhook->extractData();
+//error_log(printf($data->getRawData(), 1));
 
-//$jiraWebhook->run();
+$jiraWebhook->run();

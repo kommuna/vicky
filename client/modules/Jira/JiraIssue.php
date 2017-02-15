@@ -21,8 +21,8 @@ class JiraIssue
         
         $issueFields = $data['fields'];
 
-        $issueData->setNumber($data['issue']['key']);
-        $issueData->setURL($data['issue']['self']);
+        $issueData->setNumber($data['key']);
+        $issueData->setURL($data['self']);
         $issueData->setStatus($issueFields['status']['name']);
         $issueData->setSummary($issueFields['summary']);
         $issueData->setAssignee($issueFields['assignee']['name']);

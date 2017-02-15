@@ -125,7 +125,7 @@ class JiraWebhook
 
                     $refStart = $data->isCommentReference();
 
-                    if ($refStart) {
+                    if (isset($refStart)) {
                         $lastComment = $data->getLastComment();
                         $refStart += 2;
                         $refEnd = stripos($lastComment, ']');

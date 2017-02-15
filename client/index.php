@@ -35,32 +35,32 @@ $jiraWebhook->addListener('type.Operations', function($event, $data) use ($botCl
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $message = "⚙ {$message}";
-    $this->toChannel('#general', $message);
+    $botClient->toChannel('#general', $message);
 });
 
 $jiraWebhook->addListener('type.UrgentBug', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $message = "⚡ {$message}";
-    $this->toChannel('#general', $message);
+    $botClient->toChannel('#general', $message);
 });
 
 $jiraWebhook->addListener('issue.Assigned', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
-    $this->toUser($data->getAssignee(), $message);
+    $botClient->toUser($data->getAssignee(), $message);
 });
 
 $jiraWebhook->addListener('issue.Commented', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
-    $this->toUser($data->getAssignee(), $message);
+    $botClient->toUser($data->getAssignee(), $message);
 });
 
-$jiraWebhook->addListener('comment.Reference', function($event, $data, $reference) use ($botClient)
+$jiraWebhook->addListener('comment.Reference', function($event, $data) use ($botClient)
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
-    $this->toUser($data->getCommentReference(), $message);
+    $botClient->toUser($data->getCommentReference(), $message);
 });
 
 //$data = $jiraWebhook->extractData();

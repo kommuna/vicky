@@ -14,6 +14,8 @@ class JiraToSlackBotConverter extends JiraWebhookDataConverter
         //Old method, delete this after testing new
         //return "<{$number}> ({$URL}) <{$status}>: <{$summary}> ➠ <@{$assignee}>\n<@{$lastCommenterID}> ➠ <{$lastComment}>";
 
+        // TODO also need to add check for assignee
+
         if ($data->getLastComment()) {
             $message = vsprintf(
                 "<%s> (%s) <%s>: <%s> ➠ <@%s>\n<@%s> ➠ <%s>",

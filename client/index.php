@@ -27,8 +27,7 @@ $jiraWebhook->addListener('priority.Blocker', function($event, $data) use ($botC
 {
     $message = JiraWebhook::convert('JiraToSlack', $data);
     $message = "!!! {$message}";
-    //$this->toChannel('#general', $message);
-    $botClient->toUser('chewbacca', $message);
+    $this->toChannel('#general', $message);
 });
 
 $jiraWebhook->addListener('type.Operations', function($event, $data) use ($botClient)

@@ -137,8 +137,6 @@ class JiraWebhook
                 }
 
                 break;
-            case 'jira:issue_deleted':
-                break;
         }
     }
     

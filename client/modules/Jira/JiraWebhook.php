@@ -17,7 +17,7 @@ class JiraWebhook
 
     public function __construct()
     {
-        JiraWebhook::getEmitter();
+        self::getEmitter();
     }
 
     /**
@@ -45,9 +45,9 @@ class JiraWebhook
     {
         if (!empty(self::$converter[$name])) {
             return self::$converter[$name]->convert($data);
-        } else {
-            throw new JiraWebhookException("Converter {$name} is not registered!");
         }
+
+        throw new JiraWebhookException("Converter {$name} is not registered!");
     }
 
     /**

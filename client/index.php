@@ -65,7 +65,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $d
 
     if ($issue->isTypeOprations() && $issue->isStatusResolved()) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
-    } elseif ($issue->isTypeUrgentBug() || ($issue->isStatusResolved() || $data->isIssueCommented())) {
+    } elseif ($issue->isTypeUrgentBug() && ($issue->isStatusResolved() || $data->isIssueCommented())) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
     }
 

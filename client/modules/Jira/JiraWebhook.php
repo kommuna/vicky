@@ -15,6 +15,11 @@ class JiraWebhook
     private $rawData;
     private $data;
 
+    public function __construct()
+    {
+        JiraWebhook::getEmitter();
+    }
+
     /**
      * Set converter for formatting messages
      *
@@ -94,48 +99,10 @@ class JiraWebhook
 
         switch ($data->getWebhookEvent()) {
             case 'jira:issue_created':
-                if ($data->isPriorityBlocker()) {
-                    $this->on('priority.Blocker', $data);
-                } elseif ($data->isTypeOprations()) {
-                    $this->on('type.Operations', $data);
-                } elseif ($data->isTypeUrgentBug()) {
-                    $this->on('type.UrgentBug', $data);
-                }
-
-                if ($data->getAssignee()) {
-                    $this->on('issue.Assigned', $data);
-                }
-
+                $this->on('webhookEvent.IssueCreated', $data);
                 break;
             case 'jira:issue_updated':
-                if ($data->isPriorityBlocker()) {
-                    $this->on('priority.Blocker', $data);
-                } elseif ($data->isTypeOprations() && $data->isStatusResolved()) {
-                    $this->on('type.Operations', $data);
-                } elseif (($data->isTypeUrgentBug() && $data->isStatusResolved()) || ($data->isTypeUrgentBug() && $data->isIssueCommented())) {
-                    $this->on('type.UrgentBug', $data);
-                }
-
-                if ($data->isIssueAssigned()) {
-                    $this->on('issue.Assigned', $data);
-                }
-
-                if ($data->isIssueCommented()) {
-                    $this->on('issue.Commented', $data);
-
-                    $refStart = $data->isCommentReference();
-
-                    if (isset($refStart)) {
-                        $lastComment = $data->getLastComment();
-                        $refStart += 2;
-                        $refEnd = stripos($lastComment, ']');
-                        $reference = substr($lastComment, $refStart, $refEnd - $refStart);
-                        $data->setCommentReference($reference);
-
-                        $this->on('comment.Reference', $data);
-                    }
-                }
-
+                $this->on('webhookEvent.IssueUpdated', $data);
                 break;
         }
     }

@@ -11,11 +11,10 @@ class JiraWebhookData
 
     private $jiraIssue;
     private $jiraIssueComments;
-    
+
+    // TODO просто parse
     public static function parseWebhookData($data = null)
     {
-        // TODO need to add check for every data that parsing here
-
         $webhookData = new self;
         
         if ($data === null) {
@@ -66,7 +65,8 @@ class JiraWebhookData
 
     public function isStatusResolved()
     {
-        return $this->jiraIssue->getStatus() === 'Resolved';
+        // This is cause in devadmin JIRA status 'Resolved' has japanese symbols
+        return strpos($this->jiraIssue->getStatus(), 'Resolved');
     }
     
     public function isIssueCommented()

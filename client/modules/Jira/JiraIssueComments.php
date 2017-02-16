@@ -15,7 +15,7 @@ class JiraIssueComments
     {
         $issueCommentsData = new self;
 
-        if ($data === null) {
+        if (!$data) {
             return $issueCommentsData;
         }
 
@@ -74,34 +74,16 @@ class JiraIssueComments
     
     public function getLastComment()
     {
-        return $this->comments[count($this->comments) - 1];
+        return array_pop($this->comments);
     }
 
     public function getLastCommenterName()
     {
-        $n = count($this->comments) - 1;
-
-        return $this->comments[$n]->getAuthor()->getName();
-
-        // I think this method is not so good, it is better to address to the last element through an index
-        /*if (!$this->lastComment) {
-            $this->lastComment = array_pop($this->comments);
-        }
-
-        return $this->lastComment->getAuthor()->getName();*/
+        return $this->getLastComment()->getAuthor()->getName();
     }
 
     public function getLastCommentBody()
     {
-        $n = count($this->comments) - 1;
-
-        return $this->comments[$n]->getBody();
-
-        // Same
-        /*if (!$this->lastComment) {
-            $this->lastComment = array_pop($this->comments);
-        }
-
-        return $this->lastComment->getBody();*/
+        return $this->getLastComment()->getBody();
     }
 }

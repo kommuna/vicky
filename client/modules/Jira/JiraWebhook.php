@@ -96,15 +96,7 @@ class JiraWebhook
     public function run()
     {
         $data = $this->extractData();
-
-        switch ($data->getWebhookEvent()) {
-            case 'jira:issue_created':
-                $this->on('webhookEvent.IssueCreated', $data);
-                break;
-            case 'jira:issue_updated':
-                $this->on('webhookEvent.IssueUpdated', $data);
-                break;
-        }
+        $this->on($data->getWebhookEvent(), $data);
     }
     
     /**

@@ -6,6 +6,7 @@ use Vicky\client\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraWebhook;
+use Vicky\client\modules\Jira\JiraWebhookData;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';
@@ -33,83 +34,55 @@ JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConvert
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
 
-$jiraWebhook->addListener('webhookEvent.IssueCreated', function ($event, $data)
-{
-    if ($data->getIssue()->isPriorityBlocker()) {
-        $this->on('priority.Blocker', $data);
-    } elseif ($data->getIssue()->isTypeOprations()) {
-        $this->on('type.Operations', $data);
-    } elseif ($data->getIssue()->isTypeUrgentBug()) {
-        $this->on('type.UrgentBug', $data);
-    }
+$jiraWebhook->addListener('*', function($e, JiraWebhookData $data) use ($botClient) {
+    if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
+        $issue = $data->getIssue();
 
-    if ($data->getIssue()->getAssignee()) {
-        $this->on('issue.Assigned', $data);
-    } 
-});
-
-$jiraWebhook->addListener('webhookEvent.IssueUpdated', function ($event, $data)
-{
-    if ($data->getIssue()->isPriorityBlocker()) {
-        $this->on('priority.Blocker', $data);
-    } elseif ($data->getIssue()->isTypeOprations() && $data->getIssue()->isStatusResolved()) {
-        $this->on('type.Operations', $data);
-    } elseif (($data->getIssue()->isTypeUrgentBug() && $data->getIssue()->isStatusResolved()) || ($data->getIssue()->isTypeUrgentBug() && $data->isIssueCommented())) {
-        $this->on('type.UrgentBug', $data);
-    }
-
-    if ($data->isIssueAssigned()) {
-        $this->on('issue.Assigned', $data);
-    }
-
-    if ($data->isIssueCommented()) {
-        $this->on('issue.Commented', $data);
-
-        $refStart = $data->getIssue()->getIssueComments()->getLastComment()->isCommentReference();
-
-        if (isset($refStart)) {
-            $lastComment = $data->getIssue()->getIssueComments()->getLastCommentBody();
-            $refStart += 2;
-            $refEnd = stripos($lastComment, ']');
-            $reference = substr($lastComment, $refStart, $refEnd - $refStart);
-            $data->getIssue()->getIssueComments()->getLastComment()->setCommentReference($reference);
-
-            $this->on('comment.Reference', $data);
+        if ($issue->isPriorityBlocker()) {
+            $this->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
+        } elseif ($issue->isTypeOprations()) {
+            $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
+        } elseif ($issue->isTypeUrgentBug()) {
+            $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
         }
     }
 });
 
-$jiraWebhook->addListener('priority.Blocker', function($event, $data) use ($botClient)
+$jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $data) use ($botClient)
 {
-    $this->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
+    $issue = $data->getIssue();
+
+    if ($issue->getAssignee()) {
+        $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    } 
 });
 
-$jiraWebhook->addListener('type.Operations', function($event, $data) use ($botClient)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data) use ($botClient)
 {
-    $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
-});
+    $issue = $data->getIssue();
 
-$jiraWebhook->addListener('type.UrgentBug', function($event, $data) use ($botClient)
-{
-    $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
-});
+    if ($data->isIssueAssigned()) {
+        $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    }
 
-$jiraWebhook->addListener('issue.Assigned', function($event, $data) use ($botClient)
-{
-    $botClient->toUser($data->getIssue()->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
-});
+    if ($data->isIssueCommented()) {
+        $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
 
-$jiraWebhook->addListener('issue.Commented', function($event, $data) use ($botClient)
-{
-    $botClient->toUser($data->getIssue()->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
-});
+        $refStart = $issue->getIssueComments()->getLastComment()->isCommentReference();
 
-$jiraWebhook->addListener('comment.Reference', function($event, $data) use ($botClient)
-{
-    $botClient->toUser(
-        $data->getIssue()->getIssueComments()->getLastComment()->getCommentReference(), 
-        JiraWebhook::convert('JiraDefaultToSlack', $data)
-    );
+        if (isset($refStart)) {
+            $lastComment = $issue->getIssueComments()->getLastCommentBody();
+            $refStart += 2;
+            $refEnd = stripos($lastComment, ']');
+            $reference = substr($lastComment, $refStart, $refEnd - $refStart);
+            $issue->getIssueComments()->getLastComment()->setCommentReference($reference);
+
+            $botClient->toUser(
+                $issue->getIssueComments()->getLastComment()->getCommentReference(),
+                JiraWebhook::convert('JiraDefaultToSlack', $data)
+            );
+        }
+    }
 });
 
 //$data = $jiraWebhook->extractData();

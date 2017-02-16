@@ -20,6 +20,10 @@ class JiraWebhook
         self::getEmitter();
     }
 
+    public function getData() {
+        return $this->data;
+    }
+
     /**
      * Set converter for formatting messages
      *

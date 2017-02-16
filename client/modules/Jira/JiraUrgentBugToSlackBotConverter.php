@@ -11,50 +11,50 @@ class JiraUrgentBugToSlackBotConverter extends JiraWebhookDataConverter
      */
     public function convert(JiraWebhookData $data)
     {
-        if (!$data->getLastComment()) {
+        if (!$data->getIssue()->getIssueComments()->getComments()) {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ @%s",
                 [
-                    $data->getNumber(),
-                    $data->getURL(),
-                    $data->getStatus(),
-                    $data->getSummary(),
-                    $data->getAssignee()
+                    $data->getIssue()->getKey(),
+                    $data->getIssue()->getSelf(),
+                    $data->getIssue()->getStatus(),
+                    $data->getIssue()->getSummary(),
+                    $data->getIssue()->getAssignee()
                 ]
             );
-        } elseif (!$data->getAssignee()) {
+        } elseif (!$data->getIssue()->getAssignee()) {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
                 [
-                    $data->getNumber(),
-                    $data->getURL(),
-                    $data->getStatus(),
-                    $data->getSummary(),
-                    $data->getLastCommenterID(),
-                    $data->getLastComment()
+                    $data->getIssue()->getKey(),
+                    $data->getIssue()->getSelf(),
+                    $data->getIssue()->getStatus(),
+                    $data->getIssue()->getSummary(),
+                    $data->getIssue()->getLastCommenterID(),
+                    $data->getIssue()->getLastComment()
                 ]
             );
-        } elseif (!$data->getLastComment() && !$data->getAssignee()) {
+        } elseif (!$data->getIssue()->getIssueComments()->getComments() && !$data->getIssue()->getAssignee()) {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ Unassigned",
                 [
-                    $data->getNumber(),
-                    $data->getURL(),
-                    $data->getStatus(),
-                    $data->getSummary()
+                    $data->getIssue()->getKey(),
+                    $data->getIssue()->getSelf(),
+                    $data->getIssue()->getStatus(),
+                    $data->getIssue()->getSummary()
                 ]
             );
         } else {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
                 [
-                    $data->getNumber(),
-                    $data->getURL(),
-                    $data->getStatus(),
-                    $data->getSummary(),
-                    $data->getAssignee(),
-                    $data->getLastCommenterID(),
-                    $data->getLastComment()
+                    $data->getIssue()->getKey(),
+                    $data->getIssue()->getSelf(),
+                    $data->getIssue()->getStatus(),
+                    $data->getIssue()->getSummary(),
+                    $data->getIssue()->getAssignee(),
+                    $data->getIssue()->getLastCommenterID(),
+                    $data->getIssue()->getLastComment()
                 ]
             );
         }

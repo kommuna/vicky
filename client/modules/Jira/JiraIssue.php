@@ -3,15 +3,17 @@ namespace Vicky\client\modules\Jira;
 
 class JiraIssue
 {
-    private $number;
-    private $URL;
+    private $self;
+    private $key;
+    private $issueType;
+    private $priority;
+    private $assignee;
     private $status;
     private $summary;
-    private $assignee;
-    private $priority;
-    private $issueType;
+    
+    private $issueComments;
 
-    public static function parseWebhookData($data = null)
+    public static function parse($data = null)
     {
         $issueData = new self;
 
@@ -21,25 +23,65 @@ class JiraIssue
         
         $issueFields = $data['fields'];
 
-        $issueData->setNumber($data['key']);
-        $issueData->setURL($data['self']);
+        $issueData->setSelf($data['self']);
+        $issueData->setKey($data['key']);
+        $issueData->setIssueType($issueFields['issuetype']['name']);
+        $issueData->setPriority($issueFields['priority']['name']);
+        $issueData->setAssignee($issueFields['assignee']['name']);
         $issueData->setStatus($issueFields['status']['name']);
         $issueData->setSummary($issueFields['summary']);
-        $issueData->setAssignee($issueFields['assignee']['name']);
-        $issueData->setPriority($issueFields['priority']['name']);
-        $issueData->setIssueType($issueFields['issuetype']['name']);
+        
+        $issueData->setIssueComments(JiraIssueComments::parse($data['fields']['comment']));
 
         return $issueData;
     }
 
-    public function setNumber($number)
+    public function isPriorityBlocker()
     {
-        $this->number = $number;
+        return $this->getPriority() === 'Blocker';
     }
 
-    public function setURL($URL)
+    public function isTypeOprations()
     {
-        $this->URL = $URL;
+        return $this->getIssueType() === 'Operations';
+    }
+
+    public function isTypeUrgentBug()
+    {
+        return $this->getIssueType() === 'Urgent bug';
+    }
+
+    public function isStatusResolved()
+    {
+        // This is cause in devadmin JIRA status 'Resolved' has japanese symbols
+        return strpos($this->getStatus(), 'Resolved');
+    }
+
+    /**************************************************/
+
+    public function setSelf($self)
+    {
+        $this->self = $self;
+    }
+    
+    public function setKey($key)
+    {
+        $this->key = $key;
+    }
+
+    public function setIssueType($issueType)
+    {
+        $this->issueType = $issueType;
+    }
+
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+    }
+
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
     }
 
     public function setStatus($status)
@@ -51,32 +93,37 @@ class JiraIssue
     {
         $this->summary = $summary;
     }
-
-    public function setAssignee($assignee)
+    
+    public function setIssueComments($issueComments)
     {
-        $this->assignee = $assignee;
-    }
-
-    public function setPriority($priority)
-    {
-        $this->priority = $priority;
-    }
-
-    public function setIssueType($issueType)
-    {
-        $this->issueType = $issueType;
+        $this->issueComments = $issueComments;
     }
 
     /**************************************************/
 
-    public function getNumber()
+    public function getSelf()
     {
-        return $this->number;
+        return $this->self;
+    }
+    
+    public function getKey()
+    {
+        return $this->key;
     }
 
-    public function getURL()
+    public function getIssueType()
     {
-        return $this->URL;
+        return $this->issueType;
+    }
+
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    public function getAssignee()
+    {
+        return $this->assignee;
     }
 
     public function getStatus()
@@ -89,18 +136,8 @@ class JiraIssue
         return $this->summary;
     }
 
-    public function getAssignee()
+    public function getIssueComments()
     {
-        return $this->assignee;
-    }
-
-    public function getPriority()
-    {
-        return $this->priority;
-    }
-
-    public function getIssueType()
-    {
-        return $this->issueType;
+        return $this->issueComments;
     }
 }

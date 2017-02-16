@@ -3,11 +3,15 @@ namespace Vicky\client\modules\Jira;
 
 class JiraIssueComments
 {
-    private $lastCommenterID;
-    private $lastComment;
-    private $commentReference;
+    private $comments = [];
+
+    private $maxResults;
+    private $total;
+    private $startAt;
+
+    //private $lastComment;
     
-    public static function parseWebhookData($data)
+    public static function parse($data = null)
     {
         $issueCommentsData = new self;
 
@@ -15,43 +19,89 @@ class JiraIssueComments
             return $issueCommentsData;
         }
 
-        $lastComment = array_pop($data['comments']);
+        foreach ($data['comments'] as $key => $comment) {
+            $issueCommentsData->setComment($key, $comment);
+        }
 
-        $issueCommentsData->setLastCommenterID($lastComment['author']['name']);
-        $issueCommentsData->setLastComment($lastComment['body']);
+        $issueCommentsData->setMaxResults($data['maxResults']);
+        $issueCommentsData->setTotal($data['total']);
+        $issueCommentsData->setStartAt($data['startAt']);
 
         return $issueCommentsData;
     }
 
-    public function setLastCommenterID($lastCommenterID)
+    public function setComment($key, $comment)
     {
-        $this->lastCommenterID = $lastCommenterID;
+        $this->comments[$key] = JiraIssueComment::parse($comment);
+    }
+    
+    public function setMaxResults($maxResults)
+    {
+        $this->maxResults = $maxResults;
     }
 
-    public function setLastComment($lastComment)
+    public function setTotal($total)
     {
-        $this->lastComment = $lastComment;
+        $this->total = $total;
     }
 
-    public function setCommentReference($commentreference)
+    public function setStartAt($startAt)
     {
-        $this->commentReference = $commentreference;
+        $this->startAt = $startAt;
     }
 
     /**************************************************/
 
-    public function getLastCommenterID()
+    public function getComments()
     {
-        return $this->lastCommenterID;
+        return $this->comments;
     }
 
+    public function getMaxResults()
+    {
+        return $this->maxResults;
+    }
+
+    public function getTotal()
+    {
+        return $this->total;
+    }
+
+    public function getStartAt()
+    {
+        return $this->startAt;
+    }
+    
     public function getLastComment()
     {
-        return $this->lastComment;
+        return $this->comments[count($this->comments) - 1];
     }
 
-    public function getCommentReference()
+    public function getLastCommenterName()
     {
-        return $this->commentReference;
+        $n = count($this->comments) - 1;
+
+        return $this->comments[$n]->getAuthor()->getName();
+
+        // I think this method is not so good, it is better to address to the last element through an index
+        /*if (!$this->lastComment) {
+            $this->lastComment = array_pop($this->comments);
+        }
+
+        return $this->lastComment->getAuthor()->getName();*/
+    }
+
+    public function getLastCommentBody()
+    {
+        $n = count($this->comments) - 1;
+
+        return $this->comments[$n]->getBody();
+
+        // Same
+        /*if (!$this->lastComment) {
+            $this->lastComment = array_pop($this->comments);
+        }
+
+        return $this->lastComment->getBody();*/
     }
 }

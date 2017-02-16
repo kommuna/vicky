@@ -18,9 +18,7 @@ date_default_timezone_set('Europe/Moscow');
 
 // TODO каждый метод должен быть закомментирован, у каждого файла должна быть шапка
 
-// TODO добавить еще классов объектов
-// JiraIssueComment - каждый отдельный коммент из массива комментов
-// JiraUser - ветка user
+// TODO добавить класс который будет записывать время последнего коммента в тикете с приоритетот Blocker
 
 // TODO dependency injector Aura 3
 $botClient = new SlackBotSender(
@@ -37,26 +35,26 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 
 $jiraWebhook->addListener('webhookEvent.IssueCreated', function ($event, $data)
 {
-    if ($data->isPriorityBlocker()) {
+    if ($data->getIssue()->isPriorityBlocker()) {
         $this->on('priority.Blocker', $data);
-    } elseif ($data->isTypeOprations()) {
+    } elseif ($data->getIssue()->isTypeOprations()) {
         $this->on('type.Operations', $data);
-    } elseif ($data->isTypeUrgentBug()) {
+    } elseif ($data->getIssue()->isTypeUrgentBug()) {
         $this->on('type.UrgentBug', $data);
     }
 
-    if ($data->getAssignee()) {
+    if ($data->getIssue()->getAssignee()) {
         $this->on('issue.Assigned', $data);
     } 
 });
 
 $jiraWebhook->addListener('webhookEvent.IssueUpdated', function ($event, $data)
 {
-    if ($data->isPriorityBlocker()) {
+    if ($data->getIssue()->isPriorityBlocker()) {
         $this->on('priority.Blocker', $data);
-    } elseif ($data->isTypeOprations() && $data->isStatusResolved()) {
+    } elseif ($data->getIssue()->isTypeOprations() && $data->getIssue()->isStatusResolved()) {
         $this->on('type.Operations', $data);
-    } elseif (($data->isTypeUrgentBug() && $data->isStatusResolved()) || ($data->isTypeUrgentBug() && $data->isIssueCommented())) {
+    } elseif (($data->getIssue()->isTypeUrgentBug() && $data->getIssue()->isStatusResolved()) || ($data->getIssue()->isTypeUrgentBug() && $data->isIssueCommented())) {
         $this->on('type.UrgentBug', $data);
     }
 
@@ -67,14 +65,14 @@ $jiraWebhook->addListener('webhookEvent.IssueUpdated', function ($event, $data)
     if ($data->isIssueCommented()) {
         $this->on('issue.Commented', $data);
 
-        $refStart = $data->isCommentReference();
+        $refStart = $data->getIssue()->getIssueComments()->getLastComment()->isCommentReference();
 
         if (isset($refStart)) {
-            $lastComment = $data->getLastComment();
+            $lastComment = $data->getIssue()->getIssueComments()->getLastCommentBody();
             $refStart += 2;
             $refEnd = stripos($lastComment, ']');
             $reference = substr($lastComment, $refStart, $refEnd - $refStart);
-            $data->setCommentReference($reference);
+            $data->getIssue()->getIssueComments()->getLastComment()->setCommentReference($reference);
 
             $this->on('comment.Reference', $data);
         }
@@ -98,17 +96,20 @@ $jiraWebhook->addListener('type.UrgentBug', function($event, $data) use ($botCli
 
 $jiraWebhook->addListener('issue.Assigned', function($event, $data) use ($botClient)
 {
-    $botClient->toUser($data->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    $botClient->toUser($data->getIssue()->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
 });
 
 $jiraWebhook->addListener('issue.Commented', function($event, $data) use ($botClient)
 {
-    $botClient->toUser($data->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    $botClient->toUser($data->getIssue()->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
 });
 
 $jiraWebhook->addListener('comment.Reference', function($event, $data) use ($botClient)
 {
-    $botClient->toUser($data->getCommentReference(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    $botClient->toUser(
+        $data->getIssue()->getIssueComments()->getLastComment()->getCommentReference(), 
+        JiraWebhook::convert('JiraDefaultToSlack', $data)
+    );
 });
 
 //$data = $jiraWebhook->extractData();

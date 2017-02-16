@@ -131,7 +131,7 @@ class JiraWebhook
             throw new JiraWebhookException("This data cannot be decoded from json (decode error: $jsonError)!");
         }
 
-        $this->data = JiraWebhookData::parseWebhookData($this->rawData);
+        $this->data = JiraWebhookData::parse($this->rawData);
 
         return $this->data;
     }

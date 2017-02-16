@@ -6,14 +6,14 @@ use Vicky\client\exceptions\JiraWebhookDataException;
 class JiraWebhookData
 {
     private $rawData;
+
+    private $timestamp;
     private $webhookEvent;
     private $issueEvent;
 
-    private $jiraIssue;
-    private $jiraIssueComments;
+    private $issue;
 
-    // TODO просто parse
-    public static function parseWebhookData($data = null)
+    public static function parse($data = null)
     {
         $webhookData = new self;
         
@@ -31,6 +31,7 @@ class JiraWebhookData
             throw new JiraWebhookDataException('JIRA issue event type does not exist!');
         }
 
+        $webhookData->setTimestamp($data['timestamp']);
         $webhookData->setWebhookEvent($data['webhookEvent']);
         $webhookData->setIssueEvent($data['issue_event_type_name']);
 
@@ -42,31 +43,9 @@ class JiraWebhookData
             throw new JiraWebhookDataException('JIRA issue fields does not exist!');
         }
 
-        $webhookData->setJiraIssue($data['issue']);
-        $webhookData->setJiraIssueComments($data['issue']['fields']['comment']);
+        $webhookData->setIssue($data['issue']);
 
         return $webhookData;
-    }
-    
-    public function isPriorityBlocker()
-    {
-        return $this->jiraIssue->getPriority() === 'Blocker';
-    }
-    
-    public function isTypeOprations()
-    {
-        return $this->jiraIssue->getIssueType() === 'Operations';
-    }
-
-    public function isTypeUrgentBug()
-    {
-        return $this->jiraIssue->getIssueType() === 'Urgent bug';
-    }
-
-    public function isStatusResolved()
-    {
-        // This is cause in devadmin JIRA status 'Resolved' has japanese symbols
-        return strpos($this->jiraIssue->getStatus(), 'Resolved');
     }
     
     public function isIssueCommented()
@@ -79,16 +58,16 @@ class JiraWebhookData
         return $this->issueEvent === 'issue_assigned';
     }
 
-    public function isCommentReference()
-    {
-        return stripos($this->getLastComment(), '[~');
-    }
-
     /**************************************************/
 
     public function setRawData($rawData)
     {
         $this->rawData = $rawData;
+    }
+
+    public function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
     }
 
     public function setWebhookEvent($webhookEvent)
@@ -101,19 +80,9 @@ class JiraWebhookData
         $this->issueEvent = $issueEvent;
     }
     
-    public function setJiraIssue($issueData)
+    public function setIssue($issueData)
     {
-        $this->jiraIssue = JiraIssue::parseWebhookData($issueData);
-    }
-    
-    public function setJiraIssueComments($issueCommentsData)
-    {
-        $this->jiraIssueComments = JiraIssueComments::parseWebhookData($issueCommentsData);
-    }
-
-    public function setCommentReference($commentreference)
-    {
-        $this->jiraIssueComments->setCommentReference($commentreference);
+        $this->issue = JiraIssue::parse($issueData);
     }
 
     /**************************************************/
@@ -121,6 +90,11 @@ class JiraWebhookData
     public function getRawData()
     {
         return $this->rawData;
+    }
+
+    public function getTimestamp()
+    {
+        return $this->timestamp;
     }
 
     public function getWebhookEvent()
@@ -133,53 +107,8 @@ class JiraWebhookData
         return $this->issueEvent;
     }
     
-    public function getNumber()
+    public function getIssue()
     {
-        return $this->jiraIssue->getNumber();
-    }
-
-    public function getURL()
-    {
-        return $this->jiraIssue->getURL();
-    }
-
-    public function getStatus()
-    {
-        return $this->jiraIssue->getStatus();
-    }
-
-    public function getSummary()
-    {
-        return $this->jiraIssue->getSummary();
-    }
-
-    public function getAssignee()
-    {
-        return $this->jiraIssue->getAssignee();
-    }
-
-    public function getPriority()
-    {
-        return $this->jiraIssue->getPriority();
-    }
-
-    public function getIssueType()
-    {
-        return $this->jiraIssue->getIssueType();
-    }
-
-    public function getLastCommenterID()
-    {
-        return $this->jiraIssueComments->getLastCommenterID();
-    }
-
-    public function getLastComment()
-    {
-        return $this->jiraIssueComments->getLastComment();
-    }
-
-    public function getCommentReference()
-    {
-        return $this->jiraIssueComments->getCommentReference();
+        return $this->issue;
     }
 }

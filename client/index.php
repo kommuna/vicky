@@ -44,9 +44,9 @@ $jiraWebhook->addListener('*', function($e, JiraWebhookData $data) use ($botClie
     }
 });
 
-$jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $data) use ($botClient)
+$jiraWebhook->addListener('jira:issue_created', function ($e) use ($botClient)
 {
-    $issue = $data->getIssue();
+    $issue = $this->getIssue();
 
     if ($issue->isTypeOprations()) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
@@ -59,9 +59,9 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $d
     } 
 });
 
-$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data) use ($botClient)
+$jiraWebhook->addListener('jira:issue_updated', function ($e) use ($botClient)
 {
-    $issue = $data->getIssue();
+    $issue = $this->getIssue();
 
     if ($issue->isTypeOprations() && $issue->isStatusResolved()) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));

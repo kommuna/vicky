@@ -74,7 +74,7 @@ class JiraIssueComments
     
     public function getLastComment()
     {
-        return array_pop($this->comments);
+        return end($this->comments);
     }
 
     public function getLastCommenterName()

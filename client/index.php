@@ -5,8 +5,8 @@ use Vicky\client\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
-use Vicky\client\modules\Jira\JiraWebhook;
-use Vicky\client\modules\Jira\JiraWebhookData;
+use JiraWebhook\JiraWebhook;
+use JiraWebhook\Models\JiraWebhookData;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';

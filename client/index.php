@@ -17,11 +17,11 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
-// TODO каждый метод должен быть закомментирован, у каждого файла должна быть шапка
+// TODO all methods should be commented out, each file must be a cap of a comment
 
-// TODO добавить шаблоны для конверторов сообщений
+// TODO add templates for converters
 
-// TODO добавить класс который будет записывать время последнего коммента в тикете с приоритетот Blocker
+// TODO add a class to test the last time a comment
 
 // TODO dependency injector Aura 3
 

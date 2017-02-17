@@ -19,9 +19,12 @@ date_default_timezone_set('Europe/Moscow');
 
 // TODO каждый метод должен быть закомментирован, у каждого файла должна быть шапка
 
+// TODO добавить шаблоны для конверторов сообщений
+
 // TODO добавить класс который будет записывать время последнего коммента в тикете с приоритетот Blocker
 
 // TODO dependency injector Aura 3
+
 $botClient = new SlackBotSender(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
@@ -34,12 +37,13 @@ JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConvert
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
 
-$jiraWebhook->addListener('*', function($e, JiraWebhookData $data) use ($botClient) {
+$jiraWebhook->addListener('*', function($e) use ($botClient) {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
+        $data = $this->getData();
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
-            $this->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
+            $botClient->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
         }
     }
 });
@@ -78,6 +82,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e) use ($botClient)
     if ($data->isIssueCommented()) {
         $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
 
+        // TODO need rework
         $refStart = $issue->getIssueComments()->getLastComment()->isCommentReference();
 
         if (isset($refStart)) {
@@ -95,7 +100,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e) use ($botClient)
     }
 });
 
-//$data = $jiraWebhook->extractData();
+$data = $jiraWebhook->extractData();
 //error_log(print_r($data->getRawData()));
+error_log(print_r($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames()));
 
 $jiraWebhook->run();

@@ -20,6 +20,11 @@ class SlackBotSender
         $this->auth = $auth;
     }
 
+    public static function getInstance()
+    {
+        // TODO 
+    }
+
     /**
      * Send HTTP POST request to slack bot
      * to send in channel

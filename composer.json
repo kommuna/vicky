@@ -3,7 +3,6 @@
     "require": {
         "jclg/php-slack-bot": "dev-master",
         "monolog/monolog": "1.22.0",
-        "league/event": "2.1.2",
         "kommuna/jirawebhook": "dev-master"
     },
 

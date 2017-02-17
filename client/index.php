@@ -82,8 +82,16 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e) use ($botClient)
     if ($data->isIssueCommented()) {
         $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
 
+        $users = array_pop($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames());
+
+        if ($users) {
+            foreach ($users as $user) {
+                $botClient->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
+            }
+        }
+
         // TODO need rework
-        $refStart = $issue->getIssueComments()->getLastComment()->isCommentReference();
+        /*$refStart = $issue->getIssueComments()->getLastComment()->isCommentReference();
 
         if (isset($refStart)) {
             $lastComment = $issue->getIssueComments()->getLastCommentBody();
@@ -96,12 +104,12 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e) use ($botClient)
                 $issue->getIssueComments()->getLastComment()->getCommentReference(),
                 JiraWebhook::convert('JiraDefaultToSlack', $data)
             );
-        }
+        }*/
     }
 });
 
 $data = $jiraWebhook->extractData();
-//error_log(print_r($data->getRawData()));
-error_log(print_r($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames()));
+//error_log(print_r($data->getRawData()), true);
+error_log(print_r($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames(), true));
 
 $jiraWebhook->run();

@@ -7,7 +7,7 @@ use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use JiraWebhook\JiraWebhook;
 use JiraWebhook\Models\JiraWebhookData;
-use Vicky\client\modules\BlockerIssueFile;
+use Vicky\client\modules\BlockersIssueFile;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';
@@ -33,7 +33,7 @@ $botClient = SlackBotSender::getInstance(
 
 $jiraWebhook = new JiraWebhook();
 
-$fileClient = new BlockerIssueFile($config['pathToBlockerFile']);
+$fileClient = new BlockersIssueFile($config['pathToBlockerFile']);
 
 JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
 JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
@@ -43,9 +43,12 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileClient)
 {
     if ($data->isIssueCommented()) {
-        $fileClient->setCommentTime(
-            $data->getIssue()->getKey(),
-            $data->getIssue()->getIssueComments()->getLastComment()->getUpdated()
+        $issue = $data->getIssue();
+        
+        $fileClient->setCommentTimeToFile(
+            $issue->getKey(),
+            $issue->getAssignee(),
+            $issue->getIssueComments()->getLastComment()->getUpdated()
         );
     }
 });

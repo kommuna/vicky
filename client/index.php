@@ -43,7 +43,7 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileClient)
 {
     if ($data->isIssueCommented()) {
-        $fileClient->setTime(
+        $fileClient->setCommentTime(
             $data->getIssue()->getKey(),
             $data->getIssue()->getIssueComments()->getLastComment()->getUpdated()
         );

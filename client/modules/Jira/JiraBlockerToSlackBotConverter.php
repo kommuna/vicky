@@ -14,50 +14,54 @@ class JiraBlockerToSlackBotConverter extends JiraWebhookDataConverter
      */
     public function convert(JiraWebhookData $data)
     {
-        if (!$data->getIssue()->getIssueComments()->getComments()) {
+        $issue = $data->getIssue();
+        $comment = $issue->getIssueComments()->getLastComment();
+        $author = $comment->getAuthor();
+
+        if (!$comment) {
             $message = vsprintf(
                 "!!! %s (%s) %s: %s ➠ @%s",
                 [
-                    $data->getIssue()->getKey(),
-                    $data->getIssue()->getSelf(),
-                    $data->getIssue()->getStatus(),
-                    $data->getIssue()->getSummary(),
-                    $data->getIssue()->getAssignee()
+                    $issue->getKey(),
+                    $issue->getSelf(),
+                    $issue->getStatus(),
+                    $issue->getSummary(),
+                    $issue->getAssignee()
                 ]
             );
-        } elseif (!$data->getIssue()->getAssignee()) {
+        } elseif (!$issue->getAssignee()) {
             $message = vsprintf(
                 "!!! %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
                 [
-                    $data->getIssue()->getKey(),
-                    $data->getIssue()->getSelf(),
-                    $data->getIssue()->getStatus(),
-                    $data->getIssue()->getSummary(),
-                    $data->getIssue()->getLastCommenterID(),
-                    $data->getIssue()->getLastComment()
+                    $issue->getKey(),
+                    $issue->getSelf(),
+                    $issue->getStatus(),
+                    $issue->getSummary(),
+                    $author->getName(),
+                    $comment->getBody()
                 ]
             );
-        } elseif (!$data->getIssue()->getIssueComments()->getComments() && !$data->getIssue()->getAssignee()) {
+        } elseif (!$comment && !$issue->getAssignee()) {
             $message = vsprintf(
                 "!!! %s (%s) %s: %s ➠ Unassigned",
                 [
-                    $data->getIssue()->getKey(),
-                    $data->getIssue()->getSelf(),
-                    $data->getIssue()->getStatus(),
-                    $data->getIssue()->getSummary()
+                    $issue->getKey(),
+                    $issue->getSelf(),
+                    $issue->getStatus(),
+                    $issue->getSummary()
                 ]
             );
         } else {
             $message = vsprintf(
                 "!!! %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
                 [
-                    $data->getIssue()->getKey(),
-                    $data->getIssue()->getSelf(),
-                    $data->getIssue()->getStatus(),
-                    $data->getIssue()->getSummary(),
-                    $data->getIssue()->getAssignee(),
-                    $data->getIssue()->getLastCommenterID(),
-                    $data->getIssue()->getLastComment()
+                    $issue->getKey(),
+                    $issue->getSelf(),
+                    $issue->getStatus(),
+                    $issue->getSummary(),
+                    $issue->getAssignee(),
+                    $author->getName(),
+                    $comment->getBody()
                 ]
             );
         }

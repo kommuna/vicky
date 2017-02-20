@@ -2,10 +2,14 @@
 namespace Vicky\client\modules;
 
 use Vicky\client\exceptions\BlockerFileException;
+use League\Event\Emitter;
 
 class BlockersIssueFile
 {
+    private static $emitter;
+    
     protected $pathToDir;
+    protected $botClient;
 
     /**
      * BlockerIssueFile constructor.
@@ -19,6 +23,45 @@ class BlockersIssueFile
         }
 
         $this->pathToDir = $pathToDir;
+
+        self::getEmitter();
+    }
+
+    /**
+     * Initialize emitter
+     *
+     * @return Emitter
+     */
+    public static function getEmitter()
+    {
+        if (!self::$emitter) {
+            self::$emitter = new Emitter();
+        }
+
+        return self::$emitter;
+    }
+
+    /**
+     * Add listener for event
+     *
+     * @param $name - event name
+     * @param $listener - listener (it could be function or object (see league/event docs))
+     * @param int $priority - listener priority
+     */
+    public function addListener($name, $listener, $priority = 0)
+    {
+        self::$emitter->addListener($name, $listener, $priority);
+    }
+
+    /**
+     * Call listener by event name
+     *
+     * @param $name - event name
+     * @param null $data
+     */
+    public function on($name, $data = null)
+    {
+        self::$emitter->emit($name, $data);
     }
 
     /**
@@ -46,25 +89,6 @@ class BlockersIssueFile
     
     public function run()
     {
-        $files = scandir($this->pathToDir);
-
-        foreach ($files as $file) {
-            $pathToFile = "{$this->pathToDir}/{$file}";
-
-            $f = fopen($pathToFile, "r");
-
-            $str = fread($f, filesize($pathToFile));
-
-            if (!$str) {
-                throw new BlockerFileException("Cant read from {$pathToFile}!");
-            }
-
-            $data = explode(' ', $str);
-
-            $dataTime1 = new \DateTime('NOW');
-            $dataTime2 = new \DateTime($data[2]);
-            
-            error_log($dataTime1->diff($dataTime2));
-        }
+        $this->on('check.CommentTime', $this->pathToDir);
     }
 }

@@ -7,6 +7,7 @@ use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use JiraWebhook\JiraWebhook;
 use JiraWebhook\Models\JiraWebhookData;
+use Vicky\client\modules\BlockerIssueFile;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';
@@ -32,12 +33,25 @@ $botClient = SlackBotSender::getInstance(
 
 $jiraWebhook = new JiraWebhook();
 
+$fileClient = new BlockerIssueFile($config['pathToBlockerFile']);
+
 JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
 JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
 
-$jiraWebhook->addListener('*', function($e, $data) use ($botClient) {
+$jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileClient)
+{
+    if ($data->isIssueCommented()) {
+        $fileClient->setTime(
+            $data->getIssue()->getKey(),
+            $data->getIssue()->getIssueComments()->getLastComment()->getUpdated()
+        );
+    }
+});
+
+$jiraWebhook->addListener('*', function($e, $data) use ($botClient)
+{
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
         $issue = $data->getIssue();
 
@@ -96,9 +110,5 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
         }
     }
 });
-
-//$data = $jiraWebhook->extractData();
-//error_log(print_r($data->getRawData()), true);
-//error_log(print_r($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames(), true));
 
 $jiraWebhook->run();

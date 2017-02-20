@@ -25,7 +25,7 @@ date_default_timezone_set('Europe/Moscow');
 
 // TODO dependency injector Aura 3
 
-$botClient = new SlackBotSender(
+$botClient = SlackBotSender::getInstance(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
 );
@@ -87,26 +87,18 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
             }
         }
 
-        // TODO need rework
-        /*$refStart = $issue->getIssueComments()->getLastComment()->isCommentReference();
+        $users = $issue->getIssueComments()->getLastComment()->getMentionedUsersNicknames();
 
-        if (isset($refStart)) {
-            $lastComment = $issue->getIssueComments()->getLastCommentBody();
-            $refStart += 2;
-            $refEnd = stripos($lastComment, ']');
-            $reference = substr($lastComment, $refStart, $refEnd - $refStart);
-            $issue->getIssueComments()->getLastComment()->setCommentReference($reference);
-
-            $botClient->toUser(
-                $issue->getIssueComments()->getLastComment()->getCommentReference(),
-                JiraWebhook::convert('JiraDefaultToSlack', $data)
-            );
-        }*/
+        if (isset($users)) {
+            foreach ($users as $user) {
+                $botClient->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
+            }
+        }
     }
 });
 
-$data = $jiraWebhook->extractData();
+//$data = $jiraWebhook->extractData();
 //error_log(print_r($data->getRawData()), true);
-error_log(print_r($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames(), true));
+//error_log(print_r($data->getIssue()->getIssueComments()->getLastComment()->getMentionedUsersNicknames(), true));
 
 $jiraWebhook->run();

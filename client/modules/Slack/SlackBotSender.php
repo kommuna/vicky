@@ -5,6 +5,8 @@ use Vicky\client\exceptions\SlackBotSenderException;
 
 class SlackBotSender
 {
+    private static $botClient;
+    
     protected $slackBotUrl;
     protected $auth;
 
@@ -20,9 +22,16 @@ class SlackBotSender
         $this->auth = $auth;
     }
 
-    public static function getInstance()
+    /**
+     * @return SlackBotSender
+     */
+    public static function getInstance($slackBotUrl, $auth)
     {
-        // TODO 
+        if (!self::$botClient) {
+            self::$botClient = new self($slackBotUrl, $auth);
+        }
+        
+        return self::$botClient;
     }
 
     /**

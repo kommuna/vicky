@@ -37,9 +37,8 @@ JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConvert
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
 
-$jiraWebhook->addListener('*', function($e) use ($botClient) {
+$jiraWebhook->addListener('*', function($e, $data) use ($botClient) {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
-        $data = $this->getData();
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
@@ -48,9 +47,8 @@ $jiraWebhook->addListener('*', function($e) use ($botClient) {
     }
 });
 
-$jiraWebhook->addListener('jira:issue_created', function ($e) use ($botClient)
+$jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient)
 {
-    $data = $this->getData();
     $issue = $data->getIssue();
 
     if ($issue->isTypeOprations()) {
@@ -64,9 +62,8 @@ $jiraWebhook->addListener('jira:issue_created', function ($e) use ($botClient)
     } 
 });
 
-$jiraWebhook->addListener('jira:issue_updated', function ($e) use ($botClient)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient)
 {
-    $data = $this->getData();
     $issue = $data->getIssue();
 
     if ($issue->isTypeOprations() && $issue->isStatusResolved()) {

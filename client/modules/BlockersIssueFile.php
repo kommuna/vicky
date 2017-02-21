@@ -119,7 +119,8 @@ class BlockersIssueFile
     }
 
     /**
-     * Set time of last created comment in file named like JIRA issue key
+     * Set time of last created comment and assignee username 
+     * in file named like JIRA issue key
      *
      * @param $issueKey
      * @param $time
@@ -133,7 +134,10 @@ class BlockersIssueFile
 
         return $this->writeToFile($pathToFile, $data);
     }
-    
+
+    /**
+     * 
+     */
     public function run()
     {
         $this->on('check.CommentTime', $this->pathToDir);

@@ -18,14 +18,6 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
-// TODO all methods should be commented out, each file must be a cap of a comment
-
-// TODO add templates for converters
-
-// TODO add a class to test the last time a comment
-
-// TODO dependency injector Aura 3
-
 $botClient = SlackBotSender::getInstance(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
@@ -45,7 +37,7 @@ $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileCl
     $issue = $data->getIssue();
 
     if ($data->isIssueCommented() && $issue->isPriorityBlocker()) {
-        $fileClient->setCommentTimeToFile(
+        $fileClient->setCommentDataToFile(
             $issue->getKey(),
             $issue->getAssignee(),
             $issue->getIssueComments()->getLastComment()->getUpdated()

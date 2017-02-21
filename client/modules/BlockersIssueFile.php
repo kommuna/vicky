@@ -9,7 +9,6 @@ class BlockersIssueFile
     private static $emitter;
     
     protected $pathToDir;
-    protected $botClient;
 
     /**
      * BlockerIssueFile constructor.
@@ -65,6 +64,61 @@ class BlockersIssueFile
     }
 
     /**
+     * @return mixed
+     */
+    public function getPathToDir()
+    {
+        return $this->pathToDir;
+    }
+
+    // This is useful method, but i don't know how to apply him
+    /*public function readFromFile($pathToFile)
+    {
+        $f = fopen($pathToFile, "r");
+
+        if (!$f) {
+            throw new BlockerFileException("Cant open file {$pathToFile}");
+        }
+
+        $data = fread($f, filesize($pathToFile));
+
+        if (!$data) {
+            throw new BlockerFileException("Cant read from {$pathToFile}!");
+        }
+
+        fclose($f);
+
+        return $data;
+    }*/
+
+    /**
+     * Writes data to file
+     * 
+     * @param $pathToFile
+     * @param $data
+     * 
+     * @return bool
+     * 
+     * @throws BlockerFileException
+     */
+    public function writeToFile($pathToFile, $data)
+    {
+        $f = fopen($pathToFile, "w+");
+
+        if (!$f) {
+            throw new BlockerFileException("Cant open file {$pathToFile}");
+        }
+
+        $answer = fwrite($f, $data);
+
+        if (!$answer) {
+            throw new BlockerFileException("Cant write to {$pathToFile}!");
+        }
+
+        return fclose($f);
+    }
+
+    /**
      * Set time of last created comment in file named like JIRA issue key
      *
      * @param $issueKey
@@ -72,19 +126,12 @@ class BlockersIssueFile
      *
      * @throws BlockerFileException
      */
-    public function setCommentTimeToFile($issueKey, $assignee, $time)
+    public function setCommentDataToFile($issueKey, $assignee, $time)
     {
         $pathToFile = "{$this->pathToDir}/{$issueKey}";
+        $data = "{$assignee} {$time}";
 
-        $f = fopen($pathToFile, "w+");
-
-        $answer = fwrite($f, "{$assignee} {$time}");
-
-        if (!$answer) {
-            throw new BlockerFileException("Cant write to {$pathToFile}!");
-        }
-
-        return fclose($f);
+        return $this->writeToFile($pathToFile, $data);
     }
     
     public function run()

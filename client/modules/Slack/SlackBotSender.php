@@ -23,6 +23,8 @@ class SlackBotSender
     }
 
     /**
+     * Initialize slack bot client
+     *
      * @return SlackBotSender
      */
     public static function getInstance($slackBotUrl, $auth)
@@ -119,6 +121,15 @@ class SlackBotSender
         return $answer;
     }
 
+    /**
+     * Check result answer of curl executing
+     *
+     * @param $answer
+     *
+     * @return bool
+     *
+     * @throws SlackBotSenderException
+     */
     protected function curlAnswerCheck($answer)
     {
         if (strpos($answer, "Ok")) {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file has logic for checking interval between creating comment
+ * in blocker issue and presetn time
+ */
+
 namespace Vicky;
 
 use Vicky\client\exceptions\BlockerFileException;
@@ -21,6 +26,16 @@ $botClient = SlackBotSender::getInstance(
 
 $fileClient = new BlockersIssueFile($config['pathToBlockerFile']);
 
+/**
+ * Read data from file (expected that this assignee to ticket username
+ * and comment creation time separated by a space) than check time interval
+ * between creating comment (read from file) in blocker issue and presetn time
+ *
+ * If interval greater than or equal to one day than sends alert to assignee
+ * user (also read from file) in slack
+ *
+ * Else make log in log file with actual time interval
+ */
 $fileClient->addListener('check.CommentTime', function($e, $pathToDir) use ($botClient)
 {
     $files = scandir($pathToDir);
@@ -51,9 +66,9 @@ $fileClient->addListener('check.CommentTime', function($e, $pathToDir) use ($bot
         $interval = (new DateTime('NOW'))->diff(new DateTime($data[1]));
 
         if ($interval->d >= 1) {
-            $botClient->toUser($data[0], 'Blocker issue that assigned to you not commented at least 24 hours!');
+            $botClient->toUser($data[0], "Blocker issue that assigned to you not commented at least 24 hours ({$interval->format("%Yy %Mm %Dd - %Hh %Imin %Ssec")})!");
         } else {
-            error_log($interval->format("Blocker issue {$file} assigned to {$data[0]} not commented %Yy %Mm %Dd - %Hh %Imin %Ssec"));
+            error_log($interval->format("Blocker issue {$file} assigned to {$data[0]} not commented %Hh %Imin %Ssec"));
         }
     }
 });

@@ -136,7 +136,7 @@ class BlockersIssueFile
     }
 
     /**
-     * 
+     * Run events
      */
     public function run()
     {

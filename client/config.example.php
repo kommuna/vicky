@@ -1,8 +1,9 @@
 <?php
 return [
-    'error_log' => dirname(__DIR__).'/logs/php_errors.log',
+    'error_log' => '/path/to/log/file.log',
+    'pathToBlockerFile' => '/path/to/folder/',
     'curlOpt'   => [
-        'url'   => 'http://localhost:8080',
-        'auth'  => 'secret'
+        'url'   => 'http://url were you run slack bot:port',
+        'auth'  => 'secret word for slack bot if needed'
     ]
 ];

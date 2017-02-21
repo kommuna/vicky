@@ -1,6 +1,7 @@
 <?php
 return [
-    'error_log' => dirname(__DIR__).'/logs/php_errors.log',
-    'botToken'  => 'xoxb-121858321271-hjGqAg77zfoALUVvmNaeerVD',
-    'botAuth'   => 'secret'
+    'error_log' => '/path/to/log/file.log',
+    'botToken'  => 'you bot token',
+    'botAuth'   => 'secret word for bot if needed'
 ];
+

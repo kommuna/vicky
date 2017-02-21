@@ -53,7 +53,7 @@ $fileClient->addListener('check.CommentTime', function($e, $pathToDir) use ($bot
         if ($interval->d >= 1) {
             $botClient->toUser($data[0], 'Blocker issue that assigned to you not commented at least 24 hours!');
         } else {
-            error_log($interval->format("%Y:%M:%D - %H:%I:%S"));
+            error_log($interval->format("Blocker issue {$file} assigned to {$data[0]} not commented %Yy %Mm %Dd - %Hh %Imin %Ssec"));
         }
     }
 });

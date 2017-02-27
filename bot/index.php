@@ -1,6 +1,15 @@
 <?php
+/**
+ * This file configures the bot and runs it
+ *
+ * In this file, set up the necessary parameters of the bot,
+ * loaded commands and webhooks, and run bot
+ */
 namespace Vicky;
 
+use Exception;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use PhpSlackBot\Bot;
 use Vicky\bot\modules\MyCommand;
 use Vicky\bot\modules\ToUserWebhook;
@@ -14,13 +23,24 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
+$log = new Logger('vicky');
+$log->pushHandler(new StreamHandler($config['error_log'], Logger::DEBUG));
+
 $bot = new Bot();
 $bot->setToken($config['botToken']);
-$bot->loadCommand(new MyCommand());
 $bot->loadInternalCommands();
 
-$bot->loadInternalWebhooks();
-$bot->loadWebhook(new ToUserWebhook());
-$bot->loadWebhook(new ToChannelWebhook());
+try {
+    $bot->loadWebhook(new ToUserWebhook());
+    $bot->loadWebhook(new ToChannelWebhook());
+} catch (Exception $e) {
+    $log->error($e->getMessage());
+}
+
 $bot->enableWebserver(8080, $config['botAuth']);
-$bot->run();
+
+try {
+    $bot->run();
+} catch (Exception $e) {
+    $log->error($e->getMessage());
+}

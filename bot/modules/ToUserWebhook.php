@@ -1,4 +1,9 @@
 <?php
+/**
+ * Slack bot webhook
+ *
+ * This file contains the webhook definition to send messages to users
+ */
 namespace Vicky\bot\modules;
 
 use PhpSlackBot\Webhook\BaseWebhook;
@@ -8,7 +13,8 @@ class ToUserWebhook extends BaseWebhook
     /**
      * Get user id in slack by slack username
      *
-     * @param $userName
+     * @param  $userName
+     *
      * @return string
      */
     public function getUserIdFromUserName($userName)
@@ -35,10 +41,9 @@ class ToUserWebhook extends BaseWebhook
     }
 
     /**
-     * Send data from recieved HTTP POST request
-     * to slack
+     * Send data from recieved HTTP POST request to slack
      *
-     * @param $payload
+     * @param $payload data array
      * @param $context
      */
     public function execute($payload, $context)

@@ -1,20 +1,40 @@
 <?php
+/**
+ * This file is bot client
+ *
+ * This file contains bot client class that can send
+ * curl HTTP POST requests to slack bot webhooks
+ */
 namespace Vicky\client\modules\Slack;
 
 use Vicky\client\exceptions\SlackBotSenderException;
 
 class SlackBotSender
 {
+    /**
+     * @var
+     */
     private static $botClient;
-    
+
+    /**
+     * Slack bot webserver host URL
+     *
+     * @var
+     */
     protected $slackBotUrl;
+
+    /**
+     * Slack bot secret key
+     *
+     * @var null
+     */
     protected $auth;
 
     /**
      * SlackWebhookSender constructor.
      * 
-     * @param $slackBotUrl - slack bot webserver host url
-     * @param null $auth - slack bot webserver secret key
+     * @param      $slackBotUrl slack bot webserver host url
+     * @param null $auth        slack bot webserver secret key
      */
     public function __construct($slackBotUrl, $auth = null)
     {
@@ -37,17 +57,17 @@ class SlackBotSender
     }
 
     /**
-     * Send HTTP POST request to slack bot
-     * to send in channel
+     * Send HTTP POST request to slack bot to send in channel
      *
-     * @param $channel - slack channel name (with '#" symbol)
-     * @param $message - message text
-     * @param string $hookName - slack bot hook which accepts requests
+     * @param        $channel  slack channel name (with '#' symbol)
+     * @param        $message  message text
+     * @param string $hookName slack bot hook which accepts requests
+     *
      * @return bool
      */
     public function toChannel($channel, $message, $webhookName = 'tochannel')
     {
-        $channel = (substr($channel, 0, 1) == '#') ? $channel : '#'.$channel;
+        $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
 
         $slackRequest = [
             'auth'    => $this->auth,
@@ -65,12 +85,12 @@ class SlackBotSender
     }
 
     /**
-     * Send HTTP POST request to slack bot
-     * to send in pivate chat to user personally
+     * Send HTTP POST request to slack bot to send in pivate chat to user personally
      *
-     * @param $userName - slack username (without '@' symbol)
-     * @param $message - message text
-     * @param string $hookName - slack bot hook which accepts requests
+     * @param        $userName slack username (without '@' symbol)
+     * @param        $message  message text
+     * @param string $hookName slack bot hook which accepts requests
+     * 
      * @return bool
      */
     public function toUser($userName, $message, $webhookName = 'touser')
@@ -93,7 +113,8 @@ class SlackBotSender
     /**
      * Send HTTP request by curl method
      * 
-     * @param $slackRequest - text of HTTP request
+     * @param $slackRequest array with request data
+     * 
      * @return bool|mixed
      */
     protected function sendRequest($slackRequest)
@@ -103,10 +124,10 @@ class SlackBotSender
         }
         
         curl_setopt_array($curl, [
-            CURLOPT_URL => $this->slackBotUrl,
+            CURLOPT_URL            => $this->slackBotUrl,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($slackRequest)
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => http_build_query($slackRequest)
         ]);
 
         $answer = curl_exec($curl);
@@ -124,7 +145,7 @@ class SlackBotSender
     /**
      * Check result answer of curl executing
      *
-     * @param $answer
+     * @param $answer response after curl execution
      *
      * @return bool
      *

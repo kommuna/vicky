@@ -1,4 +1,9 @@
 <?php
+/**
+ * Slack bot webhook
+ *
+ * This file contains the webhook definition to send messages to channels
+ */
 namespace Vicky\bot\modules;
 
 use PhpSlackBot\Webhook\BaseWebhook;
@@ -14,10 +19,9 @@ class ToChannelWebhook extends BaseWebhook
     }
 
     /**
-     * Send data from recieved HTTP POST request
-     * to slack
+     * Send data from recieved HTTP POST request to slack
      *
-     * @param $payload
+     * @param $payload data array
      * @param $context
      */
     public function execute($payload, $context)

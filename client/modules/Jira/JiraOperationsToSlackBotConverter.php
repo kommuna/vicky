@@ -1,4 +1,10 @@
 <?php
+/**
+ * This file contains a JIRA data converter
+ *
+ * This file contains class with converter method,
+ * that converts data from JIRA to string message for issues with type 'Operations'
+ */
 namespace Vicky\client\modules\Jira;
 
 use JiraWebhook\JiraWebhookDataConverter;
@@ -9,7 +15,7 @@ class JiraOperationsToSlackBotConverter extends JiraWebhookDataConverter
     /**
      * Converts $data into message (string)
      *
-     * @param JiraWebhookData $data
+     * @param  JiraWebhookData $data parsed data from JIRA
      * @return string
      */
     public function convert(JiraWebhookData $data)

@@ -11,7 +11,7 @@ use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use JiraWebhook\JiraWebhook;
 use JiraWebhook\Models\JiraWebhookData;
-use Vicky\client\modules\BlockersIssueFile;
+//use Vicky\client\modules\BlockersIssueFile;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 require dirname(__DIR__).'/vendor/autoload.php';
@@ -29,7 +29,7 @@ $botClient = SlackBotSender::getInstance(
 
 $jiraWebhook = new JiraWebhook();
 
-$fileClient = new BlockersIssueFile($config['pathToBlockerFile']);
+//$fileClient = new BlockersIssueFile($config['pathToBlockerFile']);
 
 JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
 JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
@@ -40,7 +40,7 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
  * Writes time of creating comment and username assignee to Blocker ticket
  * user to file that have name like key of issue
  */
-$jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileClient)
+/*$jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileClient)
 {
     $issue = $data->getIssue();
 
@@ -51,10 +51,10 @@ $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($fileCl
             $issue->getIssueComments()->getLastComment()->getCreated()
         );
     }
-});
+});*/
 
 /**
- * Sends alert to slack general channel at any change of Blocker ticket
+ * Send message to slack general channel at creating or any change of Blocker issue
  */
 $jiraWebhook->addListener('*', function($e, $data) use ($botClient)
 {
@@ -68,10 +68,7 @@ $jiraWebhook->addListener('*', function($e, $data) use ($botClient)
 });
 
 /**
- * Sends alert to slack general channel at creating issue with type 'Operations'
- * or 'Urgent bug'
- *
- * Also send alert to user in slack if issue of this types was assigned to him
+ * Send message to slack general channel at creating issue with type 'Operations'
  */
 $jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient)
 {
@@ -79,25 +76,36 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botCl
 
     if ($issue->isTypeOprations()) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
-    } elseif ($issue->isTypeUrgentBug()) {
-        $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
     }
-
-    if ($issue->getAssignee()) {
-        $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
-    } 
 });
 
 /**
- * Sends alert to slack general channel if issue with type 'Operations' or 'Urgent bug'
- * get status 'Resolved' or issue with status 'Urgent bug' get commented
- *
- * Also sends alert to user in slack if any issue get assigned to him
- *
- * Also sends alert to user in slack if someone create comment in issue that 
- * assigned to him
- * 
- * And send alert to user in slack if someone make reference to him in created comment
+ * Send message to slack general channel at creating issue with type 'Urgent bug'
+ */
+$jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient)
+{
+    $issue = $data->getIssue();
+
+    if ($issue->isTypeUrgentBug()) {
+        $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
+    }
+});
+
+/**
+ * Send message to user in slack if created issue was assigned to him
+ */
+$jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient)
+{
+    $issue = $data->getIssue();
+
+    if ($issue->getAssignee()) {
+        $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    }
+});
+
+/**
+ * Send message to slack general channel if issue with type 'Operations'
+ * get status 'Resolved'
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient)
 {
@@ -105,17 +113,55 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
 
     if ($issue->isTypeOprations() && $issue->isStatusResolved()) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
-    } elseif ($issue->isTypeUrgentBug() && ($issue->isStatusResolved() || $data->isIssueCommented())) {
+    }
+});
+
+/**
+ * Send message to slack general channel if issue with type 'Urgent bug'
+ * get status 'Resolved' or get commented
+ */
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient)
+{
+    $issue = $data->getIssue();
+
+    if ($issue->isTypeUrgentBug() && ($issue->isStatusResolved() || $data->isIssueCommented())) {
         $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
     }
+});
+
+/**
+ * Send message to user in slack if any issue get assigned to him
+ */
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient)
+{
+    $issue = $data->getIssue();
 
     if ($data->isIssueAssigned()) {
         $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
+});
+
+/**
+ * Send message to user in slack if someone create comment in issue that
+ * assigned to him
+ */
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient)
+{
+    $issue = $data->getIssue();
 
     if ($data->isIssueCommented()) {
         $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+    }
+});
 
+/**
+ * Send message to user in slack if someone make reference to him in created comment
+ */
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient)
+{
+    $issue = $data->getIssue();
+
+    if ($data->isIssueCommented()) {
         $users = $issue->getIssueComments()->getLastComment()->getMentionedUsersNicknames();
 
         if (isset($users)) {

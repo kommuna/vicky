@@ -1,8 +1,13 @@
 <?php
 /**
- * This file has logic of events that cause data obtained from JIRA webhook
+ * This file is part of vicky.
+ *
+ * @credits https://github.com/kommuna
+ * @author  chewbacca@devadmin.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-
 namespace Vicky;
 
 use Monolog\Logger;
@@ -13,12 +18,8 @@ use Vicky\client\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\client\modules\Slack\SlackBotSender;
-use Vicky\client\exceptions\SlackBotSenderException;
 
 use JiraWebhook\JiraWebhook;
-use JiraWebhook\Models\JiraWebhookData;
-use JiraWebhook\Exceptions\JiraWebhookException;
-use JiraWebhook\Exceptions\JiraWebhookDataException;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/clientConfig.php';
@@ -26,16 +27,21 @@ $config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/clientConfig.php';
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
-date_default_timezone_set('Europe/Moscow');
+date_default_timezone_set($config['timeZone']);
 
 $log = new Logger('vicky');
-$log->pushHandler(new StreamHandler($config['error_log'], Logger::DEBUG));
+$log->pushHandler(
+    new StreamHandler(
+        $config['error_log'],
+        $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
+    )
+);
 
 $start = microtime(true);
 
 $log->info("The script ".__FILE__." started.");
 
-$botClient = SlackBotSender::getInstance(
+SlackBotSender::setConfigs(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
 );
@@ -67,19 +73,13 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 /**
  * Send message to slack general channel at creating or any change of Blocker issue
  */
-$jiraWebhook->addListener('*', function($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('*', function($e, $data)
 {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
-            try {
-                $botClient->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
-            } catch (SlackBotSenderException $e) {
-                $log->error($e->getMessage());
-            } catch (JiraWebhookException $e) {
-                $log->error($e->getMessage());
-            }
+            SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
         }
     }
 });
@@ -87,54 +87,36 @@ $jiraWebhook->addListener('*', function($e, $data) use ($botClient, $log)
 /**
  * Send message to slack general channel at creating issue with type 'Operations'
  */
-$jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($issue->isTypeOprations()) {
-        try {
-            $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
     }
 });
 
 /**
  * Send message to slack general channel at creating issue with type 'Urgent bug'
  */
-$jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($issue->isTypeUrgentBug()) {
-        try {
-            $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
     }
 });
 
 /**
  * Send message to user in slack if created issue was assigned to him
  */
-$jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 {
-    $issue = $data->getIssue();
+    $assignee = $data->getIssue()->getAssignee();
 
-    if ($issue->getAssignee()) {
-        try {
-            $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+    if ($assignee->getName()) {
+        SlackBotSender::getInstance()->toUser($assignee->getName(), JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
 });
 
@@ -142,18 +124,12 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botCl
  * Send message to slack general channel if issue with type 'Operations'
  * get status 'Resolved'
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($issue->isTypeOprations() && $issue->isStatusResolved()) {
-        try {
-            $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
     }
 });
 
@@ -161,36 +137,24 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
  * Send message to slack general channel if issue with type 'Urgent bug'
  * get status 'Resolved' or get commented
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($issue->isTypeUrgentBug() && ($issue->isStatusResolved() || $data->isIssueCommented())) {
-        try {
-            $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
     }
 });
 
 /**
  * Send message to user in slack if any issue get assigned to him
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($data->isIssueAssigned()) {
-        try {
-            $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+        SlackBotSender::getInstance()->toUser($issue->getAssignee()->getName(), JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
 });
 
@@ -198,25 +162,19 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
  * Send message to user in slack if someone create comment in issue that
  * assigned to him
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($data->isIssueCommented()) {
-        try {
-            $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
-        } catch (SlackBotSenderException $e) {
-            $log->error($e->getMessage());
-        } catch (JiraWebhookException $e) {
-            $log->error($e->getMessage());
-        }
+        SlackBotSender::getInstance()->toUser($issue->getAssignee()->getName(), JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
 });
 
 /**
  * Send message to user in slack if someone make reference to him in created comment
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botClient, $log)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
     $issue = $data->getIssue();
 
@@ -225,13 +183,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
 
         if ($users) {
             foreach ($users as $user) {
-                try {
-                    $botClient->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
-                } catch (SlackBotSenderException $e) {
-                    $log->error($e->getMessage());
-                } catch (JiraWebhookException $e) {
-                    $log->error($e->getMessage());
-                }
+                SlackBotSender::getInstance()->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
             }
         }
     }
@@ -239,9 +191,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
 
 try {
     $jiraWebhook->run();
-} catch (JiraWebhookException $e) {
-    $log->error($e->getMessage());
-} catch (JiraWebhookDataException $e) {
+} catch (\Exception $e) {
     $log->error($e->getMessage());
 }
 

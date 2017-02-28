@@ -1,9 +1,12 @@
 <?php
 /**
- * This file is bot client
+ * This file is part of vicky.
  *
- * This file contains bot client class that can send
- * curl HTTP POST requests to slack bot webhooks
+ * @credits https://github.com/kommuna
+ * @author  chewbacca@devadmin.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace Vicky\client\modules\Slack;
 
@@ -21,14 +24,14 @@ class SlackBotSender
      *
      * @var
      */
-    protected $slackBotUrl;
+    protected static $slackBotUrl;
 
     /**
      * Slack bot secret key
      *
      * @var null
      */
-    protected $auth;
+    protected static $auth;
 
     /**
      * SlackWebhookSender constructor.
@@ -39,18 +42,30 @@ class SlackBotSender
     public function __construct($slackBotUrl, $auth = null)
     {
         $this->slackBotUrl = $slackBotUrl;
-        $this->auth = $auth;
+        $this->auth        = $auth;
     }
 
     /**
-     * Initialize slack bot client
+     * Set configs like slack bot host url and secret key
+     * 
+     * @param      $slackBotUrl host URL
+     * @param null $auth        secret key
+     */
+    public static function setConfigs($slackBotUrl, $auth = null)
+    {
+        self::$slackBotUrl = $slackBotUrl;
+        self::$auth        = $auth;
+    }
+    
+    /**
+     * Initialize slack bot client or return if already initialized
      *
      * @return SlackBotSender
      */
-    public static function getInstance($slackBotUrl, $auth)
+    public static function getInstance()
     {
         if (!self::$botClient) {
-            self::$botClient = new self($slackBotUrl, $auth);
+            self::$botClient = new self(self::$slackBotUrl, self::$auth);
         }
         
         return self::$botClient;

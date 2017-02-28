@@ -15,7 +15,7 @@ Then you need to configure config files (clientConfig.php and botConfig.php) use
 bot/config.example.php and client/config.example.php, and put them into /etc/vicky/ folder. You can get bot token
 [here] (https://my.slack.com/services/new/bot).
 
-Then you need to configure slack bot, for details see [this] (https://github.com/jclg/php-slack-bot):
+Then you need to configure slack bot, for details see [this] (https://github.com/jclg/php-slack-bot).
 
 Then you need to configure [JIRA webhook] (https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 

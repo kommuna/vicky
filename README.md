@@ -65,8 +65,8 @@ use Vicky\client\modules\Slack\SlackBotSender;
 
 SlackBotSender::setConfigs($botHostURL, $auth);
 
-SlackBotSender::getInstance()->toChannel('#channelName', $message);
-SlackBotSender::getInstance()->toUser('userNickname', $message);
+SlackBotSender::getInstance()->toChannel('#channelName', 'message');
+SlackBotSender::getInstance()->toUser('userNickname', 'message');
 ```
 
 Also, to send messages bot must be invited to the channel.

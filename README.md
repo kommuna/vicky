@@ -37,10 +37,12 @@ server {
 After all things done you can run slack bot by running command `php .../vicky/bot/index.php`.
 
 #Usage
+##Slack bot
 For more details how configure custom webhooks and commands for bot see [this] (https://github.com/jclg/php-slack-bot).
 
-For more details about JIRA data see [this lib] (https://github.com/kommuna/jirawebhook) and [this docs]
-(https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
+##JiraWebhook
+For more details about JIRA data, JIRA data converters and events see [this lib] (https://github.com/kommuna/jirawebhook)
+and [this docs] (https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
 
 ##Slack bot client
 To use a bot client for sending messages to slack you should use following example code:
@@ -55,33 +57,3 @@ $botClient->toUser('userNickname', $message);
 ```
 
 Also, to send messages bot must be invited to the channel
-
-##JIRA data converters
-To create a new converter you should create a new class that implements JiraWebhookDataConverter interface. Then to set
-and use a new converter you should use following example code:
-
-```php
-use JiraWebhook\JiraWebhook;
-use Vicky\client\modules\Jira\NewConverterClass();
-
-require '/vendor/autoload.php';
-
-JiraWebhook::setConverter('converterName', new NewConverterClass());
-$message = JiraWebhook::convert('converterName', $jiraWebhookData)
-```
-
-##JIRA data events
-To create a new event you should use following example code:
-
-```php
-use JiraWebhook\JiraWebhook;
-
-require '/vendor/autoload.php';
-
-$jiraWebhook = new JiraWebhook($receivedData);
-$jiraWebhook->addListener('eventName', $listener);
-$jiraWebhook->run();
-```
-
-The `$eventName` must be some data from the [JiraWebhook\Models\JiraWebhookData]
-(https://github.com/kommuna/jirawebhook/blob/master/src/Models/JiraWebhookData.php)

@@ -48,7 +48,7 @@ To use a bot client for sending messages to slack you should use following examp
 ```php
 use Vicky\client\modules\Slack\SlackBotSender;
 
-$botClient = SlackBotSender::getInstance($hostURL, $auth);
+$botClient = SlackBotSender::getInstance($botHostURL, $auth);
 
 $botClient->toChannel('#channelName', $message);
 $botClient->toUser('userNickname', $message);
@@ -83,4 +83,5 @@ $jiraWebhook->addListener('eventName', $listener);
 $jiraWebhook->run();
 ```
 
-The `$eventName` must be some data from the JiraWebhook\Models\JiraWebhookData
+The `$eventName` must be some data from the [JiraWebhook\Models\JiraWebhookData]
+(https://github.com/kommuna/jirawebhook/blob/master/src/Models/JiraWebhookData.php)

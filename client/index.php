@@ -33,7 +33,7 @@ $log->pushHandler(new StreamHandler($config['error_log'], Logger::DEBUG));
 
 $start = microtime(true);
 
-$log->info("The script ".__DIR__."/index.php started.");
+$log->info("The script ".__FILE__." started.");
 
 $botClient = SlackBotSender::getInstance(
     $config['curlOpt']['url'],

@@ -23,10 +23,10 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
      */
     public function convert(JiraWebhookData $data)
     {
-        $issue    = $data->getIssue();
-        $assignee = $issue->getAssignee();
-        $comment  = $issue->getIssueComments()->getLastComment();
-        $author   = $comment->getAuthor();
+        $issue        = $data->getIssue();
+        $assigneeName = $issue->getAssignee()->getName();
+        $comment      = $issue->getIssueComments()->getLastComment();
+        $authorName   = $comment->getAuthor()->getName();
 
         /**
          * If issue dont have comments
@@ -39,13 +39,13 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
-                    $assignee->getName()
+                    $assigneeName
                 ]
             );
-        /**
-         * If issue not assigned to any user
-         */
-        } elseif (!$issue->getAssignee()) {
+            /**
+             * If issue not assigned to any user
+             */
+        } elseif (!$assigneeName) {
             $message = vsprintf(
                 "%s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
                 [
@@ -53,14 +53,14 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
-                    $author->getName(),
+                    $authorName,
                     $comment->getBody()
                 ]
             );
-        /**
-         * If issue dont have comments and not assigned to any user
-         */
-        } elseif (!$comment && !$issue->getAssignee()) {
+            /**
+             * If issue dont have comments and not assigned to any user
+             */
+        } elseif (!$comment && !$assigneeName) {
             $message = vsprintf(
                 "%s (%s) %s: %s ➠ Unassigned",
                 [
@@ -70,9 +70,9 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSummary()
                 ]
             );
-        /**
-         * Default message
-         */
+            /**
+             * Default message
+             */
         } else {
             $message = vsprintf(
                 "%s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
@@ -81,8 +81,8 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
-                    $assignee->getName(),
-                    $author->getName(),
+                    $assigneeName,
+                    $authorName,
                     $comment->getBody()
                 ]
             );

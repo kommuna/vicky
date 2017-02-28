@@ -17,7 +17,7 @@ bot/config.example.php and client/config.example.php, and put them into /etc/vic
 
 Then you need to configure [JIRA webhook] (https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
-Then you need to configure server for your bot, as example you can use this nginx config:
+Then you need to configure server that will listen JIRA webhook, as example you can use this nginx config:
 ```
 server {
         listen          80;

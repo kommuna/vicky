@@ -54,8 +54,8 @@ use Vicky\client\modules\Slack\SlackBotSender;
 
 $botClient = new SlackBotSender($botHostURL, $auth);
 
-$botClient->toChannel('#channelName', $message);
-$botClient->toUser('userNickname', $message);
+$botClient->toChannel('#channelName', 'message');
+$botClient->toUser('userNickname', 'message');
 ```
 
 or use static methods:

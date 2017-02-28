@@ -1,23 +1,88 @@
 # What is this?
-This is vicky - friendly PHP JIRA - slack robot.
-Created for make easy and comfortable notification of any changes in JIRA
-to slack.
+This is vicky - friendly PHP JIRA to slack robot.
+Created for make easy and comfortable notification of any changes in JIRA to slack.
+
+This library can receive and parse data from JIRA webhook, convert it into messages and send it to slack bot.
+Also you can setup slack bot for your own needs, by creating new webhooks and commands. And you can write event
+listeners for work with received data.
 
 # Installation
-For installing this robot you should clone this repo in any folder you like
-in your system.
+For installing this library you should grab the code from GitHub.
 
-Next step: you need to run command 'composer install' in project folder.
+Then you need to run command `composer install` in project folder.
 
-Next step: you need to configure config (clietnConfig.php and botConfig.php) as
-example (bot/config.example.php and client/config.example.php) and put them
-into /etc/vicky/ folder.
+Then you need to configure config files (clientConfig.php and botConfig.php) use as example
+bot/config.example.php and client/config.example.php, and put them into /etc/vicky/ folder. You can get bot token
+[here] (https://my.slack.com/services/new/bot).
 
-Next step: you need to configure JIRA webhook (see docs https://developer.atlassian.com/jiradev/jira-apis/webhooks)
+Then you need to configure [JIRA webhook] (https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
-After all things done you can run slack bot by running command 'php .../vicky/bot/index.php',
-and he will receive data from JIRA
+Then you need to configure server for your bot, as example you can use this nginx config:
+```
+server {
+        listen          80;
+        server_name     your.host;
+        root            .../vicky/client;
+        index           index.php;
+        try_files       $uri $uri/ /index.php?$query_string;
+        error_page  405     =200 $uri;
+        location ~* \.php$ {
+                include         fastcgi_params;
+                fastcgi_pass    localhost:9000;
+                fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+    }
+```
 
-Also if you wnat to configure checking time of creating comment in Blocker issue, you should
-configure your /etc/crontab file as example vicky/client/crontab.example (for more details
-read https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-autotasks-cron-configuring.html)
+After all things done you can run slack bot by running command `php .../vicky/bot/index.php`.
+
+#Usage
+For more details how configure custom webhooks and commands for bot see [this] (https://github.com/jclg/php-slack-bot).
+
+For more details about JIRA data see [this lib] (https://github.com/kommuna/jirawebhook) and [this docs]
+(https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
+
+##Slack bot client
+To use a bot client for sending messages to slack you should use following example code:
+
+```php
+use Vicky\client\modules\Slack\SlackBotSender;
+
+require '/vendor/autoload.php';
+
+$botClient = SlackBotSender::getInstance($hostURL, $auth);
+
+$botClient->toChannel('#channelName', $message);
+$botClient->toUser('#userNickname', $message);
+```
+
+Also, to send messages to the channel bot must be invited to the channel
+
+##JIRA data converters
+To create a new converter you should create a new class that implements JiraWebhookDataConverter interface. Then to set
+a new converter you should use following code as example:
+
+```php
+use JiraWebhook\JiraWebhook;
+use Vicky\client\modules\Jira\NewConverterClass();
+
+require '/vendor/autoload.php';
+
+JiraWebhook::setConverter('converterName', new NewConverterClass());
+```
+
+##JIRA data events
+To create a new event you should use following code as example:
+
+```php
+use JiraWebhook\JiraWebhook;
+
+require '/vendor/autoload.php';
+
+$jiraWebhook = new JiraWebhook($receivedData);
+
+$jiraWebhook->addListener('eventName', $listener);
+$jiraWebhook->run();
+```
+
+The `$eventName` must be some data from the JiraWebhook\Models\JiraWebhookData

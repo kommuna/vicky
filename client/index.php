@@ -7,14 +7,18 @@ namespace Vicky;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Vicky\client\exceptions\SlackBotSenderException;
+
 use Vicky\client\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\client\modules\Slack\SlackBotSender;
+use Vicky\client\exceptions\SlackBotSenderException;
+
 use JiraWebhook\JiraWebhook;
 use JiraWebhook\Models\JiraWebhookData;
+use JiraWebhook\Exceptions\JiraWebhookException;
+use JiraWebhook\Exceptions\JiraWebhookDataException;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/clientConfig.php';
@@ -36,8 +40,25 @@ $botClient = SlackBotSender::getInstance(
     $config['curlOpt']['auth']
 );
 
-$jiraWebhook = new JiraWebhook();
+/**
+ * Get raw data from JIRA webhook
+ */
+try {
+    $f = fopen('php://input', 'r');
+    $data = stream_get_contents($f);
 
+    if (!$data) {
+        throw new JiraWebhookException('There is not data in the Jira webhook');
+    }
+} catch (JiraWebhookException $e) {
+    $log->error($e->getMessage());
+}
+
+$jiraWebhook = new JiraWebhook($data);
+
+/**
+ * Set converters
+ */
 JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
 JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
@@ -56,6 +77,8 @@ $jiraWebhook->addListener('*', function($e, $data) use ($botClient, $log)
                 $botClient->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
             } catch (SlackBotSenderException $e) {
                 $log->error($e->getMessage());
+            } catch (JiraWebhookException $e) {
+                $log->error($e->getMessage());
             }
         }
     }
@@ -73,6 +96,8 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botCl
             $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
         } catch (SlackBotSenderException $e) {
             $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
+            $log->error($e->getMessage());
         }
     }
 });
@@ -89,6 +114,8 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botCl
             $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
         } catch (SlackBotSenderException $e) {
             $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
+            $log->error($e->getMessage());
         }
     }
 });
@@ -104,6 +131,8 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data) use ($botCl
         try {
             $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
         } catch (SlackBotSenderException $e) {
+            $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
             $log->error($e->getMessage());
         }
     }
@@ -122,6 +151,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
             $botClient->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
         } catch (SlackBotSenderException $e) {
             $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
+            $log->error($e->getMessage());
         }
     }
 });
@@ -139,6 +170,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
             $botClient->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
         } catch (SlackBotSenderException $e) {
             $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
+            $log->error($e->getMessage());
         }
     }
 });
@@ -154,6 +187,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
         try {
             $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
         } catch (SlackBotSenderException $e) {
+            $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
             $log->error($e->getMessage());
         }
     }
@@ -172,6 +207,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
             $botClient->toUser($issue->getAssignee(), JiraWebhook::convert('JiraDefaultToSlack', $data));
         } catch (SlackBotSenderException $e) {
             $log->error($e->getMessage());
+        } catch (JiraWebhookException $e) {
+            $log->error($e->getMessage());
         }
     }
 });
@@ -186,11 +223,13 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
     if ($data->isIssueCommented()) {
         $users = $issue->getIssueComments()->getLastComment()->getMentionedUsersNicknames();
 
-        if (isset($users)) {
+        if ($users) {
             foreach ($users as $user) {
                 try {
                     $botClient->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
                 } catch (SlackBotSenderException $e) {
+                    $log->error($e->getMessage());
+                } catch (JiraWebhookException $e) {
                     $log->error($e->getMessage());
                 }
             }
@@ -198,6 +237,12 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data) use ($botCl
     }
 });
 
-$jiraWebhook->run();
+try {
+    $jiraWebhook->run();
+} catch (JiraWebhookException $e) {
+    $log->error($e->getMessage());
+} catch (JiraWebhookDataException $e) {
+    $log->error($e->getMessage());
+}
 
 $log->info("Script finished in ".(microtime(true) - $start)." sec.");

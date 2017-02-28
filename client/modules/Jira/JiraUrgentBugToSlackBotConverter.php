@@ -10,7 +10,7 @@ namespace Vicky\client\modules\Jira;
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
 
-class JiraUrgentBugToSlackBotConverter extends JiraWebhookDataConverter
+class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into message (string)

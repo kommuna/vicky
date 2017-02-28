@@ -57,7 +57,7 @@ class SlackBotSender
     }
 
     /**
-     * Send HTTP POST request to slack bot to send in channel
+     * Send HTTP POST request to slack bot to send in $channel
      *
      * @param        $channel  slack channel name (with '#' symbol)
      * @param        $message  message text
@@ -143,7 +143,7 @@ class SlackBotSender
     }
 
     /**
-     * Check result answer of curl executing
+     * Check result $answer of curl executing
      *
      * @param $answer response after curl execution
      *

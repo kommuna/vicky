@@ -2,14 +2,14 @@
 This is vicky - friendly PHP JIRA to slack robot.
 Created for make easy and comfortable notification of any changes in JIRA to slack.
 
-This library can receive and parse data from JIRA webhook, convert it into messages and send it to slack bot.
+This library can receive and parse data from JIRA webhook, convert it into messages and send it to slack.
 Also you can setup slack bot for your own needs, by creating new webhooks and commands. And you can write event
-listeners for work with received data.
+listeners for work with received data from JIRA.
 
 # Installation
 For installing this library you should grab the code from GitHub.
 
-Then you need to run command `composer install` in project folder.
+Then you need to run command `composer install` in .../vicky folder.
 
 Then you need to configure config files (clientConfig.php and botConfig.php) use as example
 bot/config.example.php and client/config.example.php, and put them into /etc/vicky/ folder. You can get bot token
@@ -21,11 +21,11 @@ Then you need to configure server for your bot, as example you can use this ngin
 ```
 server {
         listen          80;
-        server_name     your.host;
+        server_name     host.url;
         root            .../vicky/client;
         index           index.php;
         try_files       $uri $uri/ /index.php?$query_string;
-        error_page  405     =200 $uri;
+        error_page  405 =200 $uri;
         location ~* \.php$ {
                 include         fastcgi_params;
                 fastcgi_pass    localhost:9000;
@@ -48,19 +48,17 @@ To use a bot client for sending messages to slack you should use following examp
 ```php
 use Vicky\client\modules\Slack\SlackBotSender;
 
-require '/vendor/autoload.php';
-
 $botClient = SlackBotSender::getInstance($hostURL, $auth);
 
 $botClient->toChannel('#channelName', $message);
-$botClient->toUser('#userNickname', $message);
+$botClient->toUser('userNickname', $message);
 ```
 
-Also, to send messages to the channel bot must be invited to the channel
+Also, to send messages bot must be invited to the channel
 
 ##JIRA data converters
 To create a new converter you should create a new class that implements JiraWebhookDataConverter interface. Then to set
-a new converter you should use following code as example:
+and use a new converter you should use following example code:
 
 ```php
 use JiraWebhook\JiraWebhook;
@@ -69,10 +67,11 @@ use Vicky\client\modules\Jira\NewConverterClass();
 require '/vendor/autoload.php';
 
 JiraWebhook::setConverter('converterName', new NewConverterClass());
+$message = JiraWebhook::convert('converterName', $jiraWebhookData)
 ```
 
 ##JIRA data events
-To create a new event you should use following code as example:
+To create a new event you should use following example code:
 
 ```php
 use JiraWebhook\JiraWebhook;
@@ -80,7 +79,6 @@ use JiraWebhook\JiraWebhook;
 require '/vendor/autoload.php';
 
 $jiraWebhook = new JiraWebhook($receivedData);
-
 $jiraWebhook->addListener('eventName', $listener);
 $jiraWebhook->run();
 ```

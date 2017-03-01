@@ -22,7 +22,7 @@ use Vicky\client\modules\Slack\SlackBotSender;
 use JiraWebhook\JiraWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
-$config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/clientConfig.php';
+$config = require '/etc/vicky/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
@@ -181,10 +181,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
     if ($data->isIssueCommented()) {
         $users = $issue->getIssueComments()->getLastComment()->getMentionedUsersNicknames();
 
-        if ($users) {
-            foreach ($users as $user) {
-                SlackBotSender::getInstance()->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
-            }
+        foreach ($users as $user) {
+            SlackBotSender::getInstance()->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
         }
     }
 });

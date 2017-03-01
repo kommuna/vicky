@@ -19,7 +19,7 @@ use Vicky\bot\modules\ToUserWebhook;
 use Vicky\bot\modules\ToChannelWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
-$config = require (isset($argv[1])) ? $argv[1] : '/etc/vicky/botConfig.php';
+$config = require 'config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);

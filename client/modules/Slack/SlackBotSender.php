@@ -100,7 +100,7 @@ class SlackBotSender
     }
 
     /**
-     * Send HTTP POST request to slack bot to send in pivate chat to user personally
+     * Send HTTP POST request to slack bot to send in private chat to user personally
      *
      * @param        $userName slack username (without '@' symbol)
      * @param        $message  message text

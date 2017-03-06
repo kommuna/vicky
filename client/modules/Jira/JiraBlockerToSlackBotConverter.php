@@ -29,21 +29,20 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
         $authorName   = $comment->getAuthor()->getName();
 
         /**
-         * If issue dont have comments
+         * Issue doesn't have comments and is not assigned to a user
          */
-        if (!$comment) {
+        if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ @%s",
+                "!!! %s (%s) %s: %s ➠ Unassigned",
                 [
                     $issue->getKey(),
                     $issue->getSelf(),
                     $issue->getStatus(),
-                    $issue->getSummary(),
-                    $assigneeName
+                    $issue->getSummary()
                 ]
             );
         /**
-         * If issue not assigned to any user
+         * Issue is not assigned to a user
          */    
         } elseif (!$assigneeName) {
             $message = vsprintf(
@@ -58,16 +57,17 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
                 ]
             );
         /**
-         * If issue dont have comments and not assigned to any user 
+         * Issue doesn't have any comments
          */    
-        } elseif (!$comment && !$assigneeName) {
+        } elseif (!$comment) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ Unassigned",
+                "!!! %s (%s) %s: %s ➠ @%s",
                 [
                     $issue->getKey(),
                     $issue->getSelf(),
                     $issue->getStatus(),
-                    $issue->getSummary()
+                    $issue->getSummary(),
+                    $assigneeName
                 ]
             );
         /**

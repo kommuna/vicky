@@ -31,15 +31,14 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
         /**
          * If issue dont have comments
          */
-        if (!$comment) {
+        if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "⚡ %s (%s) %s: %s ➠ @%s",
+                "⚡ %s (%s) %s: %s ➠ Unassigned",
                 [
                     $issue->getKey(),
                     $issue->getSelf(),
                     $issue->getStatus(),
-                    $issue->getSummary(),
-                    $assigneeName
+                    $issue->getSummary()
                 ]
             );
             /**
@@ -60,14 +59,15 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
             /**
              * If issue dont have comments and not assigned to any user
              */
-        } elseif (!$comment && !$assigneeName) {
+        } elseif (!$comment) {
             $message = vsprintf(
-                "⚡ %s (%s) %s: %s ➠ Unassigned",
+                "⚡ %s (%s) %s: %s ➠ @%s",
                 [
                     $issue->getKey(),
                     $issue->getSelf(),
                     $issue->getStatus(),
-                    $issue->getSummary()
+                    $issue->getSummary(),
+                    $assigneeName
                 ]
             );
             /**

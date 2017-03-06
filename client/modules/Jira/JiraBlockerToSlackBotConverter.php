@@ -29,8 +29,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
         $authorName   = $comment->getAuthor()->getName();
 
         /**
-         * Issue doesn't have comments and is not assigned to a user
-         *
+         * Issue doesn't have comments and is not assigned to a user (example code that needs to be fixed - testing code review tools)
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(

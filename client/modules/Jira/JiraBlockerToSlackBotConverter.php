@@ -30,6 +30,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 
         /**
          * Issue doesn't have comments and is not assigned to a user
+         *
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(

@@ -27,7 +27,6 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
-        $authorName   = $comment ? $comment->getAuthor()->getName() : null;
 
         /**
          * If issue dont have comments
@@ -53,7 +52,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
-                    $authorName,
+                    $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );
@@ -83,7 +82,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,
-                    $authorName,
+                    $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );

@@ -18,5 +18,6 @@ return [
     ],
     'jiraToSlackMapping' => [
         'Project name' => '#channel'
-    ]
+    ],
+    'environment' => 'local/staging/production'
 ];

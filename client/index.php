@@ -205,6 +205,13 @@ try {
 
     $jiraWebhook->run();
 } catch (\Exception $e) {
+    // For convenience in local development show errors on screen directly
+    if ($config['environment'] == 'local'){
+        var_dump($e->getMessage());
+        var_dump($e->getLine());
+        var_dump($e->getFile());
+        var_dump($e->getCode());
+    }
     $log->error($e->getMessage());
 }
 

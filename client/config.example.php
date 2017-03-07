@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 return [
+    'environment' => 'local/staging/production',
     'error_log'        => '/path/to/log/file.log',
     'timeZone'         => 'Your/TimeZone',
     'loggerDebugLevel' => true/false,
@@ -20,5 +21,4 @@ return [
         'Project name' => '#channel',
         '*'            => '#defaultChannel'
     ],
-    'environment' => 'local/staging/production'
 ];

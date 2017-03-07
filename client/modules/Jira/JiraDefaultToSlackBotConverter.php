@@ -26,7 +26,6 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
-        $authorName   = $comment->getAuthor()->getName();
 
         /**
          * Issue doesn't have comments and is not assigned to a user
@@ -82,7 +81,7 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,
-                    $authorName,
+                    $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );

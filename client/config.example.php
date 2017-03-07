@@ -15,5 +15,6 @@ return [
     'curlOpt'   => [
         'url'   => 'http://url were you host slack bot:port',
         'auth'  => 'secret key for slack bot if needed'
-    ]
+    ],
+    'environment' => 'local/staging/production'
 ];

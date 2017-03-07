@@ -41,8 +41,8 @@ class SlackBotSender
      */
     public function __construct($slackBotUrl, $auth = null)
     {
-        $this->slackBotUrl = $slackBotUrl;
-        $this->auth        = $auth;
+        self::$slackBotUrl = $slackBotUrl;
+        self::$auth        = $auth;
     }
 
     /**
@@ -85,7 +85,7 @@ class SlackBotSender
         $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
 
         $slackRequest = [
-            'auth'    => $this->auth,
+            'auth'    => self::$auth,
             'name'    => $webhookName,
             'payload' => json_encode([
                 "type"    => "message",
@@ -111,7 +111,7 @@ class SlackBotSender
     public function toUser($userName, $message, $webhookName = 'touser')
     {
         $slackRequest = [
-            'auth'    => $this->auth,
+            'auth'    => self::$auth,
             'name'    => $webhookName,
             'payload' => json_encode([
                 "type"    => "message",
@@ -139,7 +139,7 @@ class SlackBotSender
         }
         
         curl_setopt_array($curl, [
-            CURLOPT_URL            => $this->slackBotUrl,
+            CURLOPT_URL            => self::$slackBotUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query($slackRequest)

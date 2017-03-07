@@ -203,7 +203,7 @@ try {
         throw new JiraWebhookException('There is no data in the Jira webhook');
     }
 
-    $jiraWebhook->run();
+    $jiraWebhook->run($data);
 } catch (\Exception $e) {
     // For convenience in local development show errors on screen directly
     if ($config['environment'] == 'local'){

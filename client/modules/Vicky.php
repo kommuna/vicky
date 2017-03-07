@@ -32,7 +32,7 @@ class Vicky
     /**
      * Return channel name by issue project name from config file
      *
-     * @param $projectName issue project name
+     * @param string $projectName issue project name
      *
      * @return null
      */

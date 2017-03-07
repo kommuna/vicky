@@ -69,4 +69,33 @@ SlackBotSender::getInstance()->toChannel('#channelName', 'message');
 SlackBotSender::getInstance()->toUser('userNickname', 'message');
 ```
 
+##Jira to Slack mapping
+Vicky allow to configure mapping of JIRA projects to Slack channels. Write following example code in vicky config file
+(/etc/vicky/config.php):
+
+```
+<?php
+return [
+   /* Other settings */,
+   'jiraToSlackMapping' => [
+       'Your project name' => '#channelName'
+   ]
+];
+```
+
+To configure default channel use following example code:
+
+```
+<?php
+return [
+   /* Other settings */,
+   'jiraToSlackMapping' => [
+       '*' => '#channel'
+   ]
+];
+```
+
+In that case all messages from projects, that don't have any mapping setting will be sending in default channel. Also
+if project does not have mapping settings and default channel not configured, messages will not send.
+
 Also, to send messages bot must be invited to the channel.

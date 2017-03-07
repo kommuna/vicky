@@ -36,8 +36,8 @@ class SlackBotSender
     /**
      * SlackWebhookSender constructor.
      * 
-     * @param      $slackBotUrl callable slack bot webserver host url
-     * @param null $auth                 slack bot webserver secret key
+     * @param string $slackBotUrl slack bot webserver host url
+     * @param null   $auth        slack bot webserver secret key
      */
     public function __construct($slackBotUrl, $auth = null)
     {
@@ -48,8 +48,8 @@ class SlackBotSender
     /**
      * Set configs like slack bot host url and secret key
      * 
-     * @param      $slackBotUrl callable host URL
-     * @param null $auth                 secret key
+     * @param string $slackBotUrl host URL
+     * @param null   $auth        secret key
      */
     public static function setConfigs($slackBotUrl, $auth = null)
     {
@@ -74,9 +74,9 @@ class SlackBotSender
     /**
      * Send HTTP POST request to slack bot to send in $channel
      *
-     * @param        $channel  callable slack channel name (with '#' symbol)
-     * @param        $message  callable message text
-     * @param string $hookName          slack bot hook which accepts requests
+     * @param string $channel  slack channel name (with '#' symbol)
+     * @param string $message  message text
+     * @param string $hookName slack bot hook which accepts requests
      *
      * @return bool
      */
@@ -106,9 +106,9 @@ class SlackBotSender
     /**
      * Send HTTP POST request to slack bot to send in private chat to user personally
      *
-     * @param        $userName callable slack username (without '@' symbol)
-     * @param        $message  callable message text
-     * @param string $hookName          slack bot hook which accepts requests
+     * @param string $userName slack username (without '@' symbol)
+     * @param string $message  message text
+     * @param string $hookName slack bot hook which accepts requests
      * 
      * @return bool
      */
@@ -168,7 +168,7 @@ class SlackBotSender
     /**
      * Check result $answer of curl executing
      *
-     * @param $answer callable response after curl execution
+     * @param string $answer response after curl execution
      *
      * @return bool
      *

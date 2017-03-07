@@ -17,7 +17,8 @@ return [
         'auth'  => 'secret key for slack bot if needed'
     ],
     'jiraToSlackMapping' => [
-        'Project name' => '#channel'
+        'Project name' => '#channel',
+        '*' => "#general"
     ],
     'environment' => 'local/staging/production'
 ];

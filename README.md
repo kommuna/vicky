@@ -90,12 +90,12 @@ To configure default channel use following example code:
 return [
    /* Other settings */,
    'jiraToSlackMapping' => [
-       '*' => '#channel'
+       '*' => '#channelName'
    ]
 ];
 ```
 
-In that case all messages from projects, that don't have any mapping setting will be sending in default channel. Also
-if project does not have mapping settings and default channel not configured, messages will not send.
+In that case all messages from projects, that don't have any mapping setting will be sending in default channel. If
+project does not have mapping settings and default channel not configured, messages will not send.
 
 Also, to send messages bot must be invited to the channel.

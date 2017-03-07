@@ -38,6 +38,10 @@ class Vicky
      */
     public static function getChannelByProject($projectName)
     {
+        if(empty(self::$config['jiraToSlackMapping']) || !is_array(self::$config['jiraToSlackMapping'])) {
+            return;
+        }
+
         $jiraToSlackMapping = self::$config['jiraToSlackMapping'];
 
         $channel = null;

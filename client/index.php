@@ -20,6 +20,7 @@ use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 use JiraWebhook\JiraWebhook;
+use JiraWebhook\Exceptions\JiraWebhookException;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';
@@ -52,9 +53,8 @@ SlackBotSender::setConfigs(
 try {
     $f = fopen('php://input', 'r');
     $data = stream_get_contents($f);
-
     if (!$data) {
-        throw new JiraWebhookException('There is not data in the Jira webhook');
+        throw new JiraWebhookException('There is no data in the Jira webhook');
     }
 } catch (JiraWebhookException $e) {
     $log->error($e->getMessage());

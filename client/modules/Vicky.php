@@ -48,8 +48,8 @@ class Vicky
 
         if (array_key_exists($projectName, $jiraToSlackMapping)) {
             $channel = $jiraToSlackMapping[$projectName];
-        } elseif (array_key_exists('EVERYTHINGELSE', $jiraToSlackMapping)) {
-            $channel = $jiraToSlackMapping['EVERYTHINGELSE'];
+        } elseif (array_key_exists('*', $jiraToSlackMapping)) {
+            $channel = $jiraToSlackMapping['*'];
         }
 
         return $channel;

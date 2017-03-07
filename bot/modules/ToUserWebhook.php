@@ -47,7 +47,7 @@ class ToUserWebhook extends BaseWebhook
     /**
      * Send data from recieved HTTP POST request to slack
      *
-     * @param $payload data array
+     * @param $payload callable data array
      * @param $context
      */
     public function execute($payload, $context)

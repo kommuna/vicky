@@ -36,20 +36,20 @@ class SlackBotSender
     /**
      * SlackWebhookSender constructor.
      * 
-     * @param      $slackBotUrl slack bot webserver host url
-     * @param null $auth        slack bot webserver secret key
+     * @param      $slackBotUrl callable slack bot webserver host url
+     * @param null $auth                 slack bot webserver secret key
      */
     public function __construct($slackBotUrl, $auth = null)
     {
-        $this->slackBotUrl = $slackBotUrl;
-        $this->auth        = $auth;
+        self::$slackBotUrl = $slackBotUrl;
+        self::$auth        = $auth;
     }
 
     /**
      * Set configs like slack bot host url and secret key
      * 
-     * @param      $slackBotUrl host URL
-     * @param null $auth        secret key
+     * @param      $slackBotUrl callable host URL
+     * @param null $auth                 secret key
      */
     public static function setConfigs($slackBotUrl, $auth = null)
     {
@@ -74,9 +74,9 @@ class SlackBotSender
     /**
      * Send HTTP POST request to slack bot to send in $channel
      *
-     * @param        $channel  slack channel name (with '#' symbol)
-     * @param        $message  message text
-     * @param string $hookName slack bot hook which accepts requests
+     * @param        $channel  callable slack channel name (with '#' symbol)
+     * @param        $message  callable message text
+     * @param string $hookName          slack bot hook which accepts requests
      *
      * @return bool
      */
@@ -85,7 +85,7 @@ class SlackBotSender
         $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
 
         $slackRequest = [
-            'auth'    => $this->auth,
+            'auth'    => self::$auth,
             'name'    => $webhookName,
             'payload' => json_encode([
                 "type"    => "message",
@@ -102,16 +102,16 @@ class SlackBotSender
     /**
      * Send HTTP POST request to slack bot to send in private chat to user personally
      *
-     * @param        $userName slack username (without '@' symbol)
-     * @param        $message  message text
-     * @param string $hookName slack bot hook which accepts requests
+     * @param        $userName callable slack username (without '@' symbol)
+     * @param        $message  callable message text
+     * @param string $hookName          slack bot hook which accepts requests
      * 
      * @return bool
      */
     public function toUser($userName, $message, $webhookName = 'touser')
     {
         $slackRequest = [
-            'auth'    => $this->auth,
+            'auth'    => self::$auth,
             'name'    => $webhookName,
             'payload' => json_encode([
                 "type"    => "message",
@@ -139,7 +139,7 @@ class SlackBotSender
         }
         
         curl_setopt_array($curl, [
-            CURLOPT_URL            => $this->slackBotUrl,
+            CURLOPT_URL            => self::$slackBotUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query($slackRequest)
@@ -160,7 +160,7 @@ class SlackBotSender
     /**
      * Check result $answer of curl executing
      *
-     * @param $answer response after curl execution
+     * @param $answer callable response after curl execution
      *
      * @return bool
      *

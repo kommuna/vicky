@@ -20,13 +20,14 @@ use Vicky\client\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\client\modules\Slack\SlackBotSender;
 
 use JiraWebhook\JiraWebhook;
+use JiraWebhook\Exceptions\JiraWebhookException;
+use Vicky\client\modules\Vicky;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
-ini_set('max_execution_time', 0);
 date_default_timezone_set($config['timeZone']);
 
 $log = new Logger('vicky');
@@ -46,21 +47,9 @@ SlackBotSender::setConfigs(
     $config['curlOpt']['auth']
 );
 
-/**
- * Get raw data from JIRA webhook
- */
-try {
-    $f = fopen('php://input', 'r');
-    $data = stream_get_contents($f);
+$jiraWebhook = new JiraWebhook();
 
-    if (!$data) {
-        throw new JiraWebhookException('There is not data in the Jira webhook');
-    }
-} catch (JiraWebhookException $e) {
-    $log->error($e->getMessage());
-}
-
-$jiraWebhook = new JiraWebhook($data);
+$vicky = new Vicky($config);
 
 /**
  * Set converters
@@ -79,7 +68,10 @@ $jiraWebhook->addListener('*', function($e, $data)
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
-            SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraBlockerToSlack', $data));
+            SlackBotSender::getInstance()->toChannel(
+                Vicky::getChannelByProject($issue->getProjectName()), 
+                JiraWebhook::convert('JiraBlockerToSlack', $data)
+            );
         }
     }
 });
@@ -92,7 +84,10 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
     $issue = $data->getIssue();
 
     if ($issue->isTypeOprations()) {
-        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
+        SlackBotSender::getInstance()->toChannel(
+            Vicky::getChannelByProject($issue->getProjectName()), 
+            JiraWebhook::convert('JiraOperationsToSlack', $data)
+        );
     }
 });
 
@@ -104,7 +99,10 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
     $issue = $data->getIssue();
 
     if ($issue->isTypeUrgentBug()) {
-        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
+        SlackBotSender::getInstance()->toChannel(
+            Vicky::getChannelByProject($issue->getProjectName()), 
+            JiraWebhook::convert('JiraUrgentBugToSlack', $data)
+        );
     }
 });
 
@@ -129,7 +127,10 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
     $issue = $data->getIssue();
 
     if ($issue->isTypeOprations() && $issue->isStatusResolved()) {
-        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraOperationsToSlack', $data));
+        SlackBotSender::getInstance()->toChannel(
+            Vicky::getChannelByProject($issue->getProjectName()), 
+            JiraWebhook::convert('JiraOperationsToSlack', $data)
+        );
     }
 });
 
@@ -142,7 +143,10 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
     $issue = $data->getIssue();
 
     if ($issue->isTypeUrgentBug() && ($issue->isStatusResolved() || $data->isIssueCommented())) {
-        SlackBotSender::getInstance()->toChannel('#general', JiraWebhook::convert('JiraUrgentBugToSlack', $data));
+        SlackBotSender::getInstance()->toChannel(
+            Vicky::getChannelByProject($issue->getProjectName()), 
+            JiraWebhook::convert('JiraUrgentBugToSlack', $data)
+        );
     }
 });
 
@@ -188,6 +192,17 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 try {
+    /**
+     * Get raw data from JIRA webhook
+     */
+    $f = fopen('php://input', 'r');
+    $data = stream_get_contents($f);
+
+    if (!$data) {
+        $log->error('There is not data in the Jira webhook');
+        throw new JiraWebhookException('There is no data in the Jira webhook');
+    }
+
     $jiraWebhook->run();
 } catch (\Exception $e) {
     $log->error($e->getMessage());

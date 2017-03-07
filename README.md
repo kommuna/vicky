@@ -12,7 +12,7 @@ For installing this library clone the code from GitHub.
 Run command `composer install` in .../vicky folder.
 
 Configure config files, use as example bot/config.example.php and client/config.example.php, and put bot config into
-.../vicky/bot folder and client config into /etc/vicky/ folder. Get bot token [here]
+/etc/slackBot folder and client config into /etc/vicky/ folder. Get bot token [here]
 (https://my.slack.com/services/new/bot).
 
 Configure slack bot, for details see [this] (https://github.com/jclg/php-slack-bot).

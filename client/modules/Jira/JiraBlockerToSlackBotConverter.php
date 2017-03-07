@@ -18,7 +18,8 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
     /**
      * Converts $data into message (string)
      *
-     * @param  JiraWebhookData $data parsed data from JIRA
+     * @param JiraWebhookData $data parsed data from JIRA
+     * 
      * @return string
      */
     public function convert(JiraWebhookData $data)
@@ -26,7 +27,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
-        $authorName   = $comment->getAuthor()->getName();
+        $authorName   = $comment ? $comment->getAuthor()->getName() : null;
 
         /**
          * Issue doesn't have comments and is not assigned to a user

@@ -82,6 +82,10 @@ class SlackBotSender
      */
     public function toChannel($channel, $message, $webhookName = 'tochannel')
     {
+        if (!$channel) {
+            return false;
+        }
+
         $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
 
         $slackRequest = [
@@ -110,6 +114,10 @@ class SlackBotSender
      */
     public function toUser($userName, $message, $webhookName = 'touser')
     {
+        if (!$userName) {
+            return false;
+        }
+
         $slackRequest = [
             'auth'    => self::$auth,
             'name'    => $webhookName,

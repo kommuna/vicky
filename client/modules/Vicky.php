@@ -40,12 +40,12 @@ class Vicky
     {
         $jiraToSlackMapping = self::$config['jiraToSlackMapping'];
 
-        if (!empty($jiraToSlackMapping[$projectName])) {
+        $channel = null;
+
+        if (array_key_exists($projectName, $jiraToSlackMapping)) {
             $channel = $jiraToSlackMapping[$projectName];
-        } elseif (!empty($jiraToSlackMapping['EVERYTHINGELSE']) || $jiraToSlackMapping['EVERYTHINGELSE'] != 'false') {
+        } elseif (array_key_exists('EVERYTHINGELSE', $jiraToSlackMapping) || !$jiraToSlackMapping['EVERYTHINGELSE']) {
             $channel = $jiraToSlackMapping['EVERYTHINGELSE'];
-        } else {
-            $channel = null;
         }
 
         return $channel;

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains slack bot client class, that sends messages to slack bot
+ * Slack bot client class, that sends messages to slack bot
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -98,9 +98,7 @@ class SlackBotSender
             ])
         ];
 
-        $response = $this->sendRequest($slackRequest);
-
-        return $this->isResponseOK($response);
+        return $this->sendRequest($slackRequest);
     }
 
     /**
@@ -128,9 +126,7 @@ class SlackBotSender
             ])
         ];
 
-        $response = $this->sendRequest($slackRequest);
-
-        return $this->isResponseOK($response);
+        return $this->sendRequest($slackRequest);
     }
 
     /**
@@ -138,12 +134,14 @@ class SlackBotSender
      * 
      * @param $slackRequest array with request data
      * 
-     * @return bool|mixed
+     * @return bool
+     * 
+     * @throws SlackBotSenderException
      */
     protected function sendRequest($slackRequest)
     {
         if (!($curl = curl_init())) {
-            return $response = 'Cannot init curl session!';
+            throw new SlackBotSenderException('Cannot init curl session!');
         }
         
         curl_setopt_array($curl, [
@@ -157,28 +155,14 @@ class SlackBotSender
 
         $error = curl_error($curl);
         if ($error) {
-            $response = $error;
+            throw new SlackBotSenderException($error);
+        }
+
+        if (trim($response) != "Ok") {
+            throw new SlackBotSenderException($response);
         }
 
         curl_close($curl);
-
-        return $response;
-    }
-
-    /**
-     * Check response from bot
-     *
-     * @param string $response response after curl execution
-     *
-     * @return bool
-     *
-     * @throws SlackBotSenderException
-     */
-    protected function isResponseOK($response)
-    {
-        if (strpos($response, "Ok")) {
-            throw new SlackBotSenderException($response);
-        }
 
         return true;
     }

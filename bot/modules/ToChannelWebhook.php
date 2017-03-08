@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains declaration of slack bot webhook class for sending messages to channels.
+ * Slack bot webhook class, that receives payload data from HTTP POST request and sed it to slack channel.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains example config code for vicky.
+ * Example config code for vicky.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

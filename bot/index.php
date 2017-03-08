@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains the bot configuration and launch code.
+ * Main module of slack bot lib, that contains bot configuration and launch code.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

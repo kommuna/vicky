@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains example config code for slack bot.
+ * Example config code for slack bot.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

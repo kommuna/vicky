@@ -1,6 +1,7 @@
 <?php
 /**
- * This file contains event and receiving data from JIRA logic
+ * Main module of vicky project, that contains events with listeners, receiving data from JIRA logic, converter
+ * declarations, and can sends messages to slack by slack bot client.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

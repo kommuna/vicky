@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains JiraWebhookData converter for issue with priority 'Blocker'.
+ * JiraWebhookData converter of issue with priority 'Blocker' into string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

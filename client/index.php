@@ -158,7 +158,10 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
     $issue = $data->getIssue();
 
     if ($data->isIssueAssigned()) {
-        SlackBotSender::getInstance()->toUser($issue->getAssignee()->getName(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+        SlackBotSender::getInstance()->toUser(
+            $issue->getAssignee()->getName(),
+            JiraWebhook::convert('JiraDefaultToSlack', $data)
+        );
     }
 });
 
@@ -171,7 +174,10 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
     $issue = $data->getIssue();
 
     if ($data->isIssueCommented()) {
-        SlackBotSender::getInstance()->toUser($issue->getAssignee()->getName(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+        SlackBotSender::getInstance()->toUser(
+            $issue->getAssignee()->getName(),
+            JiraWebhook::convert('JiraDefaultToSlack', $data)
+        );
     }
 });
 
@@ -206,7 +212,7 @@ try {
     $jiraWebhook->run($data);
 } catch (\Exception $e) {
     // For convenience in local development show errors on screen directly
-    if ($config['environment'] == 'local'){
+    if ($config['environment'] === 'local'){
         var_dump($e->getMessage());
         var_dump($e->getLine());
         var_dump($e->getFile());

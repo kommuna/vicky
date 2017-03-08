@@ -32,14 +32,14 @@ class Vicky
     /**
      * Return channel name by issue project name from config file
      *
-     * @param $projectName string project name
+     * @param string $projectName issue project name
      *
      * @return null
      */
     public static function getChannelByProject($projectName)
     {
         if(empty(self::$config['jiraToSlackMapping']) || !is_array(self::$config['jiraToSlackMapping'])) {
-            return;
+            return null;
         }
 
         $jiraToSlackMapping = self::$config['jiraToSlackMapping'];

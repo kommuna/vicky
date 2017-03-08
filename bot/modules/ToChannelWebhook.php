@@ -25,8 +25,8 @@ class ToChannelWebhook extends BaseWebhook
     /**
      * Send data from recieved HTTP POST request to slack
      *
-     * @param $payload callable data array
-     * @param $context
+     * @param array $payload data array
+     * @param       $context
      */
     public function execute($payload, $context)
     {

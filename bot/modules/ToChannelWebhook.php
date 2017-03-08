@@ -1,6 +1,6 @@
 <?php
 /**
- * Slack bot webhook class, that receives payload data from HTTP POST request and sed it to slack channel.
+ * Slack bot webhook class, that receives payload data from HTTP POST request and send it to slack channel.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

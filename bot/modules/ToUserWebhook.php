@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains declaration of slack bot webhook class for sending messages to users.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

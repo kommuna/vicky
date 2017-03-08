@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains JiraWebhookData converter for issue with priority 'Blocker'.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

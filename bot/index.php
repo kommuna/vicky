@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains the bot configuration and launch code.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

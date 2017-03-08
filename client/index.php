@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains event and receiving data from JIRA logic
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

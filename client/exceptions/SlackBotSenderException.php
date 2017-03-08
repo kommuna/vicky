@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains exception class for slack bot client.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

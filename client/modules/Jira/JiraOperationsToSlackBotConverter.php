@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains JiraWebhookData converter for issue with type 'Operations'.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains slack bot client class, that sends messages to slack bot
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -98,9 +98,9 @@ class SlackBotSender
             ])
         ];
 
-        $answer = $this->sendRequest($slackRequest);
+        $response = $this->sendRequest($slackRequest);
 
-        return $this->curlAnswerCheck($answer);
+        return $this->isResponseOK($response);
     }
 
     /**
@@ -128,9 +128,9 @@ class SlackBotSender
             ])
         ];
 
-        $answer = $this->sendRequest($slackRequest);
+        $response = $this->sendRequest($slackRequest);
 
-        return $this->curlAnswerCheck($answer);
+        return $this->isResponseOK($response);
     }
 
     /**
@@ -143,7 +143,7 @@ class SlackBotSender
     protected function sendRequest($slackRequest)
     {
         if (!($curl = curl_init())) {
-            return $answer = 'Cannot init curl session!';
+            return $response = 'Cannot init curl session!';
         }
         
         curl_setopt_array($curl, [
@@ -153,31 +153,31 @@ class SlackBotSender
             CURLOPT_POSTFIELDS     => http_build_query($slackRequest)
         ]);
 
-        $answer = curl_exec($curl);
+        $response = curl_exec($curl);
 
         $error = curl_error($curl);
         if ($error) {
-            $answer = $error;
+            $response = $error;
         }
 
         curl_close($curl);
 
-        return $answer;
+        return $response;
     }
 
     /**
-     * Check result $answer of curl executing
+     * Check response from bot
      *
-     * @param string $answer response after curl execution
+     * @param string $response response after curl execution
      *
      * @return bool
      *
      * @throws SlackBotSenderException
      */
-    protected function curlAnswerCheck($answer)
+    protected function isResponseOK($response)
     {
-        if (strpos($answer, "Ok")) {
-            throw new SlackBotSenderException($answer);
+        if (strpos($response, "Ok")) {
+            throw new SlackBotSenderException($response);
         }
 
         return true;

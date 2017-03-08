@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains class with JIRA to slack mapping logic
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -17,7 +17,7 @@ class Vicky
      *
      * @var
      */
-    private static $config;
+    protected static $config;
 
     /**
      * Vicky constructor.
@@ -38,6 +38,9 @@ class Vicky
      */
     public static function getChannelByProject($projectName)
     {
+        /**
+         * Check for the required key in the config
+         */
         if(empty(self::$config['jiraToSlackMapping']) || !is_array(self::$config['jiraToSlackMapping'])) {
             return null;
         }
@@ -46,8 +49,14 @@ class Vicky
 
         $channel = null;
 
+        /**
+         * Check for a key corresponding to the name of the project
+         */
         if (array_key_exists($projectName, $jiraToSlackMapping)) {
             $channel = $jiraToSlackMapping[$projectName];
+        /**
+         * Check for a key with a default value
+         */
         } elseif (array_key_exists('*', $jiraToSlackMapping)) {
             $channel = $jiraToSlackMapping['*'];
         }

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * This file contains example config code for vicky.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -18,7 +18,7 @@ return [
         'auth' => 'secret key for slack bot if needed'
     ],
     'jiraToSlackMapping' => [
-        'Project name' => '#channel',
-        '*'            => '#defaultChannel'
+        'ProjectName' => '#channelName',
+        '*'           => '#defaultChannelName'
     ]
 ];

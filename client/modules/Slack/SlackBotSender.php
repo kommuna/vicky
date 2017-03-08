@@ -34,15 +34,23 @@ class SlackBotSender
     protected $authKey;
 
     /**
+     * Timeout of curl request
+     *
+     * @var
+     */
+    protected $curlTimeout;
+
+    /**
      * SlackWebhookSender constructor.
      * 
      * @param string $slackBotUrl slack bot webserver host url
      * @param null   $authKey        slack bot webserver secret key
      */
-    public function __construct($slackBotUrl, $authKey = null)
+    public function __construct($slackBotUrl, $authKey = '', $curlTimeout = 0)
     {
         $this->setSlackBotUrl($slackBotUrl);
         $this->setAuthKey($authKey);
+        $this->setCurlTimeout($curlTimeout);
     }
 
     /**
@@ -62,6 +70,14 @@ class SlackBotSender
     }
 
     /**
+     * @param $curlTimeout
+     */
+    public function setCurlTimeout($curlTimeout)
+    {
+        $this->curlTimeout = $curlTimeout;
+    }
+
+    /**
      * @return mixed
      */
     public function getSlackBotUrl()
@@ -76,20 +92,28 @@ class SlackBotSender
     {
         return $this->authKey;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCurlTimeout()
+    {
+        return $this->curlTimeout;
+    }
     
     /**
      * Initialize slack bot client or return if already initialized
      *
      * @return SlackBotSender
      */
-    public static function getInstance($slackBotUrl = null, $authKey = null)
+    public static function getInstance($slackBotUrl = '', $authKey = '', $curlTimeout = 0)
     {
         if (!self::$botClient) {
             if (!$slackBotUrl) {
                 throw new SlackBotSenderException("Slack bot url must be defined!");
             }
 
-            self::$botClient = new self($slackBotUrl, $authKey);
+            self::$botClient = new self($slackBotUrl, $authKey, $curlTimeout);
         }
         
         return self::$botClient;
@@ -97,7 +121,7 @@ class SlackBotSender
 
     /**
      * Send HTTP POST request to slack bot to send in $channel
-     * if $channel not defined then Request will not be sent
+     * if $channel empty then Request will not be sent
      *
      * @param string $channel  slack channel name (with '#' symbol)
      * @param string $message  message text
@@ -128,7 +152,7 @@ class SlackBotSender
 
     /**
      * Send HTTP POST request to slack bot to send in private chat to user personally
-     * if $userName not defined then Request will not be sent
+     * if $userName empty then Request will not be sent
      *
      * @param string $userName slack username (without '@' symbol)
      * @param string $message  message text
@@ -174,7 +198,8 @@ class SlackBotSender
             CURLOPT_URL            => $this->slackBotUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => http_build_query($slackRequest)
+            CURLOPT_POSTFIELDS     => http_build_query($slackRequest),
+            CURLOPT_CONNECTTIMEOUT => $this->curlTimeout
         ]);
 
         $response = curl_exec($curl);
@@ -186,7 +211,7 @@ class SlackBotSender
         }
 
         if (trim($response) != "Ok") {
-            throw new SlackBotSenderException("Bot response: {$response}");
+            throw new SlackBotSenderException("Bot error response: {$response}");
         }
 
         return true;

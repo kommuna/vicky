@@ -14,8 +14,9 @@ return [
     'timeZone'         => 'Your/TimeZone',
     'loggerDebugLevel' => true/false,
     'curlOpt' => [
-        'url'  => 'http://url were you host slack bot:port',
-        'auth' => 'secret key for slack bot if needed'
+        'url'     => 'http://url were you host slack bot:port',
+        'auth'    => 'secret key for slack bot if needed',
+        'timeout' => 0
     ],
     'jiraToSlackMapping' => [
         'ProjectName' => '#channelName',

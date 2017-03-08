@@ -46,7 +46,8 @@ $log->info("The script ".__FILE__." started.");
 
 SlackBotSender::getInstance(
     $config['curlOpt']['url'],
-    $config['curlOpt']['auth']
+    $config['curlOpt']['auth'],
+    $config['curlOpt']['timeout']
 );
 
 $jiraWebhook = new JiraWebhook();

@@ -17,44 +17,64 @@ class SlackBotSender
     /**
      * @var
      */
-    private static $botClient;
+    protected static $botClient;
 
     /**
      * Slack bot webserver host URL
      *
      * @var
      */
-    protected static $slackBotUrl;
+    protected $slackBotUrl;
 
     /**
      * Slack bot secret key
      *
      * @var null
      */
-    protected static $auth;
+    protected $authKey;
 
     /**
      * SlackWebhookSender constructor.
      * 
      * @param string $slackBotUrl slack bot webserver host url
-     * @param null   $auth        slack bot webserver secret key
+     * @param null   $authKey        slack bot webserver secret key
      */
-    public function __construct($slackBotUrl, $auth = null)
+    public function __construct($slackBotUrl, $authKey = null)
     {
-        self::$slackBotUrl = $slackBotUrl;
-        self::$auth        = $auth;
+        $this->setSlackBotUrl($slackBotUrl);
+        $this->setAuthKey($authKey);
     }
 
     /**
-     * Set configs like slack bot host url and secret key
-     * 
-     * @param string $slackBotUrl host URL
-     * @param null   $auth        secret key
+     * @param $slackBotUrl
      */
-    public static function setConfigs($slackBotUrl, $auth = null)
+    public function setSlackBotUrl($slackBotUrl)
     {
-        self::$slackBotUrl = $slackBotUrl;
-        self::$auth        = $auth;
+        $this->slackBotUrl = $slackBotUrl;
+    }
+
+    /**
+     * @param $authKey
+     */
+    public function setAuthKey($authKey)
+    {
+        $this->authKey = $authKey;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlackBotUrl()
+    {
+        return $this->slackBotUrl;
+    }
+
+    /**
+     * @return null
+     */
+    public function getAuthKey()
+    {
+        return $this->authKey;
     }
     
     /**
@@ -62,10 +82,14 @@ class SlackBotSender
      *
      * @return SlackBotSender
      */
-    public static function getInstance()
+    public static function getInstance($slackBotUrl = null, $authKey = null)
     {
         if (!self::$botClient) {
-            self::$botClient = new self(self::$slackBotUrl, self::$auth);
+            if (!$slackBotUrl) {
+                throw new SlackBotSenderException("Slack bot url must be defined!");
+            }
+
+            self::$botClient = new self($slackBotUrl, $authKey);
         }
         
         return self::$botClient;
@@ -73,6 +97,7 @@ class SlackBotSender
 
     /**
      * Send HTTP POST request to slack bot to send in $channel
+     * if $channel not defined then Request will not be sent
      *
      * @param string $channel  slack channel name (with '#' symbol)
      * @param string $message  message text
@@ -89,7 +114,7 @@ class SlackBotSender
         $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
 
         $slackRequest = [
-            'auth'    => self::$auth,
+            'auth'    => $this->authKey,
             'name'    => $webhookName,
             'payload' => json_encode([
                 "type"    => "message",
@@ -103,6 +128,7 @@ class SlackBotSender
 
     /**
      * Send HTTP POST request to slack bot to send in private chat to user personally
+     * if $userName not defined then Request will not be sent
      *
      * @param string $userName slack username (without '@' symbol)
      * @param string $message  message text
@@ -117,7 +143,7 @@ class SlackBotSender
         }
 
         $slackRequest = [
-            'auth'    => self::$auth,
+            'auth'    => $this->authKey,
             'name'    => $webhookName,
             'payload' => json_encode([
                 "type"    => "message",
@@ -145,24 +171,23 @@ class SlackBotSender
         }
         
         curl_setopt_array($curl, [
-            CURLOPT_URL            => self::$slackBotUrl,
+            CURLOPT_URL            => $this->slackBotUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query($slackRequest)
         ]);
 
         $response = curl_exec($curl);
-
         $error = curl_error($curl);
+        curl_close($curl);
+
         if ($error) {
-            throw new SlackBotSenderException($error);
+            throw new SlackBotSenderException("cUrl error: {$error}");
         }
 
         if (trim($response) != "Ok") {
-            throw new SlackBotSenderException($response);
+            throw new SlackBotSenderException("Bot response: {$response}");
         }
-
-        curl_close($curl);
 
         return true;
     }

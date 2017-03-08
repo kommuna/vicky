@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of issue with type 'Urgent bug' into string message.
+ * JiraWebhookData converter of issue with type 'Urgent bug' into formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

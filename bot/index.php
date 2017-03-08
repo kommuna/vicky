@@ -1,6 +1,7 @@
 <?php
 /**
- * Main module of slack bot lib, that contains bot configuration and launch code.
+ * Main module of slack bot lib, that contains bot configuration (like setting token), loading bot command and webhooks,
+ * enabling the web server, that will listen incoming HTTP POST requests and running the bot.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

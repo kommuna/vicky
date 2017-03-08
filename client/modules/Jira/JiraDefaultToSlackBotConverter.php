@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of default messages into string message.
+ * JiraWebhookData converter of default messages into formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

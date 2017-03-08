@@ -130,7 +130,7 @@ return [
        /* Don't send notifications by tickets by Jira project 'DUMP' to Slack */
        'DUMB' => false
        /* Don't send notifications by other Jira projects to Slack */
-       '*' => 'false'
+       '*' => false
    ]
 ];
 ```

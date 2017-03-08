@@ -1,7 +1,8 @@
 <?php
 /**
- * Main module of vicky project, that contains events with listeners, receiving data from JIRA logic, converter
- * declarations, and can sends messages to slack by slack bot client.
+ * Main module of vicky project, that receives data from JIRA webhook
+ * https://developer.atlassian.com/jiradev/jira-apis/webhooks), contains jiraWebhook listeners for events, that sends
+ * messages to slack by slack client and contains converters declaration.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -43,7 +44,7 @@ $start = microtime(true);
 
 $log->info("The script ".__FILE__." started.");
 
-SlackBotSender::setConfigs(
+SlackBotSender::getInstance(
     $config['curlOpt']['url'],
     $config['curlOpt']['auth']
 );

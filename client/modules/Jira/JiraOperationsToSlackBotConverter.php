@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of issue with type 'Operations' into string message.
+ * JiraWebhookData converter of issue with type 'Operations' into formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

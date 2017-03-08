@@ -70,32 +70,71 @@ SlackBotSender::getInstance()->toUser('userNickname', 'message');
 ```
 
 ##Jira to Slack mapping
-Vicky allow to configure mapping of JIRA projects to Slack channels. Write following example code in vicky config file
+Vicky allow to configure mapping of JIRA projects to Slack channels. E.g. to send all tickets of project FOO to slack 
+channel #bar:
+
 (/etc/vicky/config.php):
 
 ```
 <?php
 return [
-   /* Other settings */,
+   /* Mapping Jira projects to Slack channels */
    'jiraToSlackMapping' => [
-       'Your project name' => '#channelName'
+       /* Send tickets by Jira project 'FOO' to Slack channel '#bar' */
+       'FOO' => '#bar'
    ]
 ];
 ```
 
-To configure default channel use following example code:
+To configure default channel use follow config:
 
 ```
 <?php
 return [
-   /* Other settings */,
+   /* Mapping Jira projects to Slack channels */
    'jiraToSlackMapping' => [
+       /* Send notifications by tickets by Jira project 'FOO' to Slack channel '#bar' */
+       'FOO' => '#bar',
+       /* Send notifications by other Jira projects to Slack channel '#channelName'*/
        '*' => '#channelName'
    ]
 ];
 ```
 
-In that case all messages from projects, that don't have any mapping setting will be sending in default channel. If
-project does not have mapping settings and default channel not configured, messages will not send.
+To disable notifications for project set value by project key to `false`:
+
+```
+<?php
+return [
+   /* Mapping Jira projects to Slack channels */
+   'jiraToSlackMapping' => [
+       /* Send notifications by tickets by Jira project 'FOO' to Slack channel '#bar' */
+       'FOO' => '#bar',
+       /* Don't send notifications by tickets by Jira project 'DUMP' to Slack */
+       'DUMB' => false
+       /* Send notifications by other Jira projects to Slack channel '#channelName'*/
+       '*' => '#channelName'
+   ]
+];
+```
+
+To disable notifications for *other* projects set value by '*' key to `false`:
+
+```
+<?php
+return [
+   /* Mapping Jira projects to Slack channels */
+   'jiraToSlackMapping' => [
+       /* Send notifications by tickets by Jira project 'FOO' to Slack channel '#bar' */
+       'FOO' => '#bar',
+       /* Don't send notifications by tickets by Jira project 'DUMP' to Slack */
+       'DUMB' => false
+       /* Don't send notifications by other Jira projects to Slack */
+       '*' => 'false'
+   ]
+];
+```
+
+If project does not have mapping settings and default channel not configured, messages will not send.
 
 Also, to send messages bot must be invited to the channel.

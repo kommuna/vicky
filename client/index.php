@@ -45,9 +45,9 @@ $start = microtime(true);
 $log->info("The script ".__FILE__." started.");
 
 SlackBotSender::getInstance(
-    $config['curlOpt']['url'],
-    $config['curlOpt']['auth'],
-    $config['curlOpt']['timeout']
+    $config['slackBot']['url'],
+    $config['slackBot']['auth'],
+    $config['slackBot']['timeout']
 );
 
 $jiraWebhook = new JiraWebhook();

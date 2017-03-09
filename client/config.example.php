@@ -13,10 +13,11 @@ return [
     'error_log'        => '/path/to/log/file.log',
     'timeZone'         => 'Your/TimeZone',
     'loggerDebugLevel' => true/false,
-    'curlOpt' => [
+    'slackBot' => [
         'url'     => 'http://url were you host slack bot:port',
         'auth'    => 'secret key for slack bot if needed',
-        'timeout' => 0
+        /* The timeout value is specified in seconds */
+        'timeout' => 10
     ],
     'jiraToSlackMapping' => [
         'ProjectName' => '#channelName',

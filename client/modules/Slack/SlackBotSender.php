@@ -38,7 +38,7 @@ class SlackBotSender
      *
      * @var
      */
-    protected $curlTimeout;
+    protected $slackBotTimeout;
 
     /**
      * SlackWebhookSender constructor.
@@ -46,11 +46,11 @@ class SlackBotSender
      * @param string $slackBotUrl slack bot webserver host url
      * @param null   $authKey        slack bot webserver secret key
      */
-    public function __construct($slackBotUrl, $authKey = '', $curlTimeout = 0)
+    public function __construct($slackBotUrl, $authKey = '', $slackBotTimeout = 0)
     {
         $this->setSlackBotUrl($slackBotUrl);
         $this->setAuthKey($authKey);
-        $this->setCurlTimeout($curlTimeout);
+        $this->setSlackBotTimeout($slackBotTimeout);
     }
 
     /**
@@ -70,11 +70,11 @@ class SlackBotSender
     }
 
     /**
-     * @param $curlTimeout
+     * @param $slackBotTimeout
      */
-    public function setCurlTimeout($curlTimeout)
+    public function setSlackBotTimeout($slackBotTimeout)
     {
-        $this->curlTimeout = $curlTimeout;
+        $this->slackBotTimeout = $slackBotTimeout;
     }
 
     /**
@@ -96,9 +96,9 @@ class SlackBotSender
     /**
      * @return mixed
      */
-    public function getCurlTimeout()
+    public function getSlackBotTimeout()
     {
-        return $this->curlTimeout;
+        return $this->slackBotTimeout;
     }
     
     /**
@@ -106,14 +106,14 @@ class SlackBotSender
      *
      * @return SlackBotSender
      */
-    public static function getInstance($slackBotUrl = '', $authKey = '', $curlTimeout = 0)
+    public static function getInstance($slackBotUrl = '', $authKey = '', $slackBotTimeout = 0)
     {
         if (!self::$botClient) {
             if (!$slackBotUrl) {
                 throw new SlackBotSenderException("Slack bot url must be defined!");
             }
 
-            self::$botClient = new self($slackBotUrl, $authKey, $curlTimeout);
+            self::$botClient = new self($slackBotUrl, $authKey, $slackBotTimeout);
         }
         
         return self::$botClient;
@@ -199,7 +199,7 @@ class SlackBotSender
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query($slackRequest),
-            CURLOPT_CONNECTTIMEOUT => $this->curlTimeout
+            CURLOPT_TIMEOUT        => $this->slackBotTimeout
         ]);
 
         $response = curl_exec($curl);

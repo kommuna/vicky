@@ -22,7 +22,7 @@ Configure server that will listen JIRA webhook, as example use this nginx and ph
 server {
         listen          80;
         server_name     your.host.url;
-        root            .../vicky/client;
+        root            .../vicky/src;
         index           index.php;
         try_files       $uri $uri/ /index.php?$query_string;
         error_page  405 =200 $uri;

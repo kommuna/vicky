@@ -50,14 +50,12 @@ class Vicky
         $channel = null;
 
         /**
-         * Check for a key corresponding to the name of the project, and stores in the $channel the name of the channel
-         * to which messages will be sent by JIRA $projectName
+         * Get Slack channel name by Jira project name (Jira project name can be empty)
          */
         if (array_key_exists($projectName, $jiraToSlackMapping)) {
             $channel = $jiraToSlackMapping[$projectName];
         /**
-         * Check for a key with a '*' value, and stores in the $channel the name of the channel to which messages will
-         * be sent by other JIRA projects
+         * Get Slack channel for Jira projects by default
          */
         } elseif (array_key_exists('*', $jiraToSlackMapping)) {
             $channel = $jiraToSlackMapping['*'];

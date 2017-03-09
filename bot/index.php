@@ -41,7 +41,7 @@ try {
     $log->error($e->getMessage());
 }
 
-$bot->enableWebserver(8080, $config['botAuth']);
+$bot->enableWebserver($config['botPort'], $config['botAuth']);
 
 try {
     $bot->run();

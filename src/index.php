@@ -80,6 +80,8 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
+ * Custom *
+ *
  * Send message to slack general channel at creating issue with type 'Operations'
  */
 $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
@@ -95,7 +97,10 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 });
 
 /**
- * Send message to slack general channel at creating issue with type 'Urgent bug'
+ * Custom *
+ *
+ * Send a message to the project's channel when an issue with
+ * type 'Urgent bug' was created
  */
 $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 {
@@ -110,7 +115,8 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 });
 
 /**
- * Send message to user in slack if created issue was assigned to him
+ * Send a message to the user in slack if a newly created issue
+ * was assigned to them
  */
 $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 {
@@ -122,8 +128,10 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 });
 
 /**
- * Send message to slack general channel if issue with type 'Operations'
- * get status 'Resolved'
+ *  * Custom *
+ *
+ * Send a message to the project channel if an issue with type
+ * 'Operations' gets status 'Resolved'
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
@@ -138,7 +146,9 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 /**
- * Send message to slack general channel if issue with type 'Urgent bug'
+ * Custom *
+ *
+ * Send a message to slack project channel if an issue with type 'Urgent bug'
  * get status 'Resolved' or get commented
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
@@ -154,7 +164,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 /**
- * Send message to user in slack if any issue get assigned to him
+ * Send a message to user in slack if an issue gets assigned to them
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
@@ -169,8 +179,8 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 /**
- * Send message to user in slack if someone create comment in issue that
- * assigned to him
+ * Send a message to user in slack if someone comments on an issue
+ * assigned to them
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
@@ -185,7 +195,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 /**
- * Send message to user in slack if someone make reference to him in created comment
+ * Send message to user in slack if someone mentions them in a new comment
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
@@ -208,7 +218,7 @@ try {
     $data = stream_get_contents($f);
 
     if (!$data) {
-        $log->error('There is not data in the Jira webhook');
+        $log->error('There is no data in the Jira webhook');
         throw new JiraWebhookException('There is no data in the Jira webhook');
     }
 

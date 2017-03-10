@@ -138,3 +138,30 @@ return [
 If project does not have mapping settings and default channel not configured, messages will not send.
 
 Also, to send messages bot must be invited to the channel.
+
+## Events
+
+Currently there's support for the following events:
+
+- Issue created:  
+        - If the issue is a blocker a message is sent in the project's channel  
+        - A message is sent to the user the issue is assigned to.
+  
+- Issue updated  
+        - If an issue gets assigned - a message is sent to the assignee
+        
+- Comments  
+        - Send message to a user's channel if someone mentions them in a new comment  
+        - Send a message to user in slack if someone comments on an issue assigned to them
+        
+- Custom events (we will be moving this section)  
+        - If an issue with type 'Operations' was created a message is set to the project's channel    
+        - If an issue with type 'Urgent bug' was created a message is set to the project's channel    
+        - Is an issue with type 'Operations' was resolved - a message is set to the project's channel  
+        - Is an issue with type 'Urgent Bug' was resolved or commented - a message is set to the project's channel  
+        - Send message to a user's channel if someone mentions them in a new comment  
+        
+        
+        
+        
+        

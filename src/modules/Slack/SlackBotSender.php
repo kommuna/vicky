@@ -100,11 +100,15 @@ class SlackBotSender
     {
         return $this->slackBotTimeout;
     }
-    
+
     /**
      * Initialize slack bot client or return if already initialized
      *
+     * @param string $slackBotUrl
+     * @param string $authKey
+     * @param int $slackBotTimeout
      * @return SlackBotSender
+     * @throws SlackBotSenderException
      */
     public static function getInstance($slackBotUrl = '', $authKey = '', $slackBotTimeout = 0)
     {

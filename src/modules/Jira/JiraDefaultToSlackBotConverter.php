@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of default messages into formatted string message.
+ * JiraWebhookData converter of default messages into a formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -17,8 +17,8 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into message (string)
-     * 
-     * @param JiraWebhookData $data parsed data from JIRA
+     *
+     * @param JiraWebhookData $data - Parsed data from JIRA
      * 
      * @return string
      */

@@ -125,11 +125,11 @@ class SlackBotSender
 
     /**
      * Send HTTP POST request to slack bot to send in $channel
-     * if $channel empty then Request will not be sent
+     * if $channel is empty then Request will not be sent
      *
-     * @param string $channel  slack channel name (with '#' symbol)
+     * @param string $channel  slack channel name (including or not the '#' symbol)
      * @param string $message  message text
-     * @param string $hookName slack bot hook which accepts requests
+     * @param string $webhookName slack bot hook which accepts requests
      *
      * @return bool
      */
@@ -155,12 +155,12 @@ class SlackBotSender
     }
 
     /**
-     * Send HTTP POST request to slack bot to send in private chat to user personally
-     * if $userName empty then Request will not be sent
+     * Send HTTP POST request to slack bot to send in private chat to user directly
+     * if $userName is empty then Request will not be sent
      *
      * @param string $userName slack username (without '@' symbol)
      * @param string $message  message text
-     * @param string $hookName slack bot hook which accepts requests
+     * @param string $webhookName slack bot hook which accepts requests
      * 
      * @return bool
      */

@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of issue with type 'Urgent bug' into formatted string message.
+ * JiraWebhookData converter of issue with type 'Urgent bug' into a formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -10,15 +10,15 @@
  */
 namespace Vicky\src\modules\Jira;
 
-use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
+use JiraWebhook\JiraWebhookDataConverter;
 
 class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into message (string)
      *
-     * @param JiraWebhookData $data parsed data from JIRA
+     * @param JiraWebhookData $data - Parsed data from JIRA
      * 
      * @return string
      */
@@ -29,7 +29,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
         $comment      = $issue->getIssueComments()->getLastComment();
 
         /**
-         * If issue dont have comments
+         * Issue doesn't have comments and is not assigned to a user
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(
@@ -41,9 +41,9 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSummary()
                 ]
             );
-            /**
-             * If issue not assigned to any user
-             */
+        /**
+         * Issue is not assigned to a user
+         */
         } elseif (!$assigneeName) {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
@@ -56,9 +56,9 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
                     $comment->getBody()
                 ]
             );
-            /**
-             * If issue dont have comments and not assigned to any user
-             */
+        /**
+         * Issue doesn't have any comments
+         */
         } elseif (!$comment) {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ @%s",
@@ -70,9 +70,9 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
                     $assigneeName
                 ]
             );
-            /**
-             * Default message
-             */
+        /**
+         * Default message
+         */
         } else {
             $message = vsprintf(
                 "⚡ %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",

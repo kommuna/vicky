@@ -148,6 +148,7 @@ Currently there's support for the following events:
         - A message is sent to the user the issue is assigned to.
   
 - Issue updated  
+        - If the issue is a blocker a message is sent in the project's channel  
         - If an issue gets assigned - a message is sent to the assignee
         
 - Comments  

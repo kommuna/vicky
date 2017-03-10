@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of issue with priority 'Blocker' into formatted string message.
+ * JiraWebhookData converter of issues with priority 'Blocker' into a formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -10,15 +10,15 @@
  */
 namespace Vicky\src\modules\Jira;
 
-use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
+use JiraWebhook\JiraWebhookDataConverter;
 
 class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into message (string)
      *
-     * @param JiraWebhookData $data parsed data from JIRA
+     * @param JiraWebhookData $data - Parsed data from JIRA
      * 
      * @return string
      */

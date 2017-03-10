@@ -1,6 +1,7 @@
 <?php
 /**
- * Slack bot webhook class, that receives payload data from HTTP POST request and send it to slack channel.
+ * Slack bot webhook class, that receives payload data from
+ * HTTP POST request and sends it to a group Slack channel.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -23,9 +24,9 @@ class ToChannelWebhook extends BaseWebhook
     }
 
     /**
-     * Send data from recieved HTTP POST request to slack
+     * Send data from received HTTP POST request to slack
      *
-     * @param array $payload data array
+     * @param array $payload Data array
      * @param       $context
      */
     public function execute($payload, $context)

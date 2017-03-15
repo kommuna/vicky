@@ -23,6 +23,5 @@ date_default_timezone_set('Europe/Moscow');
 $blockers = new BlockersIssueFile($config['pathToBlockersIssueFile']);
 
 foreach (glob("{$config['pathToBlockersIssueFile']}*") as $file) {
-    $arr = $blockers->get($file);
-    echo $arr[1];
+    echo print_r($blockers->get($file), true);
 }

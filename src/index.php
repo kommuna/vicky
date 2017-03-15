@@ -68,19 +68,26 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 /**
  * Send message to slack general channel at creating or any change of Blocker issue
  */
-$jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
+$jiraWebhook->addListener('*', function($e, $data)
 {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
-            $blockersIssueFile->put($data);
-
             SlackBotSender::getInstance()->toChannel(
                 Vicky::getChannelByProject($issue->getProjectName()), 
                 JiraWebhook::convert('JiraBlockerToSlack', $data)
             );
         }
+    }
+});
+
+$jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($blockersIssueFile)
+{
+    $issue = $data->getIssue();
+
+    if ($issue->isPriorityBlocker() && $data->isIssueCommented()) {
+        $blockersIssueFile->put($data);
     }
 });
 

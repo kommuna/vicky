@@ -93,7 +93,7 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 {
     $issue = $data->getIssue();
 
-    if ($issue->isTypeOprations()) {
+    if ($issue->isTypeOperations()) {
         SlackBotSender::getInstance()->toChannel(
             Vicky::getChannelByProject($issue->getProjectName()), 
             JiraWebhook::convert('JiraOperationsToSlack', $data)
@@ -142,7 +142,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
     $issue = $data->getIssue();
 
-    if ($issue->isTypeOprations() && $issue->isStatusResolved()) {
+    if ($issue->isTypeOperations() && $issue->isStatusResolved()) {
         SlackBotSender::getInstance()->toChannel(
             Vicky::getChannelByProject($issue->getProjectName()), 
             JiraWebhook::convert('JiraOperationsToSlack', $data)

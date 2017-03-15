@@ -32,7 +32,7 @@ class BlockersIssueFile
         $date = (new DateTime())->add(new DateInterval('PT24H'));
         return file_put_contents(
             "{$this->pathToFolder}{$data->getIssue()->getKey()}",
-            "{$data->getRawData()} {$date->format('Y-m-d\TH:i:sP')}"
+            print_r($data->getRawData(),true)." {$date->format('Y-m-d\TH:i:sP')}"
         );
     }
 

@@ -22,9 +22,10 @@ class BlockersIssueFile
         $this->pathToFolder = substr($pathToFolder, -1) === '/' ? $pathToFolder : "{$pathToFolder}/";
     }
 
-    public function get()
+    public function get($pathToFile)
     {
-        
+        $data = file_get_contents($pathToFile);
+        return explode(' ', $data);
     }
 
     public function put($data)

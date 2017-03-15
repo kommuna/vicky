@@ -22,5 +22,6 @@ return [
     'jiraToSlackMapping' => [
         'ProjectName' => '#channelName',
         '*'           => '#defaultChannelName'
-    ]
+    ],
+    'pathToBlockersIssueFile' => '/path/to/blockers/issue/file/folder/'
 ];

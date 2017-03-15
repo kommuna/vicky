@@ -10,11 +10,15 @@
  */
 namespace Vicky\src\modules;
 
+use DateTime;
+
 class BlockersIssueFile
 {
-    public function __construct()
-    {
+    protected $pathToFolder;
 
+    public function __construct($pathToFolder)
+    {
+        $this->pathToFolder = $pathToFolder;
     }
 
     public function get()
@@ -22,9 +26,10 @@ class BlockersIssueFile
 
     }
 
-    public function put()
+    public function put($data)
     {
-
+        $date = (new DateTime())->add(new DateInterval('PT24H'));
+        return file_put_contents("{$this->pathToFolder}{$data->getIssue()->getKey()}", "{$data} {$date}");
     }
 
     public function delete()

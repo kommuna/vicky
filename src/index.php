@@ -15,6 +15,7 @@ namespace Vicky;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use Vicky\src\modules\BlockersIssueFile;
 use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraOperationsToSlackBotConverter;
@@ -54,6 +55,8 @@ $jiraWebhook = new JiraWebhook();
 
 $vicky = new Vicky($config);
 
+$blockersIssueFile = new BlockersIssueFile($config['pathToBlockersIssueFile']);
+
 /**
  * Set converters
  */
@@ -65,12 +68,14 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 /**
  * Send message to slack general channel at creating or any change of Blocker issue
  */
-$jiraWebhook->addListener('*', function($e, $data)
+$jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
 {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
+            $blockersIssueFile->put($data);
+
             SlackBotSender::getInstance()->toChannel(
                 Vicky::getChannelByProject($issue->getProjectName()), 
                 JiraWebhook::convert('JiraBlockerToSlack', $data)

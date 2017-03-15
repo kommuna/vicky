@@ -30,7 +30,7 @@ class BlockersIssueFile
     public function put($data)
     {
         $date = (new DateTime())->add(new DateInterval('PT24H'));
-        return file_put_contents("{$this->pathToFolder}{$data->getIssue()->getKey()}", "{$data} {$date}");
+        return file_put_contents("{$this->pathToFolder}{$data->getIssue()->getKey()}", "{$data->getRawData()} {$date}");
     }
 
     public function delete()

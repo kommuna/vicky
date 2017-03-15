@@ -74,7 +74,7 @@ $jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
-            $blockersIssueFile->put($data->getRawData());
+            $blockersIssueFile->put($data);
 
             SlackBotSender::getInstance()->toChannel(
                 Vicky::getChannelByProject($issue->getProjectName()), 

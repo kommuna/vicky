@@ -31,10 +31,13 @@ class BlockersIssueFile
 
     public function put($data)
     {
+        $issueKey = $data->getIssue()->getKey();
+        
+        $data = $data->getRawData();
         $data['nextNotification'] = (new DateTime())->add(new DateInterval('PT24H'))->format('Y-m-d\TH:i:sP');
         $data = json_encode($data);
 
-        return file_put_contents("{$this->pathToFolder}{$data->getIssue()->getKey()}", $data);
+        return file_put_contents("{$this->pathToFolder}{$issueKey}", $data);
     }
 
     public function delete()

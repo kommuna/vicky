@@ -19,17 +19,18 @@ class BlockersIssueFile
 
     public function __construct($pathToFolder)
     {
-        $this->pathToFolder = $pathToFolder;
+        $this->pathToFolder = substr($pathToFolder, -1) === '/' ? $pathToFolder : "{$pathToFolder}/";
     }
 
     public function get()
     {
-
+        
     }
 
     public function put($data)
     {
         $date = (new DateTime())->add(new DateInterval('PT24H'));
+
         return file_put_contents(
             "{$this->pathToFolder}{$data->getIssue()->getKey()}",
             print_r($data->getRawData(),true)." {$date->format('Y-m-d\TH:i:sP')}"

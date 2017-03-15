@@ -25,7 +25,7 @@ $config = require '/etc/slackBot/config.php';
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
-date_default_timezone_set('Europe/Moscow');
+date_default_timezone_set($config['timeZone']);
 
 $log = new Logger('vicky');
 $log->pushHandler(new StreamHandler($config['error_log'], Logger::DEBUG));

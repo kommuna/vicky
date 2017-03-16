@@ -54,20 +54,16 @@ class VickyClient
             CURLOPT_URL            => $this->vickyUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => http_build_query($data),
+            CURLOPT_POSTFIELDS     => json_encode($data),
             CURLOPT_TIMEOUT        => $this->vickyTimeout
         ]);
 
-        $response = curl_exec($curl);
+        curl_exec($curl);
         $error = curl_error($curl);
         curl_close($curl);
 
         if ($error) {
             throw new VickyClientException("cUrl error: {$error}");
-        }
-
-        if (trim($response) != "Ok") {
-            throw new VickyClientException("Vicky error response: {$response}");
         }
 
         return true;

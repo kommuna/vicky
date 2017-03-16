@@ -10,9 +10,13 @@
  */
 namespace Vicky;
 
-use Vicky\src\modules\BlockersIssueFile;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use DateTime;
 use DateInterval;
+
+use Vicky\src\modules\BlockersIssueFile;
+use Vicky\src\modules\VickyClient;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';
@@ -22,17 +26,35 @@ ini_set('error_log', $config['error_log']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set('Europe/Moscow');
 
+$log = new Logger('vicky');
+$log->pushHandler(
+    new StreamHandler(
+        $config['error_log'],
+        $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
+    )
+);
+
+$start = microtime(true);
+
+$log->info("The script ".__FILE__." started.");
+
 $blockers = new BlockersIssueFile($config['pathToBlockersIssueFile']);
+
+$vickyClient = new VickyClient(
+    $config['vickyClient']['url'],
+    $config['vickyClient']['timeout']
+);
 
 foreach (glob("{$blockers->getPathToFolder()}*") as $pathToFile) {
     $data = $blockers->get($pathToFile);
 
     if (strtotime('now') >= strtotime($data['nextNotification'])) {
-        //Send request
+        $data['webhookEvent'] = 'blocker:notification';
+        $vickyClient->send(json_encode($data));
 
         $data['nextNotification'] = (new DateTime())->add(new DateInterval("PT6H"))->format('Y-m-d\TH:i:sP');
         $blockers->put($data);
     }
-
-    //echo print_r($blockers->get($pathToFile), true);
 }
+
+$log->info("Script finished in ".(microtime(true) - $start)." sec.");

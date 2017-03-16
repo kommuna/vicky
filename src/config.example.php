@@ -19,6 +19,11 @@ return [
         /* The time-out of requests to the bot is specified in seconds */
         'timeout' => 10
     ],
+    'vickyClient' => [
+        'url' => 'http://url were you host vicky/',
+        /* The time-out of requests to the bot is specified in seconds */
+        'timeout' => 10
+    ],
     'jiraToSlackMapping' => [
         'ProjectName' => '#channelName',
         '*'           => '#defaultChannelName'

@@ -96,6 +96,16 @@ $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($blocke
     }
 });
 
+$jiraWebhook->addListener('blocker:notification', function($e, $data)
+{
+    $issue = $data->getIssue();
+
+    SlackBotSender::getInstance()->toChannel(
+        Vicky::getChannelByProject($issue->getProjectName()),
+        JiraWebhook::convert('JiraBlockerToSlack', $data)
+    );
+});
+
 /**
  * Custom *
  *

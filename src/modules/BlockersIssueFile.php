@@ -22,26 +22,23 @@ class BlockersIssueFile
         $this->pathToFolder = substr($pathToFolder, -1) === '/' ? $pathToFolder : "{$pathToFolder}/";
     }
 
+    public function getPathToFolder()
+    {
+        return $this->pathToFolder;
+    }
+
     public function get($pathToFile)
     {
-        $data = file_get_contents($pathToFile);
-        
-        return json_decode($data, true);
+        return json_decode(file_get_contents($pathToFile), true);
     }
 
     public function put($data)
     {
-        $issueKey = $data->getIssue()->getKey();
-        
-        $data = $data->getRawData();
-        $data['nextNotification'] = (new DateTime())->add(new DateInterval('PT24H'))->format('Y-m-d\TH:i:sP');
-        $data = json_encode($data);
-
-        return file_put_contents("{$this->pathToFolder}{$issueKey}", $data);
+        return file_put_contents("{$this->pathToFolder}{$data['issue']['key']}", json_encode($data));
     }
 
-    public function delete()
+    public function delete($pathToFile)
     {
-        
+        return unlink($pathToFile);
     }
 }

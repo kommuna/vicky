@@ -14,6 +14,8 @@ namespace Vicky;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use DateTime;
+use DateInterval;
 
 use Vicky\src\modules\BlockersIssueFile;
 use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
@@ -87,7 +89,10 @@ $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($blocke
     $issue = $data->getIssue();
 
     if ($issue->isPriorityBlocker() && $data->isIssueCommented()) {
-        $blockersIssueFile->put($data);
+        $rawData = $data->getRawData();
+        $rawData['nextNotification'] = (new DateTime())->add(new DateInterval("PT24H"))->format('Y-m-d\TH:i:sP');
+
+        $blockersIssueFile->put($rawData);
     }
 });
 

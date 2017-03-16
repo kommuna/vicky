@@ -11,6 +11,8 @@
 namespace Vicky;
 
 use Vicky\src\modules\BlockersIssueFile;
+use DateTime;
+use DateInterval;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';
@@ -22,6 +24,15 @@ date_default_timezone_set('Europe/Moscow');
 
 $blockers = new BlockersIssueFile($config['pathToBlockersIssueFile']);
 
-foreach (glob("{$config['pathToBlockersIssueFile']}*") as $file) {
-    echo print_r($blockers->get($file), true);
+foreach (glob("{$blockers->getPathToFolder()}*") as $pathToFile) {
+    $data = $blockers->get($pathToFile);
+
+    if (strtotime('now') >= strtotime($data['nextNotification'])) {
+        //Send request
+
+        $data['nextNotification'] = (new DateTime())->add(new DateInterval("PT6H"))->format('Y-m-d\TH:i:sP');
+        $blockers->put($data);
+    }
+
+    //echo print_r($blockers->get($pathToFile), true);
 }

@@ -50,7 +50,7 @@ foreach (glob("{$blockers->getPathToFolder()}*") as $pathToFile) {
 
     if (strtotime('now') >= strtotime($data['nextNotification'])) {
         $data['webhookEvent'] = 'blocker:notification';
-        $vickyClient->send(json_encode($data));
+        $vickyClient->send($data);
 
         $data['nextNotification'] = (new DateTime())->add(new DateInterval("PT6H"))->format('Y-m-d\TH:i:sP');
         $blockers->put($data);

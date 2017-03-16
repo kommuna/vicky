@@ -26,7 +26,7 @@ class VickyClient
 
     public function setVickyUrl($vickyUrl)
     {
-        $this->vickyURL = $vickyUrl;
+        $this->vickyUrl = $vickyUrl;
     }
 
     public function setvickyTimeout($vickyTimeout)
@@ -67,7 +67,7 @@ class VickyClient
         }
 
         if (trim($response) != "Ok") {
-            throw new VickyClientException("Bot error response: {$response}");
+            throw new VickyClientException("Vicky error response: {$response}");
         }
 
         return true;

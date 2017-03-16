@@ -10,9 +10,6 @@
  */
 namespace Vicky\src\modules;
 
-use DateTime;
-use DateInterval;
-
 class BlockersIssueFile
 {
     protected $pathToFolder;

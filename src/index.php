@@ -18,6 +18,7 @@ use DateTime;
 use DateInterval;
 
 use Vicky\src\modules\BlockersIssueFile;
+use Vicky\src\modules\Jira\JiraBlockerNotificationConverter;
 use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraOperationsToSlackBotConverter;
@@ -66,6 +67,7 @@ JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConvert
 JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
+JiraWebhook::setConverter('JiraBlockerNotification', new JiraBlockerNotificationConverter());
 
 /**
  * Send message to slack general channel at creating or any change of Blocker issue
@@ -102,7 +104,7 @@ $jiraWebhook->addListener('blocker:notification', function($e, $data)
 
     SlackBotSender::getInstance()->toUser(
         $issue->getAssignee()->getName(),
-        JiraWebhook::convert('JiraBlockerToSlack', $data)
+        JiraWebhook::convert('JiraBlockerNotification', $data)
     );
 });
 

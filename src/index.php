@@ -275,8 +275,6 @@ try {
         throw new JiraWebhookException('There is no data in the Jira webhook');
     }
 
-    error_log(print_r(json_decode($data), true));
-
     $jiraWebhook->run($data);
 } catch (\Exception $e) {
     // For convenience in local development show errors on screen directly

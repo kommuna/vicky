@@ -1,7 +1,7 @@
 <?php
 /**
  * Main module of vicky project, that receives data from JIRA webhook
- * https://developer.atlassian.com/jiradev/jira-apis/webhooks), contains jiraWebhook listeners for events, that sends
+ * (https://developer.atlassian.com/jiradev/jira-apis/webhooks), contains jiraWebhook listeners for events, that sends
  * messages to slack by slack client and contains converters declaration.
  *
  * @credits https://github.com/kommuna
@@ -86,11 +86,19 @@ $jiraWebhook->addListener('*', function($e, $data)
     }
 });
 
-$jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($blockersIssueFile)
+/*$jiraWebhook->addListener('*', function($e, $data)
+{
+    
+});*/
+
+/**
+ * Put raw data from JIRA to blockers issue file with next notification time
+ */
+$jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
 {
     $issue = $data->getIssue();
 
-    if ($issue->isPriorityBlocker() && $data->isIssueCommented()) {
+    if(($e->getName() === 'jira:issue_created' && $issue->isPriorityBlocker()) || ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && $data->isIssueCommented())) {
         $rawData = $data->getRawData();
         $rawData['nextNotification'] = (new DateTime())->add(new DateInterval("PT24H"))->format('Y-m-d\TH:i:sP');
 
@@ -98,6 +106,9 @@ $jiraWebhook->addListener('jira:issue_updated', function($e, $data) use ($blocke
     }
 });
 
+/**
+ * Send message to assignee user if blockers issue not commented more than 24 hours
+ */
 $jiraWebhook->addListener('blocker:notification', function($e, $data)
 {
     $issue = $data->getIssue();
@@ -157,7 +168,7 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 });
 
 /**
- *  * Custom *
+ * Custom *
  *
  * Send a message to the project channel if an issue with type
  * 'Operations' gets status 'Resolved'
@@ -250,6 +261,8 @@ try {
         $log->error('There is no data in the Jira webhook');
         throw new JiraWebhookException('There is no data in the Jira webhook');
     }
+
+    print_r(json_decode($data), true);
 
     $jiraWebhook->run($data);
 } catch (\Exception $e) {

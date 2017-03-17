@@ -1,6 +1,6 @@
 <?php
 /**
- * File review
+ * Vicky module, that check blockers issue files, send notification to vicky Like JIRA and store next notification time
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

@@ -1,6 +1,6 @@
 <?php
 /**
- * File review
+ * Class that send messages to vicky like JIRA
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -14,36 +14,73 @@ use Vicky\src\exceptions\VickyClientException;
 
 class VickyClient
 {
+    /**
+     * Vicky host URL
+     * 
+     * @var
+     */
     protected $vickyUrl;
 
+    /**
+     * Timeout of curl request
+     * 
+     * @var
+     */
     protected $vickyTimeout;
 
+    /**
+     * VickyClient constructor.
+     * 
+     * @param     $vickyUrl     vicky host URL
+     * @param int $vickyTimeout timeout of curl request to vicky
+     */
     public function __construct($vickyUrl, $vickyTimeout)
     {
         $this->setVickyUrl($vickyUrl);
         $this->setvickyTimeout($vickyTimeout);
     }
 
+    /**
+     * @param $vickyUrl
+     */
     public function setVickyUrl($vickyUrl)
     {
         $this->vickyUrl = $vickyUrl;
     }
 
+    /**
+     * @param $vickyTimeout
+     */
     public function setvickyTimeout($vickyTimeout)
     {
         $this->vickyTimeout = $vickyTimeout;
     }
 
+    /**
+     * @return mixed
+     */
     public function getVickyUrl()
     {
         return $this->vickyUrl;
     }
 
+    /**
+     * @return mixed
+     */
     public function getVickyTimeout()
     {
         return $this->vickyTimeout;
     }
 
+    /**
+     * Send HTTP request by curl method
+     * 
+     * @param $data array with data
+     * 
+     * @return bool
+     * 
+     * @throws VickyClientException
+     */
     public function send($data)
     {
         if (!($curl = curl_init())) {

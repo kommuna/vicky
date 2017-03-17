@@ -87,10 +87,7 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
- * Priority not blocker
- * Status Resolved
- * Status Close
- * issue deleted
+ * Delete blockers issue file if issue deleted, issue priority not Blocker, issue has status Resolved or Close
  */
 $jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
 {
@@ -100,7 +97,6 @@ $jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
         chdir($blockersIssueFile->getPathToFolder());
 
         foreach (glob("*") as $pathToFile) {
-            error_log($pathToFile);
             if ($pathToFile === $issue->getKey()) {
                 $blockersIssueFile->delete($pathToFile);
             }

@@ -96,9 +96,14 @@ $jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
 {
     $issue = $data->getIssue();
 
-    if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || !$issue->isStatusResolved() || !$issue->isStatusClose()) {
-        foreach (glob("{$blockersIssueFile->getPathToFolder()}*") as $pathToFile) {
-            $blockersIssueFile->delete($pathToFile);
+    if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || $issue->isStatusResolved() || $issue->isStatusClose()) {
+        chdir($blockersIssueFile->getPathToFolder());
+
+        foreach (glob("*") as $pathToFile) {
+            error_log($pathToFile);
+            if ($pathToFile === $issue->getKey()) {
+                $blockersIssueFile->delete($pathToFile);
+            }
         }
     }
 });

@@ -86,10 +86,22 @@ $jiraWebhook->addListener('*', function($e, $data)
     }
 });
 
-/*$jiraWebhook->addListener('*', function($e, $data)
+/**
+ * Priority not blocker
+ * Status Resolved
+ * Status Close
+ * issue deleted
+ */
+$jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
 {
-    
-});*/
+    $issue = $data->getIssue();
+
+    if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || !$issue->isStatusResolved() || !$issue->isStatusClose()) {
+        foreach (glob("{$blockersIssueFile->getPathToFolder()}*") as $pathToFile) {
+            $blockersIssueFile->delete($pathToFile);
+        }
+    }
+});
 
 /**
  * Put raw data from JIRA to blockers issue file with next notification time

@@ -38,22 +38,22 @@ $start = microtime(true);
 
 $log->info("The script ".__FILE__." started.");
 
-$blockers = new BlockersIssueFile($config['pathToBlockersIssueFile']);
+$blockersIssueFile = new BlockersIssueFile($config['pathToBlockersIssueFile']);
 
 $vickyClient = new VickyClient(
     $config['vickyClient']['url'],
     $config['vickyClient']['timeout']
 );
 
-foreach (glob("{$blockers->getPathToFolder()}*") as $pathToFile) {
-    $data = $blockers->get($pathToFile);
+foreach (glob("{$blockersIssueFile->getPathToFolder()}*") as $pathToFile) {
+    $data = $blockersIssueFile->get($pathToFile);
 
     if (strtotime('now') >= strtotime($data['nextNotification'])) {
         $data['webhookEvent'] = 'blocker:notification';
         $vickyClient->send($data);
 
         $data['nextNotification'] = (new DateTime())->add(new DateInterval("PT6H"))->format('Y-m-d\TH:i:sP');
-        $blockers->put($data);
+        $blockersIssueFile->put($data);
     }
 }
 

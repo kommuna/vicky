@@ -50,15 +50,16 @@ To stop the service run `service slackbotservice stop` or `/etc/init.d/myservice
 
 >Note: Another way to run the slackbot would be to have [supervisord](http://supervisord.org/) monitor it.  
 
-#Usage
-##Slack bot
+# Usage
+
+## Slack bot  
 For more details how configure custom webhooks and commands for bot see [this] (https://github.com/jclg/php-slack-bot).
 
-##JiraWebhook
+## JiraWebhook
 For more details about JIRA data, JIRA data converters and events see [this lib] (https://github.com/kommuna/jirawebhook)
 and [this docs] (https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
 
-##Slack bot client
+## Slack bot client
 To use a bot client for sending messages to Slack use following example code:
 
 ```php
@@ -81,7 +82,7 @@ SlackBotSender::getInstance()->toChannel('#channelName', 'message');
 SlackBotSender::getInstance()->toUser('userNickname', 'message');
 ```
 
-##Jira to Slack mapping
+## Jira to Slack mapping
 Vicky allows to configure mapping of JIRA projects to Slack channels. This configuration is done in the `/etc/vicky/config.php` file.
 
 For example: to send all tickets of project FOO to Slack channel #foo you need to do: 

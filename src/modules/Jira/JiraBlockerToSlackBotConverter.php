@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * JiraWebhookData converter of issues with priority 'Blocker' into a formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -8,17 +8,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\client\modules\Jira;
+namespace Vicky\src\modules\Jira;
 
-use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
+use JiraWebhook\JiraWebhookDataConverter;
 
-class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
+class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into message (string)
      *
-     * @param  JiraWebhookData $data parsed data from JIRA
+     * @param JiraWebhookData $data - Parsed data from JIRA
+     * 
      * @return string
      */
     public function convert(JiraWebhookData $data)
@@ -26,14 +27,41 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
-        $authorName   = $comment->getAuthor()->getName();
 
         /**
-         * If issue dont have comments
+         * Issue doesn't have comments and is not assigned to a user
          */
-        if (!$comment) {
+        if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ @%s",
+                "!!! %s (%s) %s: %s ➠ Unassigned",
+                [
+                    $issue->getKey(),
+                    $issue->getSelf(),
+                    $issue->getStatus(),
+                    $issue->getSummary()
+                ]
+            );
+        /**
+         * Issue is not assigned to a user
+         */    
+        } elseif (!$assigneeName) {
+            $message = vsprintf(
+                "!!! %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
+                [
+                    $issue->getKey(),
+                    $issue->getSelf(),
+                    $issue->getStatus(),
+                    $issue->getSummary(),
+                    $comment->getAuthor()->getName(),
+                    $comment->getBody()
+                ]
+            );
+        /**
+         * Issue doesn't have any comments
+         */    
+        } elseif (!$comment) {
+            $message = vsprintf(
+                "!!! %s (%s) %s: %s ➠ @%s",
                 [
                     $issue->getKey(),
                     $issue->getSelf(),
@@ -42,52 +70,24 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $assigneeName
                 ]
             );
-            /**
-             * If issue not assigned to any user
-             */
-        } elseif (!$assigneeName) {
-            $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
-                [
-                    $issue->getKey(),
-                    $issue->getSelf(),
-                    $issue->getStatus(),
-                    $issue->getSummary(),
-                    $authorName,
-                    $comment->getBody()
-                ]
-            );
-            /**
-             * If issue dont have comments and not assigned to any user
-             */
-        } elseif (!$comment && !$assigneeName) {
-            $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ Unassigned",
-                [
-                    $issue->getKey(),
-                    $issue->getSelf(),
-                    $issue->getStatus(),
-                    $issue->getSummary()
-                ]
-            );
-            /**
-             * Default message
-             */
+        /**
+         * Default message
+         */    
         } else {
             $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
+                "!!! %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
                 [
                     $issue->getKey(),
                     $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,
-                    $authorName,
+                    $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );
         }
-        
+
         return $message;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of vicky.
+ * Example config code for slack bot.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -11,6 +11,7 @@
 return [
     'error_log' => '/path/to/log/file.log',
     'botToken'  => 'your bot token',
-    'botAuth'   => 'secret key for bot if needed'
+    'botAuth'   => 'secret key for bot if needed',
+    'botPort'   => 8080
 ];
 

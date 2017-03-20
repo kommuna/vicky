@@ -1,4 +1,5 @@
 {
+    "name": "kommuna/vicky",
     "minimum-stability" : "dev",
     "require": {
         "jclg/php-slack-bot": "dev-master",

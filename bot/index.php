@@ -1,6 +1,7 @@
 <?php
 /**
- * This file is part of vicky.
+ * Main module of slack bot lib, that contains bot configuration (like setting token), loading bot command and webhooks,
+ * enabling the web server, that will listen incoming HTTP POST requests and running the bot.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -19,7 +20,7 @@ use Vicky\bot\modules\ToUserWebhook;
 use Vicky\bot\modules\ToChannelWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
-$config = require 'config.php';
+$config = require '/etc/slackBot/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
@@ -40,7 +41,7 @@ try {
     $log->error($e->getMessage());
 }
 
-$bot->enableWebserver(8080, $config['botAuth']);
+$bot->enableWebserver($config['botPort'], $config['botAuth']);
 
 try {
     $bot->run();

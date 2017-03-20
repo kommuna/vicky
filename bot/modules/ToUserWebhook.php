@@ -1,6 +1,7 @@
 <?php
 /**
- * This file is part of vicky.
+ * Slack bot webhook class, that receives payload data from
+ * HTTP POST request and sends it to slack users.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -45,10 +46,10 @@ class ToUserWebhook extends BaseWebhook
     }
 
     /**
-     * Send data from recieved HTTP POST request to slack
+     * Send data from the received HTTP POST request to Slack
      *
-     * @param $payload data array
-     * @param $context
+     * @param array $payload Data array
+     * @param       $context
      */
     public function execute($payload, $context)
     {

@@ -39,7 +39,7 @@ Set up [webhooks in JIRA](https://developer.atlassian.com/jiradev/jira-apis/webh
 
 #### 4. Slackbot daemon
 You can run the slackbot by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
-We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow this steps:
+We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow these steps:
 
  - Copy the `init.d/slackbotservice` script to your init.d folder. 
  - chmod +x the script
@@ -143,7 +143,7 @@ Please note that if a project doesn't have any mapping settings and the default 
 Important note: 
 >The bot must be invited to the channel in order to be able to send messages to it.
 
-## Events
+# Events
 
 Currently the following default events are set in the index.php file:
 
@@ -159,5 +159,5 @@ Currently the following default events are set in the index.php file:
         - Send message to a user's channel if someone mentions them in a new comment  
         - Send a message to user in slack if someone comments on an issue assigned to them
         
-## Customizing
+# Customizing
 You can add your own logic and your own listeners to Vicky. In order to do that you would have to clone the customized vicky skeleton and add your listeners in there, following the provided examples.

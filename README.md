@@ -1,10 +1,10 @@
 # What is this?
-This is vicky - friendly PHP JIRA to Slack robot.
-Created for make easy and comfortable notification of any changes in JIRA to Slack.
+This is Vicky - a friendly PHP JIRA to Slack robot.
+It sends notification about JIRA ticket updates to Slack.
 
-This library can receive and parse data from JIRA webhook, convert it into messages and send it to Slack.
-It is possible to setup Slack bot for more functionality, by creating new webhooks and commands. And it is possible to
-write event listeners for work with received data from JIRA.
+This library can receive and parse data from JIRA webhook, convert it into easily readable messages and send them off to the approriate (configurable) user or channel in Slack.
+It comes loaded with a few [default listeners](#default-listeners) for the most common scenarios, but you can [extend it](#customizing) with your own custom logic too.
+
 
 # Installation
 To install this library clone the code from GitHub and run `composer install` in the root folder.
@@ -143,7 +143,7 @@ Please note that if a project doesn't have any mapping settings and the default 
 Important note: 
 >The bot must be invited to the channel in order to be able to send messages to it.
 
-# Events
+# Default listeners
 
 Currently the following default events are set in the index.php file:
 

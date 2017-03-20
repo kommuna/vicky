@@ -147,4 +147,4 @@ Currently the following default events are set in the index.php file:
         - Send a message to user in slack if someone comments on an issue assigned to them
         
 ## Customizing
-You can add your own logic and your own listeners to Vicky. In order to do that you would have to clone the customized vicky skeleton and add your own listeners in there.
+You can add your own logic and your own listeners to Vicky. In order to do that you would have to clone the customized vicky skeleton and add your listeners in there, following the provided examples.

@@ -7,17 +7,17 @@ It is possible to setup Slack bot for more functionality, by creating new webhoo
 write event listeners for work with received data from JIRA.
 
 # Installation
-To install this library clone the code from GitHub.
+To install this library clone the code from GitHub and run `composer install` in the root folder.
 
-Run command `composer install` in .../vicky folder.
+#### 1. Config files  
+Copy `bot/config.example.php` to `/etc/SlackBot/config.php` and `client/config.example.php` to `/etc/vicky/config.php` and follow the instructions in them to set your values.
 
-Configure config files, use as example bot/config.example.php and client/config.example.php, and put bot config into
-/etc/SlackBot folder and client config into /etc/vicky/ folder. Get bot token [here]
-(https://my.slack.com/services/new/bot).
+Get your bot token [here](https://my.slack.com/services/new/bot).
 
 Configure Slack bot, for details see [this] (https://github.com/jclg/php-slack-bot).
 
-Configure server that will listen JIRA webhook, as example use this nginx and php-fpm config:
+#### 2. Server/Virtual host
+Set up a server that will listen for JIRA webhooks, use this nginx and php-fpm config as an example:
 ```
 server {
         listen          80;
@@ -34,9 +34,22 @@ server {
     }
 ```
 
-Configure [JIRA webhook] (https://developer.atlassian.com/jiradev/jira-apis/webhooks).
+#### 3. Jira
+Set up [webhooks in JIRA](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
-After all things done run Slack bot by running command `php .../vicky/bot/index.php`.
+#### 4. Slackbot daemon
+You can run the slackbot by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
+We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow this steps:
+
+ - Copy the `init.d/slackbotservice` script to your init.d folder. 
+ - chmod +x the script
+ - Configure the `DAEMON` and `DAEMON_OPTS` variables
+ - Run `service slackbotservice start` or `/etc/init.d/myservice start`
+
+To stop the service run `service slackbotservice stop` or `/etc/init.d/myservice stop`
+
+>Note: Another way to run the slackbot would be to have [supervisord](http://supervisord.org/) monitor it.
+
 
 #Usage
 ##Slack bot
@@ -72,14 +85,14 @@ SlackBotSender::getInstance()->toUser('userNickname', 'message');
 ##Jira to Slack mapping
 Vicky allows to configure mapping of JIRA projects to Slack channels. This configuration is done in the `/etc/vicky/config.php` file.
 
-For example: to send all tickets of project FOO to Slack channel #bar you need to do: 
+For example: to send all tickets of project FOO to Slack channel #foo you need to do: 
 
 ```
 <?php
 return [
    ...
    'jiraToSlackMapping' => [
-       'FOO' => '#bar'
+       'FOO' => '#foo'
    ]
    ...
 ];

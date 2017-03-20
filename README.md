@@ -7,7 +7,7 @@ It is possible to setup Slack bot for more functionality, by creating new webhoo
 write event listeners for work with received data from JIRA.
 
 # Installation
-For installing this library clone the code from GitHub.
+To install this library clone the code from GitHub.
 
 Run command `composer install` in .../vicky folder.
 
@@ -70,78 +70,69 @@ SlackBotSender::getInstance()->toUser('userNickname', 'message');
 ```
 
 ##Jira to Slack mapping
-Vicky allow to configure mapping of JIRA projects to Slack channels. E.g. to send all tickets of project FOO to Slack 
-channel #bar:
+Vicky allows to configure mapping of JIRA projects to Slack channels. This configuration is done in the `/etc/vicky/config.php` file.
 
-(/etc/vicky/config.php):
+For example: to send all tickets of project FOO to Slack channel #bar you need to do: 
 
 ```
 <?php
 return [
-   /* Mapping Jira projects to Slack channels */
+   ...
    'jiraToSlackMapping' => [
-       /* Send tickets by Jira project 'FOO' to Slack channel '#bar' */
        'FOO' => '#bar'
    ]
+   ...
 ];
 ```
 
-To configure default channel use follow config:
+
+If you want to disable all notifications for a project just set its mapping key to false instead of a slack channel name:
 
 ```
 <?php
 return [
-   /* Mapping Jira projects to Slack channels */
    'jiraToSlackMapping' => [
-       /* Send notifications by tickets by Jira project 'FOO' to Slack channel '#bar' */
-       'FOO' => '#bar',
-       /* Send notifications by other Jira projects to Slack channel '#channelName'*/
-       '*' => '#channelName'
+       'FOO' => '#foo',
+       'BAR' => false,
    ]
 ];
 ```
 
-To disable notifications for project set value by project key to `false`:
+
+You can also configure a backup channel where all the messages from projects that aren't mapped in Slack would go:
 
 ```
 <?php
 return [
-   /* Mapping Jira projects to Slack channels */
    'jiraToSlackMapping' => [
-       /* Send notifications by tickets by Jira project 'FOO' to Slack channel '#bar' */
-       'FOO' => '#bar',
-       /* Don't send notifications by tickets by Jira project 'DUMP' to Slack */
-       'DUMB' => false
-       /* Send notifications by other Jira projects to Slack channel '#channelName'*/
-       '*' => '#channelName'
+       'FOO' => '#foo',
+       'BAR' => false,
+       '*' => '#'
    ]
 ];
 ```
 
-To disable notifications for *other* projects set value by '*' key to `false`:
+To disable notifications for all unmapped projects set the '*' mapping key to `false`:
 
 ```
 <?php
 return [
-   /* Mapping Jira projects to Slack channels */
    'jiraToSlackMapping' => [
-       /* Send notifications by tickets by Jira project 'FOO' to Slack channel '#bar' */
        'FOO' => '#bar',
-       /* Don't send notifications by tickets by Jira project 'DUMP' to Slack */
-       'DUMB' => false
-       /* Don't send notifications by other Jira projects to Slack */
+       'DUMP' => false
        '*' => false
    ]
 ];
 ```
 
-If project does not have mapping settings and default channel not configured, messages will not send.
+Please note that if a project doesn't have any mapping settings and the default channel is not configured, messages will not be sent.
 
-Also, to send messages bot must be invited to the channel.
+Important note: 
+>The bot must be invited to the channel in order to be able to send messages to it.
 
 ## Events
 
-Currently there's support for the following events:
+Currently the following default events are set in the index.php file:
 
 - Issue created:  
         - If the issue is a blocker a message is sent in the project's channel  
@@ -155,14 +146,5 @@ Currently there's support for the following events:
         - Send message to a user's channel if someone mentions them in a new comment  
         - Send a message to user in slack if someone comments on an issue assigned to them
         
-- Custom events (we will be moving this section)  
-        - If an issue with type 'Operations' was created a message is set to the project's channel    
-        - If an issue with type 'Urgent bug' was created a message is set to the project's channel    
-        - Is an issue with type 'Operations' was resolved - a message is set to the project's channel  
-        - Is an issue with type 'Urgent Bug' was resolved or commented - a message is set to the project's channel  
-        - Send message to a user's channel if someone mentions them in a new comment  
-        
-        
-        
-        
-        
+## Customizing
+You can add your own logic and your own listeners to Vicky. In order to do that you would have to clone the customized vicky skeleton and add your own listeners in there.

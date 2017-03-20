@@ -62,6 +62,18 @@ JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConvert
 JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
 
+
+
+/*
+|--------------------------------------------------------------------------
+| Register default listeners
+|--------------------------------------------------------------------------
+|
+| These are just a few default listeners that would make sense for most teams.
+| To add your own you should follow instructions in the README.md file
+|
+*/
+
 /**
  * Send a message to the project's channel when a blocker issue is created or updated
  */
@@ -80,7 +92,7 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
- * Send a message to user if a newly created issue
+ * Send message to user if a newly created issue
  * was assigned to them
  */
 $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
@@ -93,7 +105,7 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 });
 
 /**
- * Send a message to user if an issue gets assigned to them
+ * Send message to user if an issue gets assigned to them
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 {
@@ -108,7 +120,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 /**
- * Send a message to user if someone comments on an issue
+ * Send message to user if someone comments on an issue
  * assigned to them
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
@@ -140,81 +152,6 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 
-
-/*
-|--------------------------------------------------------------------------
-| Custom listeners
-|--------------------------------------------------------------------------
-|
-| Domain specific listeners. We'll need to approach this in another way
-| in the future, so the package doesn't contain company specific logic
-|
-*/
-
-/**
- * Send a message to the project channel if an issue with type
- * 'Operations' gets status 'Resolved'
- */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
-{
-    $issue = $data->getIssue();
-
-    if ($issue->isTypeOperations() && $issue->isStatusResolved()) {
-        SlackBotSender::getInstance()->toChannel(
-            Vicky::getChannelByProject($issue->getProjectName()), 
-            JiraWebhook::convert('JiraOperationsToSlack', $data)
-        );
-    }
-});
-
-/**
- * Send a message to the project's channel when an issue
- * with  type 'Operations' is created
- */
-$jiraWebhook->addListener('jira:issue_created', function ($e, $data)
-{
-    $issue = $data->getIssue();
-
-    if ($issue->isTypeOperations()) {
-        SlackBotSender::getInstance()->toChannel(
-            Vicky::getChannelByProject($issue->getProjectName()),
-            JiraWebhook::convert('JiraOperationsToSlack', $data)
-        );
-    }
-});
-
-/**
- * Send a message to the project's channel when an issue
- * with  type 'Urgent bug' is created
- */
-$jiraWebhook->addListener('jira:issue_created', function ($e, $data)
-{
-    $issue = $data->getIssue();
-
-    if ($issue->isTypeUrgentBug()) {
-        SlackBotSender::getInstance()->toChannel(
-            Vicky::getChannelByProject($issue->getProjectName()),
-            JiraWebhook::convert('JiraUrgentBugToSlack', $data)
-        );
-    }
-});
-
-
-/**
- * Send a message to the project's channel when an issue with type
- * 'Urgent bug' gets status 'Resolved' or get commented
- */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
-{
-    $issue = $data->getIssue();
-
-    if ($issue->isTypeUrgentBug() && ($issue->isStatusResolved() || $data->isIssueCommented())) {
-        SlackBotSender::getInstance()->toChannel(
-            Vicky::getChannelByProject($issue->getProjectName()), 
-            JiraWebhook::convert('JiraUrgentBugToSlack', $data)
-        );
-    }
-});
 
 
 

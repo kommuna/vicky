@@ -48,8 +48,7 @@ We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpage
 
 To stop the service run `service slackbotservice stop` or `/etc/init.d/myservice stop`
 
->Note: Another way to run the slackbot would be to have [supervisord](http://supervisord.org/) monitor it.
-
+>Note: Another way to run the slackbot would be to have [supervisord](http://supervisord.org/) monitor it.  
 
 #Usage
 ##Slack bot

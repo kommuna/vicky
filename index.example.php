@@ -40,6 +40,9 @@ $log->pushHandler(
         $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
     )
 );
+if ($config['environment'] === 'local'){
+    $log->pushHandler(new StreamHandler('php://output', Logger::DEBUG)); // <<< uses a stream
+}
 
 $start = microtime(true);
 
@@ -183,14 +186,10 @@ try {
 
     $jiraWebhook->run($data);
 } catch (\Exception $e) {
-    // For convenience in local development show errors on screen directly
-    if ($config['environment'] === 'local'){
-        var_dump($e->getMessage());
-        var_dump($e->getLine());
-        var_dump($e->getFile());
-        var_dump($e->getCode());
-    }
     $log->error($e->getMessage());
+    $log->error($e->getLine());
+    $log->error($e->getFile());
+    $log->error($e->getCode());
 }
 
 $log->info("Script finished in ".(microtime(true) - $start)." sec.");

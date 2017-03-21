@@ -1,6 +1,6 @@
 <?php
 /**
- * Main module of vicky project, that receives data from JIRA webhook
+ * An example index file for the main module of vicky project, that receives data from JIRA webhook
  * https://developer.atlassian.com/jiradev/jira-apis/webhooks), contains jiraWebhook listeners for events, that sends
  * messages to slack by slack client and contains converters declaration.
  *
@@ -8,7 +8,7 @@
  * @author  chewbacca@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * file that is distributed with this source code.
  */
 namespace Vicky;
 
@@ -23,9 +23,10 @@ use Vicky\src\modules\Slack\SlackBotSender;
 use Vicky\src\modules\Vicky;
 
 use JiraWebhook\JiraWebhook;
+use JiraWebhook\Models\JiraWebhookData;
 use JiraWebhook\Exceptions\JiraWebhookException;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';
 
 ini_set('log_errors', 'On');
@@ -50,12 +51,12 @@ SlackBotSender::getInstance(
     $config['slackBot']['timeout']
 );
 
+new Vicky($config);
 $jiraWebhook = new JiraWebhook();
 
-$vicky = new Vicky($config);
-
 /**
- * Set converters
+ * Set the converters Vicky will use to "translate" JIRA webhook
+ * payload into formatted, human readable Slack messages
  */
 JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
 JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
@@ -77,7 +78,7 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 /**
  * Send a message to the project's channel when a blocker issue is created or updated
  */
-$jiraWebhook->addListener('*', function($e, $data)
+$jiraWebhook->addListener('*', function($e, JiraWebhookData $data)
 {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
         $issue = $data->getIssue();
@@ -95,7 +96,7 @@ $jiraWebhook->addListener('*', function($e, $data)
  * Send message to user if a newly created issue
  * was assigned to them
  */
-$jiraWebhook->addListener('jira:issue_created', function ($e, $data)
+$jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $data)
 {
     $assignee = $data->getIssue()->getAssignee();
 
@@ -107,7 +108,7 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, $data)
 /**
  * Send message to user if an issue gets assigned to them
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
     $issue = $data->getIssue();
 
@@ -123,7 +124,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
  * Send message to user if someone comments on an issue
  * assigned to them
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
     $issue = $data->getIssue();
 
@@ -138,7 +139,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 /**
  * Send message to user if someone mentions them in a new comment
  */
-$jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
+$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
     $issue = $data->getIssue();
 
@@ -152,6 +153,19 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, $data)
 });
 
 
+/*
+|--------------------------------------------------------------------------
+| Custom listeners
+|--------------------------------------------------------------------------
+| ADD YOUR CUSTOM LISTENERS HERE
+|
+*/
+
+
+/*
+ * ------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
+ */
 
 
 

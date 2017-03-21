@@ -1,9 +1,13 @@
 {
     "name": "kommuna/vicky",
+    "description": "A friendly PHP JIRA to Slack robot",
+    "keywords": ["vicky", "jira", "atlassian", "webhook", "bot", "slack", "slackbot"],
+    "homepage": "https://github.com/kommuna/vicky",
+    "license": "Unlicense",
+    "type": "library",
     "minimum-stability" : "dev",
     "require": {
         "jclg/php-slack-bot": "dev-master",
-        "monolog/monolog": "1.22.0",
         "kommuna/jirawebhook": "dev-master"
     },
 

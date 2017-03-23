@@ -28,5 +28,9 @@ return [
         'ProjectName' => '#channelName',
         '*'           => '#defaultChannelName'
     ],
-    'pathToBlockersIssueFile' => '/path/to/blockers/issue/file/folder/'
+    'blockersIssues' => [
+        'folder'               => '/path/to/blockers/issue/file/folder/',
+        /* The time interval for blockers issues notification is specified in hours */
+        'norificationInterval' => 6
+    ]
 ];

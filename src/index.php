@@ -17,7 +17,7 @@ use Monolog\Handler\StreamHandler;
 use DateTime;
 use DateInterval;
 
-use Vicky\src\modules\BlockersIssueFile;
+use Vicky\src\modules\IssueFile;
 use Vicky\src\modules\Jira\JiraBlockerNotificationConverter;
 use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
@@ -58,7 +58,7 @@ $jiraWebhook = new JiraWebhook();
 
 $vicky = new Vicky($config);
 
-$blockersIssueFile = new BlockersIssueFile($config['pathToBlockersIssueFile']);
+IssueFile::setPathToFolder($config['blockersIssues']['folder']);
 
 /**
  * Set converters
@@ -89,40 +89,36 @@ $jiraWebhook->addListener('*', function($e, $data)
 /**
  * Delete blockers issue file if issue deleted, issue priority not Blocker, issue has status Resolved or Close
  */
-$jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
+$jiraWebhook->addListener('*', function($e, $data)
 {
     $issue = $data->getIssue();
 
     if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || $issue->isStatusResolved() || $issue->isStatusClose()) {
-        chdir($blockersIssueFile->getPathToFolder());
-
-        foreach (glob("*") as $pathToFile) {
-            if ($pathToFile === $issue->getKey()) {
-                $blockersIssueFile->delete($pathToFile);
-            }
-        }
+        IssueFile::deleteFileByIssueKey(IssueFile::getPathToFolder(), $issue->getKey());
     }
 });
 
 /**
  * Put raw data from JIRA to blockers issue file with next notification time
  */
-$jiraWebhook->addListener('*', function($e, $data) use ($blockersIssueFile)
+$jiraWebhook->addListener('*', function($e, $data)
 {
     $issue = $data->getIssue();
 
     if(($e->getName() === 'jira:issue_created' && $issue->isPriorityBlocker()) || ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && $data->isIssueCommented())) {
-        $rawData = $data->getRawData();
-        $rawData['nextNotification'] = (new DateTime())->add(new DateInterval("PT24H"))->format('Y-m-d\TH:i:sP');
-
-        $blockersIssueFile->put($rawData);
+        $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'), 24);
+        
+        $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
+        
+        IssueFile::put($pathToFile, $issueFile->getFileName(), $issueFile);
     }
 });
 
 /**
- * Send message to assignee user if blockers issue not commented more than 24 hours
+ * Send message to assignee user if blockers issue not commented more
+ * than 24 hours
  */
-$jiraWebhook->addListener('blocker:notification', function($e, $data)
+$jiraWebhook->addListener('jira:custom:blocker_notification', function($e, $data)
 {
     $issue = $data->getIssue();
 
@@ -130,6 +126,12 @@ $jiraWebhook->addListener('blocker:notification', function($e, $data)
         $issue->getAssignee()->getName(),
         JiraWebhook::convert('JiraBlockerNotification', $data)
     );
+
+    $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'));
+
+    $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
+
+    IssueFile::put($pathToFile, $issueFile->getFileName(), $issueFile);
 });
 
 /**

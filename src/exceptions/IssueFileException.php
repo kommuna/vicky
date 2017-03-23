@@ -10,4 +10,4 @@
  */
 namespace Vicky\src\exceptions;
 
-class BlockersIssueFileException extends \Exception {}
+class IssueFileException extends \Exception {}

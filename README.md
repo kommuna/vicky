@@ -32,9 +32,9 @@ We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpage
  - Copy the `init.d/slackbotservice` script to your init.d folder. 
  - chmod +x the script
  - Configure the `DAEMON` and `DAEMON_OPTS` variables
- - Run `service slackbotservice start` or `/etc/init.d/myservice start`
+ - Run `service slackbotservice start` or `/etc/init.d/slackbotservice start`
 
-To stop the service run `service slackbotservice stop` or `/etc/init.d/myservice stop`
+To stop the service run `service slackbotservice stop` or `/etc/init.d/slackbotservice stop`
 
 >Note: Another way to run the slackbot would be to have [supervisord](http://supervisord.org/) monitor it.  
 

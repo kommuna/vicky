@@ -109,7 +109,7 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $d
 });
 
 /**
- * Send message to user if an issue gets assigned to them
+ * Send message to user's channel if an issue gets assigned to them
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
@@ -124,7 +124,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $d
 });
 
 /**
- * Send message to user if someone comments on an issue
+ * Send message to user's channel if someone comments on an issue
  * assigned to them
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
@@ -140,7 +140,7 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $d
 });
 
 /**
- * Send message to user if someone mentions them in a new comment
+ * Send message to user's channel if someone mentions them in a new comment
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {

@@ -2,8 +2,8 @@
 This is Vicky - a friendly PHP JIRA to Slack robot.
 It sends notification about JIRA ticket updates to Slack.
 
-This library can receive and parse data from JIRA webhook, convert it into easily readable messages and send them off to the approriate (configurable) user or channel in Slack.
-It comes loaded with a few [default listeners](#default-listeners) for the most common scenarios, but you can [extend it](#customizing) with your own custom logic too.
+This library can receive and parse data from JIRA webhook, convert it into easily readable messages and send them off to the appropriate (configurable) user or channel in Slack.
+It comes loaded with a few default listeners for the most common scenarios, but you can extend it with your own custom logic too.
 
 
 # Installation and configuration
@@ -18,7 +18,7 @@ and run `composer install`.
 #### 1. Config files  
 Copy `bot/config.example.php` to `/etc/SlackBot/config.php` and `client/config.example.php` to `/etc/vicky/config.php` and follow the instructions in them to set your values.
 
-You can get your slack bot token [here](https://my.slack.com/services/new/bot).
+The slack bot token can be obtained [here](https://my.slack.com/services/new/bot).
 
 >IMPORTANT: Please make sure that you have the webserver and the slackbot running on different ports. The slackbot port is configurable and you can set it in the `/etc/slackBot/config.php` file. 
 
@@ -26,7 +26,7 @@ You can get your slack bot token [here](https://my.slack.com/services/new/bot).
 Register your [webhooks in JIRA](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
 #### 3. Slackbot daemon
-You can run the slackbot by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
+The slackbot can be run by by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
 We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow these steps:
 
  - Copy the `init.d/slackbotservice` script to your init.d folder. 
@@ -39,7 +39,7 @@ To stop the service run `service slackbotservice stop` or `/etc/init.d/myservice
 >Note: Another way to run the slackbot would be to have [supervisord](http://supervisord.org/) monitor it.  
 
 # Usage
-You can use the provided `index.example.php` file to see how to setup the listeners for specific JIRA events in your project and how to handle those webhooks.
+Use the provided `index.example.php` file to see how to setup the listeners for specific JIRA events in your project and how to handle those webhooks.
 It already comes loaded with some basic events (listed below), but you can also add your own, following the example of the provided ones.
 
 Let's look at the most basic parts:
@@ -76,7 +76,7 @@ Let's look at the most basic parts:
     */
     
     /**
-     * Send message to user if an issue gets assigned to them
+     * Send message to a user's channel if an issue gets assigned to them
      */
     $jiraWebhook->addListener('jira:issue_updated', function ($e, \JiraWebhook\Models\JiraWebhookData $data)
     {

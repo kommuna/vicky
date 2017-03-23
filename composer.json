@@ -11,5 +11,14 @@
         "psr-4": {
             "Vicky\\": ""
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vicky\\Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7",
+        "fzaninotto/faker": "^1.6"
     }
 }

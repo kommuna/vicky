@@ -14,12 +14,14 @@ namespace Vicky;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Maknz\Slack\Client;
 
 use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraOperationsToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\src\modules\Slack\SlackBotSender;
+use Vicky\src\modules\Slack\SlackMessageSender;
 use Vicky\src\modules\Vicky;
 
 use JiraWebhook\JiraWebhook;
@@ -67,7 +69,6 @@ JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotC
 JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
 
 
-
 /*
 |--------------------------------------------------------------------------
 | Register default listeners
@@ -87,10 +88,10 @@ $jiraWebhook->addListener('*', function($e, JiraWebhookData $data)
         $issue = $data->getIssue();
 
         if ($issue->isPriorityBlocker()) {
-            SlackBotSender::getInstance()->toChannel(
-                Vicky::getChannelByProject($issue->getProjectName()), 
-                JiraWebhook::convert('JiraBlockerToSlack', $data)
-            );
+            $slackClientMessage = SlackMessageSender::getMessage();
+            JiraWebhook::convert('JiraBlockerToSlack', $data, $slackClientMessage);
+            $slackClientMessage->to(Vicky::getChannelByProject($issue->getProjectName()));
+            $slackClientMessage->send();
         }
     }
 });
@@ -104,7 +105,10 @@ $jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $d
     $assignee = $data->getIssue()->getAssignee();
 
     if ($assignee->getName()) {
-        SlackBotSender::getInstance()->toUser($assignee->getName(), JiraWebhook::convert('JiraDefaultToSlack', $data));
+        $slackClientMessage = SlackMessageSender::getMessage();
+        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
+        $slackClientMessage->to('@' . $assignee->getName());
+        $slackClientMessage->send();
     }
 });
 
@@ -116,10 +120,11 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $d
     $issue = $data->getIssue();
 
     if ($data->isIssueAssigned()) {
-        SlackBotSender::getInstance()->toUser(
-            $issue->getAssignee()->getName(),
-            JiraWebhook::convert('JiraDefaultToSlack', $data)
-        );
+        $data->overrideIssueEventDescription("An issue has been assigned to you");
+        $slackClientMessage = SlackMessageSender::getMessage();
+        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
+        $slackClientMessage->to('@' . $issue->getAssignee()->getName());
+        $slackClientMessage->send();
     }
 });
 
@@ -132,10 +137,11 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $d
     $issue = $data->getIssue();
 
     if ($data->isIssueCommented()) {
-        SlackBotSender::getInstance()->toUser(
-            $issue->getAssignee()->getName(),
-            JiraWebhook::convert('JiraDefaultToSlack', $data)
-        );
+        $data->overrideIssueEventDescription("A new comment has been posted on your issue");
+        $slackClientMessage = SlackMessageSender::getMessage();
+        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
+        $slackClientMessage->to('@' . $issue->getAssignee()->getName());
+        $slackClientMessage->send();
     }
 });
 
@@ -148,9 +154,13 @@ $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $d
 
     if ($data->isIssueCommented()) {
         $users = $issue->getIssueComments()->getLastComment()->getMentionedUsersNicknames();
+        $data->overrideIssueEventDescription("You've been mentioned in a comment");
 
         foreach ($users as $user) {
-            SlackBotSender::getInstance()->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
+            $slackClientMessage = SlackMessageSender::getMessage();
+            JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
+            $slackClientMessage->to('@' . $user);
+            $slackClientMessage->send();
         }
     }
 });

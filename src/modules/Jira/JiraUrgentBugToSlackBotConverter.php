@@ -12,6 +12,7 @@ namespace Vicky\src\modules\Jira;
 
 use JiraWebhook\Models\JiraWebhookData;
 use JiraWebhook\JiraWebhookDataConverter;
+use Maknz\Slack\Message;
 
 class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
 {
@@ -22,7 +23,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
      * 
      * @return string
      */
-    public function convert(JiraWebhookData $data)
+    public function convert(JiraWebhookData $data, Message $message)
     {
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();

@@ -12,6 +12,7 @@ namespace Vicky\src\modules\Jira;
 
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
+use Maknz\Slack\Message;
 
 class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
 {
@@ -22,7 +23,7 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
      *
      * @return string
      */
-    public function convert(JiraWebhookData $data)
+    public function convert(JiraWebhookData $data, Message $message)
     {
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
@@ -33,10 +34,10 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ Unassigned",
+                "⚙ <%s|%s> %s: %s ➠ Unassigned",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary()
                 ]
@@ -46,10 +47,10 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
          */
         } elseif (!$assigneeName) {
             $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
+                "⚙ <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $comment->getAuthor()->getName(),
@@ -61,10 +62,10 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
          */
         } elseif (!$comment) {
             $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ @%s",
+                "⚙ <%s|%s> %s: %s ➠ @%s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName
@@ -75,10 +76,10 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
          */
         } else {
             $message = vsprintf(
-                "⚙ %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
+                "⚙ <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,

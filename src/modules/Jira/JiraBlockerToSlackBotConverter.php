@@ -31,7 +31,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
         $comment      = $issue->getIssueComments()->getLastComment();
 
         $attachment = [
-            "color" => "#d40100",
+            "color" => $issue->getColour(),
             "pretext" => $data->getIssueEventDescription(),
             "title" => vsprintf(":no_entry_sign: (%s) %s", [$issue->getKey(), $issue->getSummary()]),
             "title_link" => $issue->getUrl(),

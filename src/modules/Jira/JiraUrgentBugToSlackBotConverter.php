@@ -32,7 +32,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
         $attachment = [
             "color" => $issue->getColour(),
             "pretext" => $data->getIssueEventDescription(),
-            "title" => vsprintf("(%s) %s", [$issue->getKey(), $issue->getSummary()]),
+            "title" => vsprintf(":zap: (%s) %s", [$issue->getKey(), $issue->getSummary()]),
             "title_link" => $issue->getUrl(),
 
             'fields' => [

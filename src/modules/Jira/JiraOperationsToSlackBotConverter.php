@@ -20,14 +20,35 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
      * Converts $data into message (string)
      *
      * @param JiraWebhookData $data - Parsed data from JIRA
+     * @param Message $clientMessage
      *
-     * @return string
+     * @return Message string
      */
-    public function convert(JiraWebhookData $data, Message $message)
+    public function convert(JiraWebhookData $data, Message $clientMessage)
     {
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
+
+        $attachment = [
+            "color" => $issue->getColour(),
+            "pretext" => $data->getIssueEventDescription(),
+            "title" => vsprintf("(%s) %s", [$issue->getKey(), $issue->getSummary()]),
+            "title_link" => $issue->getUrl(),
+
+            'fields' => [
+                [
+                    'title' => 'Status',
+                    'value' => $issue->getStatus(),
+                    'short' => true // whether the field is short enough to sit side-by-side other fields
+                ],
+                [
+                    'title' => 'Priority',
+                    'value' => $issue->getPriority(),
+                    'short' => true
+                ]
+            ],
+        ];
 
         /**
          * Issue doesn't have comments and is not assigned to a user
@@ -57,7 +78,14 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $comment->getBody()
                 ]
             );
-        /**
+
+            if ($data->isIssueCommented){
+                $attachment['author_name'] = $comment->getAuthor()->getName() . ' commented on:';
+                $attachment['author_icon'] = $comment->getAuthor()->getAvatarUrls()['48x48'];
+                $attachment['text'] = '>>>' . $comment->getBody();
+            }
+
+            /**
          * Issue doesn't have any comments
          */
         } elseif (!$comment) {
@@ -71,7 +99,14 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $assigneeName
                 ]
             );
-        /**
+
+            $attachment['fields'][] = [
+                'title' => 'Assigned to:',
+                'value' => $assigneeName,
+                'short' => true
+            ];
+
+            /**
          * Default message
          */
         } else {
@@ -87,8 +122,24 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $comment->getBody()
                 ]
             );
+
+            if ($data->isIssueCommented()){
+                $attachment['author_name'] = $comment->getAuthor()->getName() . ' commented on:';
+                $attachment['author_icon'] = $comment->getAuthor()->getAvatarUrls()['48x48'];
+                $attachment['text'] = '>>>' . $comment->getBody();
+            }
+
+            $attachment['fields'][] = [
+                'title' => 'Assigned to:',
+                'value' => $assigneeName,
+                'short' => true
+            ];
+
         }
-        
-        return $message;
+
+        $attachment['fallback'] = $message;
+        $clientMessage->attach($attachment);
+
+        return $clientMessage;
     }
 }

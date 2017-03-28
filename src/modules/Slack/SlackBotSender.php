@@ -3,7 +3,7 @@
  * Slack bot client class, that sends messages to slack bot
  *
  * @credits https://github.com/kommuna
- * @author  chewbacca@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -43,8 +43,8 @@ class SlackBotSender
     /**
      * SlackWebhookSender constructor.
      * 
-     * @param string $slackBotUrl slack bot webserver host url
-     * @param null   $authKey        slack bot webserver secret key
+     * @param string $slackBotUrl  slackbot webserver host url
+     * @param string $authKey      slackbot webserver secret key
      */
     public function __construct($slackBotUrl, $authKey = '', $slackBotTimeout = 0)
     {
@@ -102,7 +102,7 @@ class SlackBotSender
     }
 
     /**
-     * Initialize slack bot client or return if already initialized
+     * Initialize slack bot client or return it if already initialized
      *
      * @param string $slackBotUrl
      * @param string $authKey

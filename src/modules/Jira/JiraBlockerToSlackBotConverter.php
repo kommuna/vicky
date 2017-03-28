@@ -1,9 +1,10 @@
 <?php
 /**
- * JiraWebhookData converter of issues with priority 'Blocker' into a formatted string message.
+ * JiraWebhookData converter of issues with priority 'Blocker' into a Slack Client Message Object
  *
  * @credits https://github.com/kommuna
- * @author  chewbacca@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
+ * @author  Miss Lv lv@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,10 +18,10 @@ use Maknz\Slack\Message;
 class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
-     * Converts $data into a slack client message object
+     * Converts $data into a formatted Slack Client Message Object
      *
      * @param JiraWebhookData $data - Parsed data from JIRA
-     * @param Message $clientMessage - Slack Message Object
+     * @param Message $clientMessage - Slack Client Message Object
      *
      * @return Message
      */
@@ -40,7 +41,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
                 [
                     'title' => 'Status',
                     'value' => $issue->getStatus(),
-                    'short' => true // whether the field is short enough to sit side-by-side other fields, defaults to false
+                    'short' => true
                 ],
                 [
                     'title' => 'Priority',

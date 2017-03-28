@@ -1,27 +1,29 @@
 <?php
 /**
- * JiraWebhookData converter of issue with type 'Urgent bug' into a formatted string message.
+ * JiraWebhookData converter of issue with type 'Urgent bug' into a Slack Client Message Object.
  *
  * @credits https://github.com/kommuna
- * @author  chewbacca@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
+ * @author  Miss Lv lv@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 namespace Vicky\src\modules\Jira;
 
-use JiraWebhook\Models\JiraWebhookData;
 use JiraWebhook\JiraWebhookDataConverter;
+use JiraWebhook\Models\JiraWebhookData;
 use Maknz\Slack\Message;
 
 class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
-     * Converts $data into message (string)
+     * Converts $data into a formatted Slack Client Message Object
      *
      * @param JiraWebhookData $data - Parsed data from JIRA
-     * 
-     * @return string
+     * @param Message $clientMessage - Slack Client Message Object
+     *
+     * @return Message
      */
     public function convert(JiraWebhookData $data, Message $clientMessage)
     {

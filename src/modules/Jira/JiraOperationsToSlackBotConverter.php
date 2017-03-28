@@ -1,9 +1,10 @@
 <?php
 /**
- * JiraWebhookData converter of issues with type 'Operations' into a formatted string message.
+ * JiraWebhookData converter of issues with type 'Operations' into a Slack Client Message Object
  *
  * @credits https://github.com/kommuna
- * @author  chewbacca@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
+ * @author  Miss Lv lv@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,12 +18,12 @@ use Maknz\Slack\Message;
 class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
-     * Converts $data into message (string)
+     * Converts $data into a formatted Slack Client Message Object
      *
      * @param JiraWebhookData $data - Parsed data from JIRA
-     * @param Message $clientMessage
+     * @param Message $clientMessage - Slack Client Message Object
      *
-     * @return Message string
+     * @return Message
      */
     public function convert(JiraWebhookData $data, Message $clientMessage)
     {

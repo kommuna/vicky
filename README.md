@@ -18,7 +18,8 @@ and run `composer install`.
 #### 1. Config files  
 Copy `bot/config.example.php` to `/etc/SlackBot/config.php` and `client/config.example.php` to `/etc/vicky/config.php` and follow the instructions in them to set your values.
 
-The slack bot token can be obtained [here](https://my.slack.com/services/new/bot).
+The slack bot token can be obtained [here](https://my.slack.com/services/new/bot).  
+A new Slack incoming webhook can be created [here](https://devadmin.slack.com/apps/new/). 
 
 >IMPORTANT: Please make sure that you have the webserver and the slackbot running on different ports. The slackbot port is configurable and you can set it in the `/etc/slackBot/config.php` file. 
 
@@ -26,6 +27,8 @@ The slack bot token can be obtained [here](https://my.slack.com/services/new/bot
 Register your [webhooks in JIRA](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
 #### 3. Slackbot daemon
+> NOTE: Vicky currently doesn't implement any bot commands, so if you don't have any yourself either you can safely skip this step.
+
 The slackbot can be run by by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
 We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow these steps:
 
@@ -134,33 +137,25 @@ If you need to handle specific JIRA situations in your own, specific ways, you c
         // (reffer to the "Jira to Slack mapping" section for details )
         $channelName = Vicky::getChannelByProject($issue->getProjectName())
         
+        // Instantiate a new Slack Client (refer to https://github.com/maknz/slack for documentation)
+        $slackClient = new Client($incomingWebhookUrl, $clientSettings);
+        
+        // Get Slack Client message object
+        $slackClientMessage = $slackClient->createMessage();
+        
+        // Set up the slack message format:
         // Use one of the provided formatters "JiraDefaultToSlack" to convert your 
         // data into a readable, slack-formatted message. You can also create your own.
-        $formatted_slack_message = JiraWebhook::convert('JiraDefaultToSlack', $data);
-
-        // Send message to a user
-        SlackBotSender::getInstance()->toUser($username, $formatted_slack_message);
+        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
         
-        // Or send message to a slack channel
-        SlackBotSender::getInstance()->toChannel($channelName, $formatted_slack_message);
+        // Send off the message to Slack's API
+        $slackClientMessage->to($channelName);  // or $slackUsername
+        $slackClientMessage->send();
     });
 ```
 
 >For more details about JIRA data, JIRA data converters and events check out the [JiraWebhook package](https://github.com/kommuna/jirawebhook)
 and [this JIRA doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
-
-If you prefer staying away from static methods you can also instantiate the SlackBotSender class normally:
-
-```php
-use Vicky\client\modules\Slack\SlackBotSender;
-
-$config = require '/etc/vicky/config.php';
-
-$botClient = new SlackBotSender($config['slackBot']['url'], $config['slackBot']['auth']);
-
-$botClient->toChannel('#channelName', 'message');
-$botClient->toUser('userNickname', 'message');
-```
 
 ## Jira to Slack mapping
 Vicky allows to configure mapping of JIRA projects to Slack channels. This configuration is done in the `/etc/vicky/config.php` file.

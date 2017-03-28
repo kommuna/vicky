@@ -1,6 +1,7 @@
 <?php
 /**
- * Vicky module, that check blockers issue files, send notification to vicky Like JIRA and store next notification time
+ * Vicky module, that check blockers issue files, send notification 
+ * to vicky like JIRA and store next notification time
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -12,8 +13,6 @@ namespace Vicky\util;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use DateTime;
-use DateInterval;
 
 use Vicky\src\modules\IssueFile;
 use Vicky\src\modules\VickyClient;

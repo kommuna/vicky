@@ -70,7 +70,8 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
 JiraWebhook::setConverter('JiraBlockerNotification', new JiraBlockerNotificationConverter());
 
 /**
- * Send message to slack general channel at creating or any change of Blocker issue
+ * Send message to slack general channel at creating or any change of
+ * Blocker issue
  */
 $jiraWebhook->addListener('*', function($e, $data)
 {
@@ -87,7 +88,8 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
- * Delete blockers issue file if issue deleted, issue priority not Blocker, issue has status Resolved or Close
+ * Delete blockers issue file if issue deleted, issue priority not Blocker anymore,
+ * issue has status Resolved or Close
  */
 $jiraWebhook->addListener('*', function($e, $data)
 {
@@ -99,13 +101,15 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
- * Put raw data from JIRA to blockers issue file with next notification time
+ * If issue priority created with blocker priority, priority updated to blocker
+ * or blocker issue commented stores object with parsed data from JIRA and
+ * other data to file
  */
 $jiraWebhook->addListener('*', function($e, $data)
 {
     $issue = $data->getIssue();
 
-    if(($e->getName() === 'jira:issue_created' && $issue->isPriorityBlocker()) || ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && $data->isIssueCommented())) {
+    if (($e->getName() === 'jira:issue_created' && $issue->isPriorityBlocker()) || ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && $data->isIssueCommented())) {
         $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'), 24);
         
         $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
@@ -115,8 +119,24 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
+ * If issue priority updates to blocker and file for this issue don't exists
+ * creates file for this issue
+ */
+$jiraWebhook->addListener('*', function($e, $data) {
+    $issue = $data->getIssue();
+    
+    if ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && !IssueFile::isFileExists(IssueFile::getPathToFolder(), $issue->getKey())) {
+        $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'), 24);
+
+        $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
+
+        IssueFile::put($pathToFile, $issueFile->getFileName(), $issueFile);
+    }
+});
+
+/**
  * Send message to assignee user if blockers issue not commented more
- * than 24 hours
+ * than 24 hours and stores data with updated notification datatime
  */
 $jiraWebhook->addListener('jira:custom:blocker_notification', function($e, $data)
 {

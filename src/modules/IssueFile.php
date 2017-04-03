@@ -18,18 +18,18 @@ use Vicky\src\exceptions\IssueFileException;
 class IssueFile
 {
     /**
-     * File name
-     *
-     * @var
-     */
-    protected $fileName;
-
-    /**
      * Path to folder with blockers issues files
      *
      * @var
      */
     protected static $pathToFolder;
+
+    /**
+     * File name
+     *
+     * @var
+     */
+    protected $fileName;
 
     /**
      * Parsed data from JIRA
@@ -46,13 +46,6 @@ class IssueFile
     protected $lastNotification;
 
     /**
-     * Time interval between notifications in hours
-     *
-     * @var
-     */
-    protected $notificationInterval;
-
-    /**
      * IssueFile constructor.
      *
      * @param                      $fileName
@@ -60,20 +53,11 @@ class IssueFile
      * @param null                 $lastNotification
      * @param int                  $notificationInterval
      */
-    public function __construct($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null, $notificationInterval = 6)
+    public function __construct($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
     {
         $this->setFileName($fileName);
         $this->setJiraWebhookData($jiraWebhookData);
         $this->setLastNotification($lastNotification);
-        $this->setNotificationInterval($notificationInterval);
-    }
-
-    /**
-     * @param $fileName
-     */
-    public function setFileName($fileName)
-    {
-        $this->fileName = $fileName;
     }
 
     /**
@@ -97,6 +81,14 @@ class IssueFile
     }
 
     /**
+     * @param $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
      * @param JiraWebhookData $jiraWebhookData
      */
     public function setJiraWebhookData(JiraWebhookData $jiraWebhookData)
@@ -113,11 +105,11 @@ class IssueFile
     }
 
     /**
-     * @param $notificationInterval
+     * @return mixed
      */
-    public function setNotificationInterval($notificationInterval)
+    public static function getPathToFolder()
     {
-        $this->notificationInterval = $notificationInterval;
+        return self::$pathToFolder;
     }
 
     /**
@@ -126,14 +118,6 @@ class IssueFile
     public function getFileName()
     {
         return $this->fileName;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getPathToFolder()
-    {
-        return self::$pathToFolder;
     }
 
     /**
@@ -153,63 +137,32 @@ class IssueFile
     }
 
     /**
-     * @return mixed
-     */
-    public function getNotificationInterval()
-    {
-        return $this->notificationInterval;
-    }
-
-    /**
-     * Checks is file with $issueKey name exists
-     * 
-     * @param $pathToFolder
-     * @param $issueKey
-     * 
-     * @return bool
-     */
-    public static function isFileExists($pathToFolder, $issueKey)
-    {
-        $answer = false;
-
-        foreach (glob("{$pathToFolder}*") as $pathToFile) {
-            if (basename($pathToFile) === $issueKey) {
-                $answer = true;
-            }
-        }
-
-        return $answer;
-    }
-
-    /**
-     * Delete all files in $pathToFolder with names that matches with $issueKey
      *
-     * @param        $pathToFolder
-     * @param string $issueKey     JIRA issue key
+     *
+     * @param IssueFile $data
+     *
+     * @return string
      */
-    public static function deleteFileByIssueKey($pathToFolder, $issueKey)
+    public static function getPathToFile(IssueFile $issueFile)
     {
-        foreach (glob("{$pathToFolder}*") as $pathToFile) {
-            if (basename($pathToFile) === $issueKey) {
-                IssueFile::delete($pathToFile);
-            }
-        }
+        return self::getPathToFolder().$issueFile->getFileName();
     }
 
     /**
      * Check all files in $pathToFolder for expired notification period
      *
      * @param $pathToFolder
+     * @param $notificationInterval
      * @param $callback
      *
      * @throws IssueFileException
      */
-    public static function filesCheck($pathToFolder, $callback)
+    public static function filesCheck($pathToFolder, $notificationInterval, $callback)
     {
         foreach (glob("{$pathToFolder}*") as $pathToFile) {
             $issueFile = IssueFile::get($pathToFile);
 
-            if (IssueFile::isExpired($issueFile->getLastNotification(), $issueFile->getNotificationInterval())) {
+            if (IssueFile::isExpired($issueFile, $notificationInterval)) {
                 $callback($issueFile->getJiraWebhookData()->getRawData());
             }
         }
@@ -224,11 +177,35 @@ class IssueFile
      *
      * @return bool
      */
-    public static function isExpired($lastNotification, $notificationInterval)
+    public static function isExpired(IssueFile $issueFile, $notificationInterval)
     {
-        $interval = (new DateTime())->diff(new DateTime($lastNotification));
+        return ((time() - $issueFile->getLastNotification()) / 60) >= $notificationInterval;
+    }
 
-        return $interval->h >= $notificationInterval;
+    /**
+     *
+     *
+     * @param $fileName
+     * @param JiraWebhookData|null $jiraWebhookData
+     * @param null $lastNotification
+     *
+     * @return mixed|IssueFile
+     *
+     * @throws IssueFileException
+     */
+    public static function create($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
+    {
+        $issueFile = new self($fileName, $jiraWebhookData, $lastNotification);
+
+        $pathToFile = IssueFile::getPathToFile($issueFile);
+
+        if (file_exists($pathToFile)) {
+            $issueFile = IssueFile::get($pathToFile);
+        } else {
+            IssueFile::put($issueFile);
+        }
+
+        return $issueFile;
     }
 
     /**
@@ -242,13 +219,13 @@ class IssueFile
      */
     public static function get($pathToFile)
     {
-        $data = json_decode(file_get_contents($pathToFile));
+        $issueFile = json_decode(file_get_contents($pathToFile));
 
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new IssueFileException("Json decode error: ".json_last_error_msg());
         }
 
-        return $data;
+        return $issueFile;
     }
 
     /**
@@ -262,26 +239,27 @@ class IssueFile
      *
      * @throws IssueFileException
      */
-    public static function put($pathToFile, $issueKey, IssueFile $data)
+    public static function put(IssueFile $issueFile)
     {
-        $data = json_encode($data);
+        $pathToFile = IssueFile::getPathToFile($issueFile);
+        $issueFile = json_encode($issueFile);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new IssueFileException("Json encode error: ".json_last_error_msg());
         }
 
-        return file_put_contents("{$pathToFile}{$issueKey}", $data);
+        return file_put_contents($pathToFile, $issueFile);
     }
 
     /**
-     * Deletes $pathToFile
      *
-     * @param $pathToFile
+     *
+     * @param IssueFile $data
      *
      * @return bool
      */
-    public static function delete($pathToFile)
+    public static function delete(IssueFile $issueFile)
     {
-        return unlink($pathToFile);
+        return unlink(IssueFile::getPathToFile($issueFile));
     }
 }

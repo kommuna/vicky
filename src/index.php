@@ -88,15 +88,14 @@ $jiraWebhook->addListener('*', function($e, $data)
 });
 
 /**
- * Delete blockers issue file if issue deleted, issue priority not Blocker anymore,
- * issue has status Resolved or Close
+ * If issue priority updates to blocker and file for this issue don't exists
+ * creates file for this issue
  */
-$jiraWebhook->addListener('*', function($e, $data)
-{
+$jiraWebhook->addListener('jira:issue_updated', function($e, $data) {
     $issue = $data->getIssue();
 
-    if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || $issue->isStatusResolved() || $issue->isStatusClose()) {
-        IssueFile::deleteFileByIssueKey(IssueFile::getPathToFolder(), $issue->getKey());
+    if ($issue->isPriorityBlocker()) {
+        IssueFile::create($issue->getKey(), $data, time());
     }
 });
 
@@ -110,27 +109,22 @@ $jiraWebhook->addListener('*', function($e, $data)
     $issue = $data->getIssue();
 
     if (($e->getName() === 'jira:issue_created' && $issue->isPriorityBlocker()) || ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && $data->isIssueCommented())) {
-        $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'), 24);
-        
-        $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
-        
-        IssueFile::put($pathToFile, $issueFile->getFileName(), $issueFile);
+        $issueFile = new IssueFile($issue->getKey(), $data, time());
+        IssueFile::put($issueFile);
     }
 });
 
 /**
- * If issue priority updates to blocker and file for this issue don't exists
- * creates file for this issue
+ * Delete blockers issue file if issue deleted, issue priority not Blocker anymore,
+ * issue has status Resolved or Close
  */
-$jiraWebhook->addListener('*', function($e, $data) {
+$jiraWebhook->addListener('*', function($e, $data)
+{
     $issue = $data->getIssue();
-    
-    if ($e->getName() === 'jira:issue_updated' && $issue->isPriorityBlocker() && !IssueFile::isFileExists(IssueFile::getPathToFolder(), $issue->getKey())) {
-        $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'), 24);
 
-        $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
-
-        IssueFile::put($pathToFile, $issueFile->getFileName(), $issueFile);
+    if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || $issue->isStatusResolved() || $issue->isStatusClose()) {
+        $issueFile = IssueFile::get(IssueFile::getPathToFolder().$issue->getKey());
+        IssueFile::delete($issueFile);
     }
 });
 
@@ -138,7 +132,7 @@ $jiraWebhook->addListener('*', function($e, $data) {
  * Send message to assignee user if blockers issue not commented more
  * than 24 hours and stores data with updated notification datatime
  */
-$jiraWebhook->addListener('jira:custom:blocker_notification', function($e, $data)
+$jiraWebhook->addListener('custom:blocker_notification', function($e, $data)
 {
     $issue = $data->getIssue();
 
@@ -147,11 +141,8 @@ $jiraWebhook->addListener('jira:custom:blocker_notification', function($e, $data
         JiraWebhook::convert('JiraBlockerNotification', $data)
     );
 
-    $issueFile = new IssueFile($issue->getKey(), $data, (new DateTime())->format('Y-m-d\TH:i:sP'));
-
-    $pathToFile = IssueFile::getPathToFolder().$issueFile->getFileName();
-
-    IssueFile::put($pathToFile, $issueFile->getFileName(), $issueFile);
+    $issueFile = new IssueFile($issue->getKey(), $data, time());
+    IssueFile::put($issueFile);
 });
 
 /**

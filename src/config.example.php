@@ -30,7 +30,7 @@ return [
     ],
     'blockersIssues' => [
         'folder'               => '/path/to/blockers/issue/file/folder/',
-        /* The time interval for blockers issues notification is specified in hours */
-        'norificationInterval' => 6
+        /* The time interval for blockers issues notification is specified in minuts */
+        'notificationInterval' => 360
     ]
 ];

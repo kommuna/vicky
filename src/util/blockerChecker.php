@@ -44,10 +44,14 @@ $vickyClient = new VickyClient(
 
 IssueFile::setPathToFolder($config['blockersIssues']['folder']);
 
-IssueFile::filesCheck(IssueFile::getPathToFolder(), function($data) use ($vickyClient)
-{
-    $data['webhookEvent'] = 'jira:custom:blocker_notification';
-    $vickyClient->send($data);
-});
+IssueFile::filesCheck(
+    IssueFile::getPathToFolder(),
+    $config['notificationInterval'],
+    function($data) use ($vickyClient)
+    {
+        $data['webhookEvent'] = 'custom:blocker_notification';
+        $vickyClient->send($data);
+    }
+);
 
 $log->info("Script finished in ".(microtime(true) - $start)." sec.");

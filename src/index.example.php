@@ -14,8 +14,6 @@ namespace Vicky;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use DateTime;
-use DateInterval;
 
 use Vicky\src\modules\Jira\IssueFile;
 use Vicky\src\modules\Jira\JiraBlockerNotificationConverter;
@@ -122,8 +120,7 @@ $jiraWebhook->addListener('*', function($e, $data)
     $issue = $data->getIssue();
 
     if ($e->getName() === 'jira:issue_deleted' || !$issue->isPriorityBlocker() || $issue->isStatusResolved() || $issue->isStatusClose()) {
-        $issueFile = IssueFile::get(IssueFile::getPathToFolder().$issue->getKey());
-        IssueFile::delete($issueFile);
+        IssueFile::delete($issue->getKey());
     }
 });
 

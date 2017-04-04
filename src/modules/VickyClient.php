@@ -10,6 +10,7 @@
  */
 namespace Vicky\src\modules;
 
+use Vicky\src\exceptions\IssueFileException;
 use Vicky\src\exceptions\VickyClientException;
 
 class VickyClient
@@ -29,15 +30,21 @@ class VickyClient
     protected $vickyTimeout;
 
     /**
+     * 
+     * @var
+     */
+    protected static $vickyClient;
+
+    /**
      * VickyClient constructor.
      * 
      * @param     $vickyUrl     vicky host URL
      * @param int $vickyTimeout timeout of curl request to vicky
      */
-    public function __construct($vickyUrl, $vickyTimeout)
+    public function __construct($vickyUrl, $vickyTimeout = 0)
     {
         $this->setVickyUrl($vickyUrl);
-        $this->setvickyTimeout($vickyTimeout);
+        $this->setVickyTimeout($vickyTimeout);
     }
 
     /**
@@ -51,7 +58,7 @@ class VickyClient
     /**
      * @param $vickyTimeout
      */
-    public function setvickyTimeout($vickyTimeout)
+    public function setVickyTimeout($vickyTimeout)
     {
         $this->vickyTimeout = $vickyTimeout;
     }
@@ -73,6 +80,29 @@ class VickyClient
     }
 
     /**
+     * Initialize vicky client or return if already initialized
+     *
+     * @param     $vickyUrl
+     * @param int $vickyTimeout
+     *
+     * @return VickyClient
+     *
+     * @throws VickyClientException
+     */
+    public static function getInstance($vickyUrl = '', $vickyTimeout = 0)
+    {
+        if (!self::$vickyClient) {
+            if (!$vickyUrl) {
+                throw new VickyClientException("Slack bot url must be defined!");
+            }
+            
+            self::$vickyClient = new self($vickyUrl, $vickyTimeout);
+        }
+
+        return self::$vickyClient;
+    }
+
+    /**
      * Send HTTP request by curl method
      * 
      * @param $data array with data
@@ -81,8 +111,12 @@ class VickyClient
      * 
      * @throws VickyClientException
      */
-    public function send($data)
+    public function send($data, $customEventName = '')
     {
+        if ($customEventName) {
+            $data['webhookEvent'] = $customEventName;
+        }
+        
         if (!($curl = curl_init())) {
             throw new VickyClientException('Cannot init curl session!');
         }

@@ -37,20 +37,16 @@ $start = microtime(true);
 
 $log->info("The script ".__FILE__." started.");
 
-$vickyClient = new VickyClient(
+VickyClient::getInstance(
     $config['vickyClient']['url'],
     $config['vickyClient']['timeout']
 );
 
 IssueFile::setPathToFolder($config['blockersIssues']['folder']);
 
-IssueFile::filesCheck(
-    $config['notificationInterval'],
-    function($data) use ($vickyClient)
-    {
-        $data['webhookEvent'] = 'custom:blocker_notification';
-        $vickyClient->send($data);
-    }
-);
+IssueFile::filesCheck($config['notificationInterval'], function($data)
+{
+    VickyClient::getInstance()->send($data, 'custom:blocker_notification');
+});
 
 $log->info("Script finished in ".(microtime(true) - $start)." sec.");

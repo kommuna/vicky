@@ -251,12 +251,20 @@ class IssueFile
     /**
      * Delete file
      *
-     * @param IssueFile $issueFile
+     * @param $fileName
      *
      * @return bool
+     *
+     * @throws IssueFileException
      */
-    public static function delete(IssueFile $issueFile)
+    public static function delete($fileName)
     {
-        return unlink(IssueFile::getPathToFile($issueFile));
+        $pathToFile = IssueFile::getPathToFolder().$fileName;
+
+        if (!file_exists($pathToFile)) {
+            throw new IssueFileException("{$pathToFile} does not exists!");
+        }
+
+        return unlink($pathToFile);
     }
 }

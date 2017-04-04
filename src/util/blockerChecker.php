@@ -14,7 +14,7 @@ namespace Vicky\util;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-use Vicky\src\modules\IssueFile;
+use Vicky\src\modules\Jira\IssueFile;
 use Vicky\src\modules\VickyClient;
 
 require dirname(__DIR__).'/vendor/autoload.php';
@@ -45,7 +45,6 @@ $vickyClient = new VickyClient(
 IssueFile::setPathToFolder($config['blockersIssues']['folder']);
 
 IssueFile::filesCheck(
-    IssueFile::getPathToFolder(),
     $config['notificationInterval'],
     function($data) use ($vickyClient)
     {

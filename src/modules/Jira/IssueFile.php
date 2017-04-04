@@ -9,10 +9,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules;
+namespace Vicky\src\modules\Jira;
 
 use JiraWebhook\Models\JiraWebhookData;
-use DateTime;
 use Vicky\src\exceptions\IssueFileException;
 
 class IssueFile
@@ -39,7 +38,7 @@ class IssueFile
     protected $jiraWebhookData;
 
     /**
-     * Datatime of last notification
+     * Time of last notification
      *
      * @var
      */
@@ -51,7 +50,6 @@ class IssueFile
      * @param                      $fileName
      * @param JiraWebhookData|null $jiraWebhookData
      * @param null                 $lastNotification
-     * @param int                  $notificationInterval
      */
     public function __construct($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
     {
@@ -67,9 +65,7 @@ class IssueFile
      */
     public static function setPathToFolder($pathToFolder)
     {
-        if (!file_exists($pathToFolder) && is_writable(dirname($pathToFolder))) {
-            mkdir($pathToFolder);
-        } else{
+        if (!mkdir($pathToFolder)) {
             throw new IssueFileException("{$pathToFolder} don't exists and unable to create.");
         }
 
@@ -137,9 +133,9 @@ class IssueFile
     }
 
     /**
+     * Create full path to file
      *
-     *
-     * @param IssueFile $data
+     * @param IssueFile $issueFile
      *
      * @return string
      */
@@ -149,7 +145,22 @@ class IssueFile
     }
 
     /**
+     * Check interval between current time and time of last notification
+     * with $notificationInterval
+     *
+     * @param IssueFile $issueFile
+     * @param           $notificationInterval
+     *
+     * @return bool
+     */
+    public static function isExpired(IssueFile $issueFile, $notificationInterval)
+    {
+        return ((time() - $issueFile->getLastNotification()) / 60) >= $notificationInterval;
+    }
+
+    /**
      * Check all files in $pathToFolder for expired notification period
+     * and use $callback on expired files
      *
      * @param $pathToFolder
      * @param $notificationInterval
@@ -157,8 +168,10 @@ class IssueFile
      *
      * @throws IssueFileException
      */
-    public static function filesCheck($pathToFolder, $notificationInterval, $callback)
+    public static function filesCheck($notificationInterval, $callback)
     {
+        $pathToFolder = IssueFile::getPathToFolder();
+
         foreach (glob("{$pathToFolder}*") as $pathToFile) {
             $issueFile = IssueFile::get($pathToFile);
 
@@ -169,25 +182,12 @@ class IssueFile
     }
 
     /**
-     * Check interval between current datatime and datatime of last notification
-     * with $notification interval
+     * Creates a new file if it did not exist,
+     * or returns data from the file if it exists
      *
-     * @param $lastNotification
-     * @param $notificationInterval
-     *
-     * @return bool
-     */
-    public static function isExpired(IssueFile $issueFile, $notificationInterval)
-    {
-        return ((time() - $issueFile->getLastNotification()) / 60) >= $notificationInterval;
-    }
-
-    /**
-     *
-     *
-     * @param $fileName
+     * @param                      $fileName
      * @param JiraWebhookData|null $jiraWebhookData
-     * @param null $lastNotification
+     * @param null                 $lastNotification
      *
      * @return mixed|IssueFile
      *
@@ -231,9 +231,7 @@ class IssueFile
     /**
      * Puts data in $pathToFile
      *
-     * @param           $pathToFile
-     * @param           $issueKey
-     * @param IssueFile $data
+     * @param IssueFile $issueFile
      *
      * @return int
      *
@@ -252,9 +250,9 @@ class IssueFile
     }
 
     /**
+     * Delete file
      *
-     *
-     * @param IssueFile $data
+     * @param IssueFile $issueFile
      *
      * @return bool
      */

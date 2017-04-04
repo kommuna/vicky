@@ -17,7 +17,7 @@ use Monolog\Handler\StreamHandler;
 use DateTime;
 use DateInterval;
 
-use Vicky\src\modules\IssueFile;
+use Vicky\src\modules\Jira\IssueFile;
 use Vicky\src\modules\Jira\JiraBlockerNotificationConverter;
 use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
@@ -100,9 +100,8 @@ $jiraWebhook->addListener('jira:issue_updated', function($e, $data) {
 });
 
 /**
- * If issue priority created with blocker priority, priority updated to blocker
- * or blocker issue commented stores object with parsed data from JIRA and
- * other data to file
+ * If issue created with blocker priority or blocker issue commented
+ * stores object with parsed data from JIRA and current time
  */
 $jiraWebhook->addListener('*', function($e, $data)
 {

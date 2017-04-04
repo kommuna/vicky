@@ -162,7 +162,6 @@ class IssueFile
      * Check all files in $pathToFolder for expired notification period
      * and use $callback on expired files
      *
-     * @param $pathToFolder
      * @param $notificationInterval
      * @param $callback
      *

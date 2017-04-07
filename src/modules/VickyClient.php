@@ -43,6 +43,9 @@ class VickyClient
      */
     public function __construct($vickyUrl, $vickyTimeout = 0)
     {
+        if (!$vickyUrl) {
+            throw new VickyClientException("Slack bot url must be defined!");
+        }
         $this->setVickyUrl($vickyUrl);
         $this->setVickyTimeout($vickyTimeout);
     }
@@ -92,10 +95,6 @@ class VickyClient
     public static function getInstance($vickyUrl = '', $vickyTimeout = 0)
     {
         if (!self::$vickyClient) {
-            if (!$vickyUrl) {
-                throw new VickyClientException("Slack bot url must be defined!");
-            }
-            
             self::$vickyClient = new self($vickyUrl, $vickyTimeout);
         }
 
@@ -111,10 +110,10 @@ class VickyClient
      * 
      * @throws VickyClientException
      */
-    public function send($data, $customEventName = '')
+    public function send($data, $eventName = '')
     {
-        if ($customEventName) {
-            $data['webhookEvent'] = $customEventName;
+        if ($eventName) {
+            $data['webhookEvent'] = $eventName;
         }
         
         if (!($curl = curl_init())) {

@@ -301,16 +301,16 @@ class IssueFile
      * @throws IssueFileException
      */
 
-    public static function delete($pathToFile)
+    public static function delete($issue)
     {
-        if ($pathToFile instanceof IssueFile) {
-            $pathToFile = IssueFile::getPathToFile($pathToFile);
+        if ($issue instanceof IssueFile) {
+            $issue = IssueFile::getPathToFile($issue);
         }
 
-        if (!file_exists($pathToFile)) {
-            throw new IssueFileException("{$pathToFile} does not exists!");
+        if (!file_exists($issue)) {
+            throw new IssueFileException("{$issue} does not exists!");
         }
 
-        return unlink($pathToFile);
+        return unlink($issue);
     }
 }

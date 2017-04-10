@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of default messages into a Slack Client Message Object
+ * JiraWebhookData converter of assigned issues into a Slack Client Message Object
  *
  * @credits https://github.com/kommuna
  * @author  Chewbacca chewbacca@devadmin.com
@@ -15,7 +15,7 @@ use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
 use Maknz\Slack\Message;
 
-class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
+class JiraToAssigneeConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into a formatted Slack Client Message Object
@@ -28,15 +28,23 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
     public function convert(JiraWebhookData $data, Message $clientMessage)
     {
         $issue        = $data->getIssue();
-        $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
+        $typeIcon     = '';
+
+        if ($issue->isPriorityBlocker()) {
+            $typeIcon = ":no_entry_sign:";
+        } elseif ($issue->isTypeOperations()) {
+            $typeIcon = "⚙";
+        } elseif ($issue->isTypeUrgentBug()) {
+            $typeIcon = "⚡";
+        }
 
         /**
-         * Issue doesn't have comments and is not assigned to a user
+         * Issue doesn't have any comments, but is assigned
          */
-        if (!$comment && !$assigneeName) {
+        if (!$comment) {
             $message = vsprintf(
-                "<%s|%s> %s: %s ➠ Unassigned",
+                "Assigned to you: {$typeIcon} <%s|%s> %s: %s",
                 [
                     $issue->getUrl(),
                     $issue->getKey(),
@@ -46,54 +54,22 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
             );
 
         /**
-         * Issue is not assigned to a user
-         */
-        } elseif (!$assigneeName) {
-            $message = vsprintf(
-                "<%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s",
-                [
-                    $issue->getUrl(),
-                    $issue->getKey(),
-                    $issue->getStatus(),
-                    $issue->getSummary(),
-                    $comment->getAuthor()->getName(),
-                    $comment->getBody()
-                ]
-            );
-
-        /**
-         * Issue doesn't have any comments
-         */
-        } elseif (!$comment) {
-            $message = vsprintf(
-                "<%s|%s> %s: %s ➠ @%s",
-                [
-                    $issue->getUrl(),
-                    $issue->getKey(),
-                    $issue->getStatus(),
-                    $issue->getSummary(),
-                    $assigneeName
-                ]
-            );
-
-        /**
          * Default message
          */
         } else {
             $message = vsprintf(
-                "<%s|%s> %s: %s ➠ @%s\n@%s ➠ %s",
+                "Assigned to you: {$typeIcon} <%s|%s> %s: %s\n@%s ➠ %s",
                 [
                     $issue->getUrl(),
                     $issue->getKey(),
                     $issue->getStatus(),
                     $issue->getSummary(),
-                    $assigneeName,
                     $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );
         }
-        
+
         $clientMessage->attach($message);
 
         return $clientMessage;

@@ -43,10 +43,14 @@ VickyClient::getInstance(
 );
 
 IssueFile::setPathToFolder($config['blockersIssues']['folder']);
+IssueFile::setNotificationInterval($config['notificationInterval']);
 
-IssueFile::filesCheck($config['notificationInterval'], function($data)
+IssueFile::filesCheck(function(IssueFile $issueFile)
 {
-    VickyClient::getInstance()->send($data, 'custom:blocker_notification');
+    VickyClient::getInstance()->send(
+        $issueFile->getJiraWebhookData()->getRawData(), 
+        'custom:blocker_notification'
+    );
 });
 
 $log->info("Script finished in ".(microtime(true) - $start)." sec.");

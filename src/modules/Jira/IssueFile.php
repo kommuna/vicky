@@ -1,7 +1,7 @@
 <?php
 /**
- * Class that store path to blockers issue files, can put blockers issue
- * data to file, get data from file, and delete file
+ * Class that stores in file, contains JiraWebhook data
+ * and time of last notification
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -24,6 +24,13 @@ class IssueFile
     protected static $pathToFolder;
 
     /**
+     * Time between notifications in seconds
+     *
+     * @var
+     */
+    protected static $notificationInterval;
+
+    /**
      * File name
      *
      * @var
@@ -38,7 +45,7 @@ class IssueFile
     protected $jiraWebhookData;
 
     /**
-     * Time of last notification
+     * Time of last notification (stores in seconds)
      *
      * @var
      */
@@ -49,9 +56,9 @@ class IssueFile
      *
      * @param                      $fileName
      * @param JiraWebhookData|null $jiraWebhookData
-     * @param null                 $lastNotification
+     * @param null                 $lastNotification in seconds
      */
-    public function __construct($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
+    public function __construct($fileName, JiraWebhookData $jiraWebhookData = '', $lastNotification = '')
     {
         $this->setFileName($fileName);
         $this->setJiraWebhookData($jiraWebhookData);
@@ -77,6 +84,14 @@ class IssueFile
     }
 
     /**
+     * @param int $notificationInterval in seconds
+     */
+    public static function setNotificationInterval($notificationInterval)
+    {
+        self::$notificationInterval = $notificationInterval;
+    }
+
+    /**
      * @param $fileName
      */
     public function setFileName($fileName)
@@ -93,7 +108,7 @@ class IssueFile
     }
 
     /**
-     * @param $lastNotification
+     * @param int $lastNotification in seconds
      */
     public function setLastNotification($lastNotification)
     {
@@ -106,6 +121,14 @@ class IssueFile
     public static function getPathToFolder()
     {
         return self::$pathToFolder;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getNotificationInterval()
+    {
+        return self::$notificationInterval;
     }
 
     /**
@@ -149,35 +172,54 @@ class IssueFile
      * with $notificationInterval
      *
      * @param IssueFile $issueFile
-     * @param           $notificationInterval
+     * @param int       $notificationInterval in seconds
      *
      * @return bool
      */
     public static function isExpired(IssueFile $issueFile, $notificationInterval)
     {
-        return ((time() - $issueFile->getLastNotification()) / 60) >= $notificationInterval;
+        return (time() - $issueFile->getLastNotification()) >= $notificationInterval;
     }
 
     /**
      * Check all files in $pathToFolder for expired notification period
      * and use $callback on expired files
      *
-     * @param $notificationInterval
-     * @param $callback
+     * @param callable $callback             must be a function that takes over IssueFile
+     * @param null|int $notificationInterval in seconds
      *
      * @throws IssueFileException
      */
-    public static function filesCheck($notificationInterval, $callback)
+    public static function filesCheck($callback, $notificationInterval = '')
     {
+        $notificationInterval = $notificationInterval ? $notificationInterval : IssueFile::getNotificationInterval();
+
         $pathToFolder = IssueFile::getPathToFolder();
 
         foreach (glob("{$pathToFolder}*") as $pathToFile) {
-            $issueFile = IssueFile::get($pathToFile);
+            $issueFile = IssueFile::get(basename($pathToFile));
 
             if (IssueFile::isExpired($issueFile, $notificationInterval)) {
-                $callback($issueFile->getJiraWebhookData()->getRawData());
+                $callback($issueFile);
             }
         }
+    }
+
+    /**
+     * Updates time of last notification in blocker issue file
+     *
+     * @param        $fileName
+     * @param string $now
+     *
+     * @throws IssueFileException
+     */
+    public static function updateNotificationTime($fileName, $now = '')
+    {
+        $now = $now ? $now : time();
+
+        $issueFile = IssueFile::get($fileName);
+        $issueFile->setLastNotification($now);
+        IssueFile::put($issueFile);
     }
 
     /**
@@ -186,20 +228,20 @@ class IssueFile
      *
      * @param                      $fileName
      * @param JiraWebhookData|null $jiraWebhookData
-     * @param null                 $lastNotification
+     * @param null|int             $lastNotification in seconds
      *
      * @return mixed|IssueFile
      *
      * @throws IssueFileException
      */
-    public static function create($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
+    public static function create($fileName, JiraWebhookData $jiraWebhookData = '', $lastNotification = '')
     {
         $issueFile = new self($fileName, $jiraWebhookData, $lastNotification);
 
         $pathToFile = IssueFile::getPathToFile($issueFile);
 
         if (file_exists($pathToFile)) {
-            $issueFile = IssueFile::get($pathToFile);
+            $issueFile = IssueFile::get(basename($pathToFile));
         } else {
             IssueFile::put($issueFile);
         }
@@ -210,14 +252,15 @@ class IssueFile
     /**
      * Gets data from $pathToFile
      *
-     * @param $pathToFile
+     * @param $fileName
      *
      * @return mixed
      *
      * @throws IssueFileException
      */
-    public static function get($pathToFile)
+    public static function get($fileName)
     {
+        $pathToFile = IssueFile::getPathToFolder().$fileName;
         $issueFile = json_decode(file_get_contents($pathToFile));
 
         if (JSON_ERROR_NONE !== json_last_error()) {
@@ -249,17 +292,20 @@ class IssueFile
     }
 
     /**
-     * Delete file
+     * Deletes IssueFile
      *
-     * @param $fileName
+     * @param string|object $pathToFile can be string or IssueFile
      *
      * @return bool
      *
      * @throws IssueFileException
      */
-    public static function delete($fileName)
+
+    public static function delete($pathToFile)
     {
-        $pathToFile = IssueFile::getPathToFolder().$fileName;
+        if ($pathToFile instanceof IssueFile) {
+            $pathToFile = IssueFile::getPathToFile($pathToFile);
+        }
 
         if (!file_exists($pathToFile)) {
             throw new IssueFileException("{$pathToFile} does not exists!");

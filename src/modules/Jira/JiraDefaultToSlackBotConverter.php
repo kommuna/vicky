@@ -13,19 +13,17 @@ namespace Vicky\src\modules\Jira;
 
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
-use Maknz\Slack\Message;
 
 class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into a formatted Slack Client Message Object
      *
-     * @param JiraWebhookData $data          parsed data from JIRA
-     * @param Message         $clientMessage slack Client Message Object
+     * @param JiraWebhookData $data parsed data from JIRA
      *
-     * @return Message
+     * @return string
      */
-    public function convert(JiraWebhookData $data, Message $clientMessage)
+    public function convert(JiraWebhookData $data)
     {
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
@@ -93,9 +91,7 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                 ]
             );
         }
-        
-        $clientMessage->attach($message);
 
-        return $clientMessage;
+        return $message;
     }
 }

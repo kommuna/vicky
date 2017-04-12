@@ -13,19 +13,17 @@ namespace Vicky\src\modules\Jira;
 
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
-use Maknz\Slack\Message;
 
 class JiraToAssigneeConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into a formatted Slack Client Message Object
      *
-     * @param JiraWebhookData $data          parsed data from JIRA
-     * @param Message         $clientMessage slack Client Message Object
+     * @param JiraWebhookData $data parsed data from JIRA
      *
-     * @return Message
+     * @return string
      */
-    public function convert(JiraWebhookData $data, Message $clientMessage)
+    public function convert(JiraWebhookData $data)
     {
         $issue        = $data->getIssue();
         $comment      = $issue->getIssueComments()->getLastComment();
@@ -44,8 +42,9 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
          */
         if (!$comment) {
             $message = vsprintf(
-                "Assigned to you: {$typeIcon} <%s|%s> %s: %s",
+                "Assigned to you: %s <%s|%s> %s: %s",
                 [
+                    $typeIcon,
                     $issue->getUrl(),
                     $issue->getKey(),
                     $issue->getStatus(),
@@ -58,8 +57,9 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
          */
         } else {
             $message = vsprintf(
-                "Assigned to you: {$typeIcon} <%s|%s> %s: %s\n@%s ➠ %s",
+                "Assigned to you: %s <%s|%s> %s: %s\n@%s ➠ %s",
                 [
+                    $typeIcon,
                     $issue->getUrl(),
                     $issue->getKey(),
                     $issue->getStatus(),
@@ -70,8 +70,6 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
             );
         }
 
-        $clientMessage->attach($message);
-
-        return $clientMessage;
+        return $message;
     }
 }

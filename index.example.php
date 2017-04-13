@@ -16,10 +16,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Maknz\Slack\Client;
 
-use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
-use Vicky\src\modules\Jira\JiraOperationsToSlackBotConverter;
-use Vicky\src\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use Vicky\src\modules\Slack\SlackBotSender;
 use Vicky\src\modules\Slack\SlackMessageSender;
 use Vicky\src\modules\Vicky;
@@ -64,10 +61,6 @@ $jiraWebhook = new JiraWebhook();
  * payload into formatted, human readable Slack messages
  */
 JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
-JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
-JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
-JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
-
 
 /*
 |--------------------------------------------------------------------------
@@ -84,16 +77,7 @@ JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotCon
  */
 $jiraWebhook->addListener('*', function($e, JiraWebhookData $data)
 {
-    if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
-        $issue = $data->getIssue();
-
-        if ($issue->isPriorityBlocker()) {
-            $slackClientMessage = SlackMessageSender::getMessage();
-            JiraWebhook::convert('JiraBlockerToSlack', $data, $slackClientMessage);
-            $slackClientMessage->to(Vicky::getChannelByProject($issue->getProjectName()));
-            $slackClientMessage->send();
-        }
-    }
+    // Catch all events
 });
 
 /**

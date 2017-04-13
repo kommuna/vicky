@@ -29,7 +29,7 @@ Register your [webhooks in JIRA](https://developer.atlassian.com/jiradev/jira-ap
 #### 3. Slackbot daemon
 > NOTE: Vicky currently doesn't implement any bot commands, so if you don't have any yourself either you can safely skip this step.
 
-The slackbot can be run by by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
+The slackbot can be run by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
 We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow these steps:
 
  - Copy the `init.d/slackbotservice` script to your init.d folder. 
@@ -66,7 +66,6 @@ Let's look at the most basic parts:
      * payload into formatted, human readable Slack messages
      */
     JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
-    JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
 
     /*
     |--------------------------------------------------------------------------
@@ -105,11 +104,9 @@ Let's look at the most basic parts:
 Currently the following default events are set in the index.php file:
 
 - Issue created:  
-        - If the issue is a blocker a message is sent in the project's channel  
         - A message is sent to the user the issue is assigned to.
   
 - Issue updated  
-        - If the issue is a blocker a message is sent in the project's channel  
         - If an issue gets assigned - a message is sent to the assignee
         
 - Comments  

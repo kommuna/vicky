@@ -18,7 +18,7 @@ use JiraWebhook\Models\JiraWebhookData;
 class JiraCommentsToUserConverter implements JiraWebhookDataConverter
 {
     /**
-     * Converts $data into a formatted Slack Client Message Object
+     * Converts $data into a formatted string message
      *
      * @param JiraWebhookData $data parsed data from JIRA
      *

@@ -34,10 +34,10 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "⚡ %s (%s) %s: %s ➠ Unassigned",
+                "⚡ <%s|%s> %s: %s ➠ Unassigned",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary()
                 ]
@@ -48,10 +48,10 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
          */
         } elseif (!$assigneeName) {
             $message = vsprintf(
-                "⚡ %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
+                "⚡ <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $comment->getAuthor()->getName(),
@@ -64,10 +64,10 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
          */
         } elseif (!$comment) {
             $message = vsprintf(
-                "⚡ %s (%s) %s: %s ➠ @%s",
+                "⚡ <%s|%s> %s: %s ➠ @%s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName
@@ -79,10 +79,10 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
          */
         } else {
             $message = vsprintf(
-                "⚡ %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
+                "⚡ <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,

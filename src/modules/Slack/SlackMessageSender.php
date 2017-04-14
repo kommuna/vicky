@@ -28,7 +28,7 @@ class SlackMessageSender
     public static function getConfig()
     {
         if (!self::$config) {
-            self::$config = require '/etc/vicky-test/config.php';
+            self::$config = require '/etc/vicky/config.php';
         }
 
         return self::$config;

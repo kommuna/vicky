@@ -1,9 +1,10 @@
 <?php
 /**
- * JiraWebhookData converter of issue with priority 'Blocker' into formatted string message.
+ * JiraWebhookData converter of issues with priority 'Blocker' into a Slack Client Message Object
  *
  * @credits https://github.com/kommuna
- * @author  chewbacca@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
+ * @author  Miss Lv lv@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,10 +17,10 @@ use JiraWebhook\Models\JiraWebhookData;
 class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 {
     /**
-     * Converts $data into message (string)
+     * Converts $data into a formatted string message
      *
      * @param JiraWebhookData $data parsed data from JIRA
-     * 
+     *
      * @return string
      */
     public function convert(JiraWebhookData $data)
@@ -33,52 +34,55 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ Unassigned",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary()
                 ]
             );
+
         /**
-         * Issue is not assigned to a user
-         */    
+         * Issue is not assigned to a user, but has comments
+         */
         } elseif (!$assigneeName) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );
+
         /**
-         * Issue doesn't have any comments
-         */    
+         * Issue doesn't have any comments, but is assigned
+         */
         } elseif (!$comment) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ @%s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName
                 ]
             );
+
         /**
          * Default message
-         */    
+         */
         } else {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ @%s\n@%s ➠ %s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,

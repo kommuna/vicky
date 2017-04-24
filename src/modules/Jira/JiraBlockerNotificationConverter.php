@@ -1,6 +1,7 @@
 <?php
 /**
- * Data converter of issue with priority 'Blocker', that not commented more than 24 hours into formatted string message.
+ * Data converter of issue with priority 'Blocker',
+ * that not commented more than 24 hours into formatted string message.
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com
@@ -16,7 +17,7 @@ use JiraWebhook\Models\JiraWebhookData;
 class JiraBlockerNotificationConverter implements JiraWebhookDataConverter
 {
     /**
-     * Converts $data into message (string)
+     * Converts $data into a formatted string message
      *
      * @param JiraWebhookData $data parsed data from JIRA
      *
@@ -33,52 +34,55 @@ class JiraBlockerNotificationConverter implements JiraWebhookDataConverter
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ Unassigned\nThis ticket did not comment more than 24 hours",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\nThis ticket did not comment more than 24 hours",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary()
                 ]
             );
+            
         /**
-         * Issue is not assigned to a user
+         * Issue is not assigned to a user, but has comments
          */
         } elseif (!$assigneeName) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ Unassigned\n@%s ➠ %s\nThis ticket did not comment more than 24 hours",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s\nThis ticket did not comment more than 24 hours",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $comment->getAuthor()->getName(),
                     $comment->getBody()
                 ]
             );
+            
         /**
-         * Issue doesn't have any comments
+         * Issue doesn't have any comments, but is assigned
          */
         } elseif (!$comment) {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ @%s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\nThis ticket did not comment more than 24 hours",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName
                 ]
             );
+            
         /**
          * Default message
          */
         } else {
             $message = vsprintf(
-                "!!! %s (%s) %s: %s ➠ @%s\n@%s ➠ %s\nThis ticket did not comment more than 24 hours",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s\nThis ticket did not comment more than 24 hours",
                 [
+                    $issue->getUrl(),
                     $issue->getKey(),
-                    $issue->getSelf(),
                     $issue->getStatus(),
                     $issue->getSummary(),
                     $assigneeName,

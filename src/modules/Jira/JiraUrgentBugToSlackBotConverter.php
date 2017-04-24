@@ -28,7 +28,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
-
+        
         /**
          * Issue doesn't have comments and is not assigned to a user
          */
@@ -91,7 +91,7 @@ class JiraUrgentBugToSlackBotConverter implements JiraWebhookDataConverter
                 ]
             );
         }
-
+        
         return $message;
     }
 }

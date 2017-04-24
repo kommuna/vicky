@@ -45,7 +45,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 
         /**
          * Issue is not assigned to a user, but has comments
-         */    
+         */
         } elseif (!$assigneeName) {
             $message = vsprintf(
                 ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s",
@@ -61,7 +61,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 
         /**
          * Issue doesn't have any comments, but is assigned
-         */    
+         */
         } elseif (!$comment) {
             $message = vsprintf(
                 ":no_entry_sign: <%s|%s> %s: %s ➠ @%s",
@@ -76,7 +76,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
 
         /**
          * Default message
-         */    
+         */
         } else {
             $message = vsprintf(
                 ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s",

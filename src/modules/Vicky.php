@@ -1,6 +1,6 @@
 <?php
 /**
- * Class with JIRA to slack mapping logic
+ * JIRA to Slack mapping logic
  *
  * @credits https://github.com/kommuna
  * @author  chewbacca@devadmin.com

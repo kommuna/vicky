@@ -16,6 +16,7 @@ return [
     'slackBot' => [
         'url'     => 'http://url were you host slack bot:port',
         'auth'    => 'secret key for slack bot if needed',
+        'botName'    => 'bot name',
         /* The time-out of requests to the bot is specified in seconds */
         'timeout' => 10
     ],
@@ -24,6 +25,7 @@ return [
         /* The time-out of requests to the bot is specified in seconds */
         'timeout' => 10
     ],
+    'slackIncomingWebhookUrl' => 'incoming webhook url',  // Get it here: https://chewyteamgroup.slack.com/apps/A0F7XDUAZ-incoming-webhooks
     'jiraToSlackMapping' => [
         'ProjectName' => '#channelName',
         '*'           => '#defaultChannelName'

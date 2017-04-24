@@ -27,7 +27,7 @@ class SlackMessageSender
     public static function getConfig()
     {
         if (!self::$config) {
-            self::$config = require '/etc/vicky/config.php';
+            self::$config = require '/etc/vicky-test/config.php';
         }
 
         return self::$config;
@@ -68,15 +68,15 @@ class SlackMessageSender
      */
     public static function getMessage()
     {
-        $client = new Client(
-            self::getWebhookUrl(),
-            [
-                'username'=>self::getBotUsername(),
-                'unfurl_links' => true,
-                'markdown_in_attachments' => ['text']
-            ]
-        );
-        
+        $url = self::getWebhookUrl();
+        $settings = [
+            'username'=>self::getBotUsername(),
+            'unfurl_links' => true,
+            'markdown_in_attachments' => ['text']
+        ];
+
+        $client = new Client($url, $settings);
+      
         return $client->createMessage();
     }
 }

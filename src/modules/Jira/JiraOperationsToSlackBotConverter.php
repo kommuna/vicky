@@ -91,7 +91,7 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                 ]
             );
         }
-        
+
         return $message;
     }
 }

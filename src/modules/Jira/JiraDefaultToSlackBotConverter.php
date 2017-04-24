@@ -42,7 +42,7 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSummary()
                 ]
             );
-            
+
         /**
          * Issue is not assigned to a user
          */
@@ -58,7 +58,7 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $comment->getBody()
                 ]
             );
-            
+
         /**
          * Issue doesn't have any comments
          */
@@ -73,7 +73,7 @@ class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
                     $assigneeName
                 ]
             );
-            
+
         /**
          * Default message
          */

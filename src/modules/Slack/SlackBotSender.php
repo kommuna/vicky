@@ -3,7 +3,7 @@
  * Slack bot client class, that sends messages to slack bot
  *
  * @credits https://github.com/kommuna
- * @author  chewbacca@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -43,8 +43,8 @@ class SlackBotSender
     /**
      * SlackWebhookSender constructor.
      * 
-     * @param string $slackBotUrl slack bot webserver host url
-     * @param null   $authKey        slack bot webserver secret key
+     * @param string $slackBotUrl  slackbot webserver host url
+     * @param string $authKey      slackbot webserver secret key
      */
     public function __construct($slackBotUrl, $authKey = '', $slackBotTimeout = 0)
     {
@@ -102,7 +102,7 @@ class SlackBotSender
     }
 
     /**
-     * Initialize slack bot client or return if already initialized
+     * Initialize slack bot client or return it if already initialized
      *
      * @param string $slackBotUrl
      * @param string $authKey
@@ -125,11 +125,11 @@ class SlackBotSender
 
     /**
      * Send HTTP POST request to slack bot to send in $channel
-     * if $channel empty then Request will not be sent
+     * if $channel is empty then Request will not be sent
      *
-     * @param string $channel  slack channel name (with '#' symbol)
+     * @param string $channel  slack channel name (including or not the '#' symbol)
      * @param string $message  message text
-     * @param string $hookName slack bot hook which accepts requests
+     * @param string $webhookName slack bot hook which accepts requests
      *
      * @return bool
      */
@@ -155,12 +155,12 @@ class SlackBotSender
     }
 
     /**
-     * Send HTTP POST request to slack bot to send in private chat to user personally
-     * if $userName empty then Request will not be sent
+     * Send HTTP POST request to slack bot to send in private chat to user directly
+     * if $userName is empty then Request will not be sent
      *
      * @param string $userName slack username (without '@' symbol)
      * @param string $message  message text
-     * @param string $hookName slack bot hook which accepts requests
+     * @param string $webhookName slack bot hook which accepts requests
      * 
      * @return bool
      */

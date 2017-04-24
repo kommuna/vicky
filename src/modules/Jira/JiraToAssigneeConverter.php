@@ -28,7 +28,7 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $comment      = $issue->getIssueComments()->getLastComment();
         $typeIcon     = '';
-        
+
         if ($issue->isPriorityBlocker()) {
             $typeIcon = ":no_entry_sign:";
         } elseif ($issue->isTypeOperations()) {
@@ -36,7 +36,7 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
         } elseif ($issue->isTypeUrgentBug()) {
             $typeIcon = "⚡";
         }
-        
+
         /**
          * Issue doesn't have any comments, but is assigned
          */
@@ -51,7 +51,7 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
                     $issue->getSummary()
                 ]
             );
-            
+
         /**
          * Default message
          */
@@ -69,7 +69,7 @@ class JiraToAssigneeConverter implements JiraWebhookDataConverter
                 ]
             );
         }
-        
+
         return $message;
     }
 }

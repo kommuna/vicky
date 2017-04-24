@@ -53,7 +53,7 @@ class JiraCommentsToUserConverter implements JiraWebhookDataConverter
                 $comment->getBody()
             ]
         );
-        
+
         return $message;
     }
 }

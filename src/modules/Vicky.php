@@ -26,7 +26,23 @@ class Vicky
      */
     public function __construct($config)
     {
+        self::setConfig($config);
+    }
+
+    /**
+     * @param $config
+     */
+    public static function setConfig($config)
+    {
         self::$config = $config;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getConfig()
+    {
+        return self::$config;
     }
 
     /**

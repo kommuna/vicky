@@ -72,6 +72,7 @@ class IssueFile
      */
     public static function setPathToFolder($pathToFolder)
     {
+        error_log('Debug');
         if (!mkdir($pathToFolder)) {
             throw new IssueFileException("{$pathToFolder} don't exists and unable to create.");
         }

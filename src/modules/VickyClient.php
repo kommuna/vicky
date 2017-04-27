@@ -8,10 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules;
+namespace kommuna\vicky\modules;
 
-use Vicky\src\exceptions\IssueFileException;
-use Vicky\src\exceptions\VickyClientException;
+use kommuna\vicky\exceptions\VickyClientException;
 
 class VickyClient
 {
@@ -40,6 +39,8 @@ class VickyClient
      * 
      * @param     $vickyUrl     vicky host URL
      * @param int $vickyTimeout timeout of curl request to vicky
+     * 
+     * @throws VickyClientException
      */
     public function __construct($vickyUrl, $vickyTimeout = 0)
     {

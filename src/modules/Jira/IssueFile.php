@@ -9,10 +9,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules\Jira;
+namespace kommuna\vicky\modules\Jira;
 
 use JiraWebhook\Models\JiraWebhookData;
-use Vicky\src\exceptions\IssueFileException;
+use kommuna\vicky\exceptions\IssueFileException;
 
 class IssueFile
 {

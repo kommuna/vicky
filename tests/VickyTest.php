@@ -6,9 +6,9 @@
  * Time: 00:39
  */
 
-namespace Vicky\Tests;
+namespace kommuna\vicky\Tests;
 
-use Vicky\src\modules\Vicky;
+use kommuna\vicky\modules\Vicky;
 use PHPUnit_Framework_TestCase;
 
 class VickyTest extends PHPUnit_Framework_TestCase

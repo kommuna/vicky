@@ -14,12 +14,12 @@
 
     "autoload": {
         "psr-4": {
-            "Vicky\\": ""
+            "kommuna\\vicky\\": ""
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Vicky\\Tests\\": "tests"
+            "kommuna\\vicky\\Tests\\": "tests"
         }
     },
     "require-dev": {

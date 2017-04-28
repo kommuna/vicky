@@ -9,13 +9,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\util;
+namespace kommuna\vicky\src\util;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-use kommuna\vicky\modules\Jira\IssueFile;
-use kommuna\vicky\modules\VickyClient;
+use kommuna\vicky\src\modules\Jira\IssueFile;
+use kommuna\vicky\src\modules\VickyClient;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';

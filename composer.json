@@ -9,7 +9,8 @@
     "require": {
         "jclg/php-slack-bot": "dev-master",
         "kommuna/jirawebhook": "dev-master",
-        "maknz/slack": "^1.7"
+        "maknz/slack": "^1.7",
+        "monolog/monolog": "1.22.0"
     },
 
     "autoload": {

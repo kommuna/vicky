@@ -9,7 +9,7 @@
 namespace kommuna\vicky\Tests;
 
 use JiraWebhook\Models\JiraWebhookData;
-use kommuna\vicky\modules\Jira\JiraUrgentBugToSlackBotConverter;
+use kommuna\vicky\src\modules\Jira\JiraUrgentBugToSlackBotConverter;
 use kommuna\vicky\Tests\Factories\JiraWebhookPayloadFactory;
 
 class JiraUrgentBugToSlackBotConverterTest extends \PHPUnit_Framework_TestCase

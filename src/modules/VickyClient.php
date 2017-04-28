@@ -8,9 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace kommuna\vicky\modules;
+namespace kommuna\vicky\src\modules;
 
-use kommuna\vicky\exceptions\VickyClientException;
+use kommuna\vicky\src\exceptions\VickyClientException;
 
 class VickyClient
 {

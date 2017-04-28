@@ -11,7 +11,7 @@ namespace kommuna\vicky\Tests;
 
 use JiraWebhook\Models\JiraWebhookData;
 use kommuna\vicky\Tests\Factories\JiraWebhookPayloadFactory;
-use kommuna\vicky\modules\Jira\JiraBlockerToSlackBotConverter;
+use kommuna\vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
 
 
 /**

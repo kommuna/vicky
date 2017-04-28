@@ -9,10 +9,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace kommuna\vicky\modules\Slack;
+namespace kommuna\vicky\src\modules\Slack;
 
 use Maknz\Slack\Client;
-use kommuna\vicky\exceptions\SlackMessageSenderException;
+use kommuna\vicky\src\exceptions\SlackMessageSenderException;
 
 class SlackMessageSender
 {

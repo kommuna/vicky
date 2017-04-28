@@ -10,7 +10,7 @@ namespace kommuna\vicky\Tests;
 
 
 use JiraWebhook\Models\JiraWebhookData;
-use kommuna\vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
+use kommuna\vicky\modules\Jira\JiraDefaultToSlackBotConverter;
 use kommuna\vicky\Tests\Factories\JiraWebhookPayloadFactory;
 
 

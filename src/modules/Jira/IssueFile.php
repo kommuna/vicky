@@ -9,10 +9,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace kommuna\vicky\src\modules\Jira;
+namespace kommuna\vicky\modules\Jira;
 
 use JiraWebhook\Models\JiraWebhookData;
-use kommuna\vicky\src\exceptions\IssueFileException;
+use kommuna\vicky\exceptions\IssueFileException;
 
 class IssueFile
 {
@@ -58,7 +58,7 @@ class IssueFile
      * @param JiraWebhookData|null $jiraWebhookData
      * @param null                 $lastNotification in seconds
      */
-    public function __construct($fileName, JiraWebhookData $jiraWebhookData = '', $lastNotification = '')
+    public function __construct($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
     {
         $this->setFileName($fileName);
         $this->setJiraWebhookData($jiraWebhookData);
@@ -191,7 +191,7 @@ class IssueFile
      *
      * @throws IssueFileException
      */
-    public static function filesCheck($callback, $notificationInterval = '')
+    public static function filesCheck($callback, $notificationInterval = null)
     {
         $notificationInterval = $notificationInterval ? $notificationInterval : IssueFile::getNotificationInterval();
 
@@ -214,7 +214,7 @@ class IssueFile
      *
      * @throws IssueFileException
      */
-    public static function updateNotificationTime($fileName, $now = '')
+    public static function updateNotificationTime($fileName, $now = null)
     {
         $now = $now ? $now : time();
 
@@ -235,7 +235,7 @@ class IssueFile
      *
      * @throws IssueFileException
      */
-    public static function create($fileName, JiraWebhookData $jiraWebhookData = '', $lastNotification = '')
+    public static function create($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
     {
         $issueFile = new self($fileName, $jiraWebhookData, $lastNotification);
 

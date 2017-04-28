@@ -8,7 +8,7 @@
 
 namespace kommuna\vicky\Tests;
 
-use kommuna\vicky\src\modules\Vicky;
+use kommuna\vicky\modules\Vicky;
 use PHPUnit_Framework_TestCase;
 
 class VickyTest extends PHPUnit_Framework_TestCase

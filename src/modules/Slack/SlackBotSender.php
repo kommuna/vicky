@@ -8,9 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace kommuna\vicky\src\modules\Slack;
+namespace kommuna\vicky\modules\Slack;
 
-use kommuna\vicky\src\exceptions\SlackBotSenderException;
+use kommuna\vicky\exceptions\SlackBotSenderException;
 
 class SlackBotSender
 {

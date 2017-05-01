@@ -261,11 +261,17 @@ class IssueFile
     public static function get($fileName)
     {
         $pathToFile = IssueFile::getPathToFolder().$fileName;
-        $issueFile = json_decode(file_get_contents($pathToFile));
+        $issueFile = unserialize(file_get_contents($pathToFile));
 
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new IssueFileException("Json decode error: ".json_last_error_msg());
+        if (!$issueFile) {
+            throw new IssueFileException("Can't unserialize {$pathToFile}");
         }
+
+        //$issueFile = json_decode(file_get_contents($pathToFile));
+
+        /*if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new IssueFileException("Json decode error: ".json_last_error_msg());
+        }*/
 
         return $issueFile;
     }
@@ -282,11 +288,13 @@ class IssueFile
     public static function put(IssueFile $issueFile)
     {
         $pathToFile = IssueFile::getPathToFile($issueFile);
-        $issueFile = json_encode($issueFile);
+        $issueFile = serialize($issueFile);
+        
+        //$issueFile = json_encode($issueFile);
 
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        /*if (JSON_ERROR_NONE !== json_last_error()) {
             throw new IssueFileException("Json encode error: ".json_last_error_msg());
-        }
+        }*/
 
         return file_put_contents($pathToFile, $issueFile);
     }

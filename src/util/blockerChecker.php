@@ -9,7 +9,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace kommuna\vicky\src\util;
+namespace kommuna\vicky\util;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -18,10 +18,11 @@ use kommuna\vicky\modules\Jira\IssueFile;
 use kommuna\vicky\modules\VickyClient;
 
 require dirname(__DIR__).'/vendor/autoload.php';
-$config = require '/etc/vicky/config.php';
+$config = require '/etc/vicky-test/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['error_log']);
+ini_set('error_reporting', $config['error_reporting']);
 ini_set('max_execution_time', 0);
 date_default_timezone_set($config['timeZone']);
 
@@ -32,6 +33,9 @@ $log->pushHandler(
         $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
     )
 );
+if ($config['environment'] === 'local'){
+    $log->pushHandler(new StreamHandler('php://output', Logger::DEBUG)); // <<< uses a stream
+}
 
 $start = microtime(true);
 

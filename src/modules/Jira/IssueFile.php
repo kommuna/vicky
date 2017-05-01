@@ -264,14 +264,8 @@ class IssueFile
         $issueFile = unserialize(file_get_contents($pathToFile));
 
         if (!$issueFile) {
-            throw new IssueFileException("Can't unserialize {$pathToFile}");
+            throw new IssueFileException("Can't be unserialized {$pathToFile}");
         }
-
-        //$issueFile = json_decode(file_get_contents($pathToFile));
-
-        /*if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new IssueFileException("Json decode error: ".json_last_error_msg());
-        }*/
 
         return $issueFile;
     }
@@ -289,12 +283,6 @@ class IssueFile
     {
         $pathToFile = IssueFile::getPathToFile($issueFile);
         $issueFile = serialize($issueFile);
-        
-        //$issueFile = json_encode($issueFile);
-
-        /*if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new IssueFileException("Json encode error: ".json_last_error_msg());
-        }*/
 
         return file_put_contents($pathToFile, $issueFile);
     }
@@ -302,7 +290,7 @@ class IssueFile
     /**
      * Deletes IssueFile
      *
-     * @param string|object $pathToFile can be string or IssueFile
+     * @param string|object $issue can be string or exemplar of IssueFile
      *
      * @return bool
      *
@@ -311,6 +299,7 @@ class IssueFile
 
     public static function delete($issue)
     {
+        //TODO add check for situation when file does not exists
         if ($issue instanceof IssueFile) {
             $issue = IssueFile::getPathToFile($issue);
         }

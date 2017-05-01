@@ -17,7 +17,7 @@ use Monolog\Handler\StreamHandler;
 use kommuna\vicky\modules\Jira\IssueFile;
 use kommuna\vicky\modules\VickyClient;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require dirname(dirname(__DIR__)).'/vendor/autoload.php';
 $config = require '/etc/vicky-test/config.php';
 
 ini_set('log_errors', 'On');

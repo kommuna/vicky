@@ -61,9 +61,6 @@ class IssueFile
     public function __construct($fileName, $jiraWebhookData = null, $lastNotification = null)
     {
         $this->setFileName($fileName);
-
-        $jiraWebhookData = $jiraWebhookData instanceof JiraWebhookData ? $jiraWebhookData : null;
-
         $this->setJiraWebhookData($jiraWebhookData);
         $this->setLastNotification($lastNotification);
     }
@@ -105,8 +102,10 @@ class IssueFile
     /**
      * @param JiraWebhookData $jiraWebhookData
      */
-    public function setJiraWebhookData(JiraWebhookData $jiraWebhookData)
+    public function setJiraWebhookData($jiraWebhookData)
     {
+        $jiraWebhookData = $jiraWebhookData instanceof JiraWebhookData ? $jiraWebhookData : null;
+
         $this->jiraWebhookData = $jiraWebhookData;
     }
 

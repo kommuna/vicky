@@ -58,9 +58,12 @@ class IssueFile
      * @param JiraWebhookData|null $jiraWebhookData
      * @param null                 $lastNotification in seconds
      */
-    public function __construct($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
+    public function __construct($fileName, $jiraWebhookData = null, $lastNotification = null)
     {
         $this->setFileName($fileName);
+
+        $jiraWebhookData = $jiraWebhookData instanceof JiraWebhookData ? $jiraWebhookData : null;
+
         $this->setJiraWebhookData($jiraWebhookData);
         $this->setLastNotification($lastNotification);
     }
@@ -299,13 +302,8 @@ class IssueFile
 
     public static function delete($issue)
     {
-        //TODO add check for situation when file does not exists
         if ($issue instanceof IssueFile) {
             $issue = IssueFile::getPathToFile($issue);
-        }
-
-        if (!file_exists($issue)) {
-            throw new IssueFileException("{$issue} does not exists!");
         }
 
         return unlink($issue);

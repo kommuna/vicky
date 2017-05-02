@@ -15,7 +15,7 @@
 
     "autoload": {
         "psr-4": {
-            "kommuna\\vicky\\": "/src"
+            "kommuna\\vicky\\": "src"
         }
     },
     "autoload-dev": {

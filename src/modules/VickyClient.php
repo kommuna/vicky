@@ -105,7 +105,8 @@ class VickyClient
     /**
      * Send HTTP request by curl method
      * 
-     * @param $data array with data
+     * @param $data      array with data
+     * @param $eventName 
      * 
      * @return bool
      * 

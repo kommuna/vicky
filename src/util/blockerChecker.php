@@ -47,7 +47,7 @@ VickyClient::getInstance(
 );
 
 IssueFile::setPathToFolder($config['blockersIssues']['folder']);
-IssueFile::setNotificationInterval($config['notificationInterval']);
+IssueFile::setNotificationInterval($config['blockersIssues']['notificationInterval']);
 
 IssueFile::filesCheck(function(IssueFile $issueFile)
 {

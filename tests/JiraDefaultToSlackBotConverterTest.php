@@ -6,12 +6,12 @@
  * Time: 17:37
  */
 
-namespace Vicky\Tests;
+namespace kommuna\vicky\Tests;
 
 
 use JiraWebhook\Models\JiraWebhookData;
-use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
-use Vicky\Tests\Factories\JiraWebhookPayloadFactory;
+use kommuna\vicky\modules\Jira\JiraDefaultToSlackBotConverter;
+use kommuna\vicky\Tests\Factories\JiraWebhookPayloadFactory;
 
 
 class JiraDefaultToSlackBotConverterTest extends \PHPUnit_Framework_TestCase

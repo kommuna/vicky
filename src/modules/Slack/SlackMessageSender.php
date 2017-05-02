@@ -9,11 +9,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-namespace Vicky\src\modules\Slack;
+namespace kommuna\vicky\modules\Slack;
 
 use Maknz\Slack\Client;
-use Vicky\src\exceptions\SlackMessageSenderException;
+use kommuna\vicky\exceptions\SlackMessageSenderException;
 
 class SlackMessageSender
 {
@@ -28,7 +27,7 @@ class SlackMessageSender
     public static function getConfig()
     {
         if (!self::$config) {
-            self::$config = require '/etc/vicky/config.php';
+            self::$config = require '/etc/vicky-test/config.php';
         }
 
         return self::$config;
@@ -38,6 +37,7 @@ class SlackMessageSender
      * Gets the slack incoming webhook url
      *
      * @return string
+     *
      * @throws SlackMessageSenderException
      */
     public static function getWebhookUrl()
@@ -45,6 +45,7 @@ class SlackMessageSender
         if (!isset(self::getConfig()['slackIncomingWebhookUrl'])){
             throw new SlackMessageSenderException("Please specify an URL for the incoming webhook");
         }
+
         return self::getConfig()['slackIncomingWebhookUrl'];
     }
 
@@ -52,6 +53,7 @@ class SlackMessageSender
      * Gets the slackbot username
      *
      * @return string
+     *
      * @throws SlackMessageSenderException
      */
     public static function getBotUsername()
@@ -74,6 +76,7 @@ class SlackMessageSender
         ];
 
         $client = new Client($url, $settings);
+      
         return $client->createMessage();
     }
 }

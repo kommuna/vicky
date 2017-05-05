@@ -96,6 +96,10 @@ class IssueFile
      */
     public function setFileName($fileName)
     {
+        if (!preg_match("/^[A-Za-z]{1,10}-[0-9]{1,10}$/", $fileName)) {
+            throw new IssueFileException("This file name {$fileName} is invalid!");
+        }
+
         $this->fileName = $fileName;
     }
 
@@ -166,7 +170,7 @@ class IssueFile
      */
     public static function getPathToFile(IssueFile $issueFile)
     {
-        return realpath(self::getPathToFolder().$issueFile->getFileName());
+        return self::getPathToFolder().$issueFile->getFileName();
     }
 
     /**

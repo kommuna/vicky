@@ -29,7 +29,7 @@ date_default_timezone_set($config['timeZone']);
 $log = new Logger('vicky');
 $log->pushHandler(
     new StreamHandler(
-        $config['error_log'],
+        $config['errorLog'],
         $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
     )
 );

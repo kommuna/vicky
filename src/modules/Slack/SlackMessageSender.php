@@ -48,6 +48,7 @@ class SlackMessageSender
      *
      * @param $webhookUrl
      * @param $botUsername
+     * @param $unfurl
      */
     public function __construct($webhookUrl, $botUsername, $unfurl)
     {

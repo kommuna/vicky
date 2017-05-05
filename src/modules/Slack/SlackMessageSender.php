@@ -1,10 +1,10 @@
 <?php
 /**
- * This class instantiates a slack client object
- * and can returns a slack client Message object (through method getMessage)
+ * Slack message sender class, that sends messages to slack
  *
  * @credits https://github.com/kommuna
- * @author Miss Lv lv@devadmin.com
+ * @author  Miss Lv lv@devadmin.com
+ * @author  Chewbacca chewbacca@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,46 +17,114 @@ use Vicky\src\exceptions\SlackMessageSenderException;
 
 class SlackMessageSender
 {
-    private static $config;
+    /**
+     * Slack incoming webhook URL
+     *
+     * @var
+     */
+    protected $webhookUrl;
 
     /**
-     * Set $config parameter from config file and return it or just return it
-     * if it's already been initialised
+     * Bot username in slack
      *
-     * @return array
+     * @var
      */
-    public static function getConfig()
-    {
-        if (!self::$config) {
-            self::$config = require '/etc/vicky/config.php';
-        }
+    protected $botUsername;
 
-        return self::$config;
+    /**
+     * Whether Slack should unfurl text-based URLs
+     *
+     * @var
+     */
+    protected $unfurl;
+
+    /**
+     * @var
+     */
+    protected static $messageSenderClient;
+
+    /**
+     * SlackMessageSender constructor.
+     *
+     * @param $webhookUrl
+     * @param $botUsername
+     */
+    public function __construct($webhookUrl, $botUsername, $unfurl)
+    {
+        $this->setWebhookUrl($webhookUrl);
+        $this->setBotUsername($botUsername);
+        $this->setUnfurl($unfurl);
     }
 
     /**
-     * Gets the slack incoming webhook url
-     *
-     * @return string
-     * @throws SlackMessageSenderException
+     * @param $webhookUrl
      */
-    public static function getWebhookUrl()
+    public function setWebhookUrl($webhookUrl)
     {
-        if (!isset(self::getConfig()['slackIncomingWebhookUrl'])){
-            throw new SlackMessageSenderException("Please specify an URL for the incoming webhook");
-        }
-        return self::getConfig()['slackIncomingWebhookUrl'];
+        $this->webhookUrl = $webhookUrl;
     }
 
     /**
-     * Gets the slackbot username
+     * @param $botUsername
+     */
+    public function setBotUsername($botUsername)
+    {
+        $this->botUsername = $botUsername;
+    }
+
+    /**
+     * @param $unfurl
+     */
+    public function setUnfurl($unfurl)
+    {
+        $this->unfurl = $unfurl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWebhookUrl()
+    {
+        return $this->webhookUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBotUsername()
+    {
+        return $this->botUsername;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUnfurl()
+    {
+        return $this->unfurl;
+    }
+
+    /**
+     * Initialize slack message sender client or return it if already initialized
      *
-     * @return string
+     * @param string $webhookUrl
+     * @param string $botUsername
+     * @param bool   $unfurl
+     *
+     * @return SlackMessageSender
      * @throws SlackMessageSenderException
      */
-    public static function getBotUsername()
+    public static function getInstance($webhookUrl = '', $botUsername = '', $unfurl = false)
     {
-        return isset(self::getConfig()['slackBot']['botName']) ? self::getConfig()['slackBot']['botName'] : '';
+        if (!self::$messageSenderClient) {
+            if (!$webhookUrl || !$botUsername) {
+                throw new SlackMessageSenderException('Slack webhook url and slack bot username must be defined!');
+            }
+
+            self::$messageSenderClient = new self($webhookUrl, $botUsername, $unfurl);
+        }
+
+        return self::$messageSenderClient;
     }
 
     /**
@@ -64,16 +132,40 @@ class SlackMessageSender
      *
      * @return \Maknz\Slack\Message
      */
-    public static function getMessage()
+    protected function getMessage()
     {
-        $url = self::getWebhookUrl();
-        $settings = [
-            'username'=>self::getBotUsername(),
-            'unfurl_links' => true,
-            'markdown_in_attachments' => ['text']
+        $webhookUrl = $this->webhookUrl;
+        $settings   = [
+            'username'     => $this->botUsername,
+            'unfurl_links' => $this->unfurl
         ];
 
-        $client = new Client($url, $settings);
-        return $client->createMessage();
+        return (new Client($webhookUrl, $settings))->createMessage();
+    }
+
+    /**
+     * Sends message to slack user
+     *
+     * @param $username
+     * @param $message
+     */
+    public function toUser($username, $message)
+    {
+        $username = (substr($username, 0, 1) === '@') ? $username : "@{$username}";
+
+        $this->getMessage()->to($username)->send($message);
+    }
+
+    /**
+     * Sends message to slack channel
+     *
+     * @param $channel
+     * @param $message
+     */
+    public function toChannel($channel, $message)
+    {
+        $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
+
+        $this->getMessage()->to($channel)->send($message);
     }
 }

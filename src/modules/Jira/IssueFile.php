@@ -90,9 +90,11 @@ class IssueFile
     {
         self::$notificationInterval = $notificationInterval;
     }
-
+    
     /**
      * @param $fileName
+     *
+     * @throws IssueFileException
      */
     public function setFileName($fileName)
     {

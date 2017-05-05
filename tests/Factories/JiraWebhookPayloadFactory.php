@@ -6,7 +6,7 @@
  * Time: 14:55
  */
 
-namespace Vicky\Tests\Factories;
+namespace kommuna\vicky\Tests\Factories;
 
 use Faker\Factory;
 use Faker\Provider\Internet;

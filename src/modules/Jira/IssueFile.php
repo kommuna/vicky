@@ -80,7 +80,7 @@ class IssueFile
             throw new IssueFileException("{$pathToFolder} don't writable or don't readable.");
         }
 
-        self::$pathToFolder = substr($pathToFolder, -1) === '/' ? $pathToFolder : "{$pathToFolder}/";;
+        self::$pathToFolder = substr($pathToFolder, -1) === DIRECTORY_SEPARATOR ? $pathToFolder : $pathToFolder.DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -166,7 +166,7 @@ class IssueFile
      */
     public static function getPathToFile(IssueFile $issueFile)
     {
-        return self::getPathToFolder().$issueFile->getFileName();
+        return realpath(self::getPathToFolder().$issueFile->getFileName());
     }
 
     /**
@@ -303,6 +303,8 @@ class IssueFile
     {
         if ($issue instanceof IssueFile) {
             $issue = IssueFile::getPathToFile($issue);
+        } else {
+            $issue = IssueFile::getPathToFolder().$issue;
         }
 
         return unlink($issue);

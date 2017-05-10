@@ -98,9 +98,7 @@ class IssueFile
      */
     public function setFileName($fileName)
     {
-        if (!preg_match("/^[A-Za-z]{1,10}-[0-9]{1,10}$/", $fileName)) {
-            throw new IssueFileException("This file name {$fileName} is invalid!");
-        }
+        self::fileNameCheck($fileName);
 
         $this->fileName = $fileName;
     }
@@ -184,9 +182,24 @@ class IssueFile
      *
      * @return bool
      */
-    public static function isExpired(IssueFile $issueFile, $notificationInterval)
+    protected static function isExpired(IssueFile $issueFile, $notificationInterval)
     {
         return (time() - $issueFile->getLastNotification()) >= $notificationInterval;
+    }
+
+    /**
+     * Checks the file name for the template matching
+     *
+     * @param $fileName
+     *
+     * @throws IssueFileException
+     *
+     */
+    protected static function fileNameCheck($fileName)
+    {
+        if (!preg_match("/^[A-Za-z]{1,10}-[0-9]{1,10}$/", $fileName)) {
+            throw new IssueFileException("This file name {$fileName} is invalid!");
+        }
     }
 
     /**
@@ -310,6 +323,8 @@ class IssueFile
         if ($issue instanceof IssueFile) {
             $issue = IssueFile::getPathToFile($issue);
         } else {
+            self::fileNameCheck($issue);
+
             $issue = IssueFile::getPathToFolder().$issue;
         }
 

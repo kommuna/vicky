@@ -10,18 +10,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky;
+namespace kommuna\vicky;
 
+use kommuna\vicky\modules\Jira\JiraBlockerNotificationConverter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Maknz\Slack\Client;
-use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
-use Vicky\src\modules\Jira\JiraDefaultToSlackBotConverter;
-use Vicky\src\modules\Jira\JiraOperationsToSlackBotConverter;
-use Vicky\src\modules\Jira\JiraUrgentBugToSlackBotConverter;
-use Vicky\src\modules\Slack\SlackBotSender;
-use Vicky\src\modules\Slack\SlackMessageSender;
-use Vicky\src\modules\Vicky;
+use kommuna\vicky\modules\Jira\JiraBlockerToSlackBotConverter;
+use kommuna\vicky\modules\Jira\JiraDefaultToSlackBotConverter;
+use kommuna\vicky\modules\Jira\JiraOperationsToSlackBotConverter;
+use kommuna\vicky\modules\Jira\JiraUrgentBugToSlackBotConverter;
+use kommuna\vicky\modules\Slack\SlackBotSender;
+use kommuna\vicky\modules\Slack\SlackMessageSender;
+use kommuna\vicky\modules\Vicky;
 use JiraWebhook\JiraWebhook;
 use JiraWebhook\Models\JiraWebhookData;
 use JiraWebhook\Exceptions\JiraWebhookException;

@@ -9,15 +9,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky;
+namespace kommuna\vicky;
 
 use Exception;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use PhpSlackBot\Bot;
-use Vicky\bot\modules\MyCommand;
-use Vicky\bot\modules\ToUserWebhook;
-use Vicky\bot\modules\ToChannelWebhook;
+use kommuna\vicky\bot\modules\ToUserWebhook;
+use kommuna\vicky\bot\modules\ToChannelWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 $config = require '/etc/slackBot/config.php';

@@ -107,7 +107,9 @@ class SlackBotSender
      * @param string $slackBotUrl
      * @param string $authKey
      * @param int $slackBotTimeout
+     * 
      * @return SlackBotSender
+     * 
      * @throws SlackBotSenderException
      */
     public static function getInstance($slackBotUrl = '', $authKey = '', $slackBotTimeout = 0)

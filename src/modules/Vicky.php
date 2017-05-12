@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules;
+namespace kommuna\vicky\modules;
 
 class Vicky
 {
@@ -26,7 +26,23 @@ class Vicky
      */
     public function __construct($config)
     {
+        self::setConfig($config);
+    }
+
+    /**
+     * @param $config
+     */
+    public static function setConfig($config)
+    {
         self::$config = $config;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getConfig()
+    {
+        return self::$config;
     }
 
     /**

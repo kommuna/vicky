@@ -9,10 +9,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules\Slack;
+
+namespace kommuna\vicky\modules\Slack;
 
 use Maknz\Slack\Client;
-use Vicky\src\exceptions\SlackMessageSenderException;
+use kommuna\vicky\exceptions\SlackMessageSenderException;
 
 class SlackMessageSender
 {
@@ -112,6 +113,7 @@ class SlackMessageSender
      * @param bool   $unfurl
      *
      * @return SlackMessageSender
+     *
      * @throws SlackMessageSenderException
      */
     public static function getInstance($webhookUrl = '', $botUsername = '', $unfurl = false)

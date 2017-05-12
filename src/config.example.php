@@ -20,9 +20,19 @@ return [
         /* The time-out of requests to the bot is specified in seconds */
         'timeout' => 10
     ],
+    'vickyClient' => [
+        'url' => 'http://url were you host vicky/',
+        /* The time-out of requests to the bot is specified in seconds */
+        'timeout' => 10
+    ],
     'slackIncomingWebhookUrl' => 'incoming webhook url',  // Get it here: https://chewyteamgroup.slack.com/apps/A0F7XDUAZ-incoming-webhooks
     'jiraToSlackMapping' => [
         'ProjectName' => '#channelName',
         '*'           => '#defaultChannelName'
+    ],
+    'blockersIssues' => [
+        'folder'               => '/path/to/blockers/issue/file/folder/',
+        /* The time interval for blockers issues notification is specified in seconds */
+        'notificationInterval' => 6 * 3600
     ]
 ];

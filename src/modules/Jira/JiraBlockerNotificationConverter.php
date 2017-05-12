@@ -1,10 +1,10 @@
 <?php
 /**
- * JiraWebhookData converter of issues with priority 'Blocker' into a Slack Client Message Object
+ * Data converter of issue with priority 'Blocker',
+ * that not commented more than 24 hours into formatted string message.
  *
  * @credits https://github.com/kommuna
- * @author  Chewbacca chewbacca@devadmin.com
- * @author  Miss Lv lv@devadmin.com
+ * @author  chewbacca@devadmin.com
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,7 +14,7 @@ namespace kommuna\vicky\modules\Jira;
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
 
-class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
+class JiraBlockerNotificationConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into a formatted string message
@@ -34,7 +34,7 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
          */
         if (!$comment && !$assigneeName) {
             $message = vsprintf(
-                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\nThis ticket did not comment more than 24 hours",
                 [
                     $issue->getUrl(),
                     $issue->getKey(),
@@ -42,13 +42,13 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSummary()
                 ]
             );
-
+            
         /**
          * Issue is not assigned to a user, but has comments
          */
         } elseif (!$assigneeName) {
             $message = vsprintf(
-                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ Unassigned\n@%s ➠ %s\nThis ticket did not comment more than 24 hours",
                 [
                     $issue->getUrl(),
                     $issue->getKey(),
@@ -58,13 +58,13 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
                     $comment->getBody()
                 ]
             );
-
+            
         /**
          * Issue doesn't have any comments, but is assigned
          */
         } elseif (!$comment) {
             $message = vsprintf(
-                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\nThis ticket did not comment more than 24 hours",
                 [
                     $issue->getUrl(),
                     $issue->getKey(),
@@ -73,13 +73,13 @@ class JiraBlockerToSlackBotConverter implements JiraWebhookDataConverter
                     $assigneeName
                 ]
             );
-
+            
         /**
          * Default message
          */
         } else {
             $message = vsprintf(
-                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s",
+                ":no_entry_sign: <%s|%s> %s: %s ➠ @%s\n@%s ➠ %s\nThis ticket did not comment more than 24 hours",
                 [
                     $issue->getUrl(),
                     $issue->getKey(),

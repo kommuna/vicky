@@ -9,7 +9,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules\Jira;
+namespace kommuna\vicky\modules\Jira;
 
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
@@ -28,7 +28,7 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
         $issue        = $data->getIssue();
         $assigneeName = $issue->getAssignee()->getName();
         $comment      = $issue->getIssueComments()->getLastComment();
-
+        
         /**
          * Issue doesn't have comments and is not assigned to a user
          */
@@ -42,7 +42,7 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $issue->getSummary()
                 ]
             );
-            
+
         /**
          * Issue is not assigned to a user
          */
@@ -58,7 +58,7 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $comment->getBody()
                 ]
             );
-            
+
         /**
          * Issue doesn't have any comments
          */
@@ -73,7 +73,7 @@ class JiraOperationsToSlackBotConverter implements JiraWebhookDataConverter
                     $assigneeName
                 ]
             );
-            
+
         /**
          * Default message
          */

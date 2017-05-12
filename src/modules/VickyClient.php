@@ -45,7 +45,7 @@ class VickyClient
     public function __construct($vickyUrl, $vickyTimeout = 0)
     {
         if (!$vickyUrl) {
-            throw new VickyClientException("Slack bot url must be defined!");
+            throw new VickyClientException("VickyClient: Slack bot url must be defined!");
         }
         $this->setVickyUrl($vickyUrl);
         $this->setVickyTimeout($vickyTimeout);
@@ -90,8 +90,6 @@ class VickyClient
      * @param int $vickyTimeout
      *
      * @return VickyClient
-     *
-     * @throws VickyClientException
      */
     public static function getInstance($vickyUrl = '', $vickyTimeout = 0)
     {
@@ -119,7 +117,7 @@ class VickyClient
         }
         
         if (!($curl = curl_init())) {
-            throw new VickyClientException('Cannot init curl session!');
+            throw new VickyClientException('VickyClient: Cannot init curl session!');
         }
 
         curl_setopt_array($curl, [
@@ -135,7 +133,7 @@ class VickyClient
         curl_close($curl);
 
         if ($error) {
-            throw new VickyClientException("cUrl error: {$error}");
+            throw new VickyClientException("VickyClient: cUrl error: {$error}");
         }
 
         return true;

@@ -116,7 +116,7 @@ class SlackBotSender
     {
         if (!self::$botClient) {
             if (!$slackBotUrl) {
-                throw new SlackBotSenderException("Slack bot url must be defined!");
+                throw new SlackBotSenderException("SlackBotSender: Slack bot url must be defined!");
             }
 
             self::$botClient = new self($slackBotUrl, $authKey, $slackBotTimeout);
@@ -197,7 +197,7 @@ class SlackBotSender
     protected function sendRequest($slackRequest)
     {
         if (!($curl = curl_init())) {
-            throw new SlackBotSenderException('Cannot init curl session!');
+            throw new SlackBotSenderException('SlackBotSender: Cannot init curl session!');
         }
         
         curl_setopt_array($curl, [
@@ -213,11 +213,11 @@ class SlackBotSender
         curl_close($curl);
 
         if ($error) {
-            throw new SlackBotSenderException("cUrl error: {$error}");
+            throw new SlackBotSenderException("SlackBotSender: cUrl error: {$error}");
         }
 
         if (trim($response) != "Ok") {
-            throw new SlackBotSenderException("Bot error response: {$response}");
+            throw new SlackBotSenderException("SlackBotSender: Bot error response: {$response}");
         }
 
         return true;

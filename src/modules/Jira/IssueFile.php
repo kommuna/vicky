@@ -58,7 +58,7 @@ class IssueFile
      * @param JiraWebhookData|null $jiraWebhookData
      * @param null                 $lastNotification in seconds
      */
-    public function __construct($fileName, $jiraWebhookData = null, $lastNotification = null)
+    public function __construct($fileName, JiraWebhookData $jiraWebhookData, $lastNotification = null)
     {
         $this->setFileName($fileName);
         $this->setJiraWebhookData($jiraWebhookData);
@@ -72,12 +72,12 @@ class IssueFile
      */
     public static function setPathToFolder($pathToFolder)
     {
-        if (!mkdir($pathToFolder) && !file_exists($pathToFolder)) {
-            throw new IssueFileException("{$pathToFolder} don't exists and unable to create.");
+        if (!is_dir($pathToFolder) && !mkdir($pathToFolder)) {
+            throw new IssueFileException("IssueFile: {$pathToFolder} don't exists and unable to create.");
         }
 
         if (!is_writable($pathToFolder) || !is_readable($pathToFolder)) {
-            throw new IssueFileException("{$pathToFolder} don't writable or don't readable.");
+            throw new IssueFileException("IssueFile: {$pathToFolder} don't writable or don't readable.");
         }
 
         self::$pathToFolder = substr($pathToFolder, -1) === DIRECTORY_SEPARATOR ? $pathToFolder : $pathToFolder.DIRECTORY_SEPARATOR;
@@ -93,8 +93,6 @@ class IssueFile
     
     /**
      * @param $fileName
-     *
-     * @throws IssueFileException
      */
     public function setFileName($fileName)
     {
@@ -106,18 +104,18 @@ class IssueFile
     /**
      * @param JiraWebhookData $jiraWebhookData
      */
-    public function setJiraWebhookData($jiraWebhookData)
+    public function setJiraWebhookData(JiraWebhookData $jiraWebhookData)
     {
-        $jiraWebhookData = $jiraWebhookData instanceof JiraWebhookData ? $jiraWebhookData : null;
-
         $this->jiraWebhookData = $jiraWebhookData;
     }
 
     /**
      * @param int $lastNotification in seconds
      */
-    public function setLastNotification($lastNotification)
+    public function setLastNotification($lastNotification = null)
     {
+        $lastNotification = $lastNotification ?: time();
+
         $this->lastNotification = $lastNotification;
     }
 
@@ -198,7 +196,7 @@ class IssueFile
     protected static function fileNameCheck($fileName)
     {
         if (!preg_match("/^[A-Za-z]{1,10}-[0-9]{1,10}$/", $fileName)) {
-            throw new IssueFileException("This file name {$fileName} is invalid!");
+            throw new IssueFileException("IssueFile: This file name {$fileName} is invalid!");
         }
     }
 
@@ -208,8 +206,6 @@ class IssueFile
      *
      * @param callable $callback             must be a function that takes over IssueFile
      * @param null|int $notificationInterval in seconds
-     *
-     * @throws IssueFileException
      */
     public static function filesCheck($callback, $notificationInterval = null)
     {
@@ -227,17 +223,13 @@ class IssueFile
     }
 
     /**
-     * Updates time of last notification in blocker issue file
+     * Updates time of last notification in issue file
      *
      * @param        $fileName
      * @param string $now
-     *
-     * @throws IssueFileException
      */
     public static function updateNotificationTime($fileName, $now = null)
     {
-        $now = $now ? $now : time();
-
         $issueFile = IssueFile::get($fileName);
         $issueFile->setLastNotification($now);
         IssueFile::put($issueFile);
@@ -252,10 +244,8 @@ class IssueFile
      * @param null|int             $lastNotification in seconds
      *
      * @return mixed|IssueFile
-     *
-     * @throws IssueFileException
      */
-    public static function create($fileName, JiraWebhookData $jiraWebhookData = null, $lastNotification = null)
+    public static function create($fileName, JiraWebhookData $jiraWebhookData, $lastNotification = null)
     {
         $issueFile = new self($fileName, $jiraWebhookData, $lastNotification);
 
@@ -285,7 +275,7 @@ class IssueFile
         $issueFile = unserialize(file_get_contents($pathToFile));
 
         if (!$issueFile) {
-            throw new IssueFileException("Can't be unserialized {$pathToFile}");
+            throw new IssueFileException("IssueFile: Can't be unserialized {$pathToFile}");
         }
 
         return $issueFile;
@@ -305,7 +295,9 @@ class IssueFile
         $pathToFile = IssueFile::getPathToFile($issueFile);
         $issueFile = serialize($issueFile);
 
-        return file_put_contents($pathToFile, $issueFile);
+        if (!file_put_contents($pathToFile, $issueFile)) {
+            throw new IssueFileException("IssueFile: Can't write in this file {$pathToFile}");
+        }
     }
 
     /**
@@ -328,6 +320,8 @@ class IssueFile
             $issue = IssueFile::getPathToFolder().$issue;
         }
 
-        return unlink($issue);
+        if (!unlink($issue)) {
+            throw new IssueFileException("IssueFile: Can't unlink this file {$issue}");
+        }
     }
 }

@@ -120,7 +120,7 @@ class SlackMessageSender
     {
         if (!self::$messageSenderClient) {
             if (!$webhookUrl || !$botUsername) {
-                throw new SlackMessageSenderException('Slack webhook url and slack bot username must be defined!');
+                throw new SlackMessageSenderException('SlackMessageSender: Slack webhook url and slack bot username must be defined!');
             }
 
             self::$messageSenderClient = new self($webhookUrl, $botUsername, $unfurl);

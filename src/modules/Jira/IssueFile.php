@@ -73,11 +73,11 @@ class IssueFile
     public static function setPathToFolder($pathToFolder)
     {
         if (!is_dir($pathToFolder) && !mkdir($pathToFolder)) {
-            throw new IssueFileException("IssueFile: {$pathToFolder} don't exists and unable to create.");
+            throw new IssueFileException("IssueFile: {$pathToFolder} doesn't exists and unable to create.");
         }
 
         if (!is_writable($pathToFolder) || !is_readable($pathToFolder)) {
-            throw new IssueFileException("IssueFile: {$pathToFolder} don't writable or don't readable.");
+            throw new IssueFileException("IssueFile: {$pathToFolder} isn't writable or readable.");
         }
 
         self::$pathToFolder = substr($pathToFolder, -1) === DIRECTORY_SEPARATOR ? $pathToFolder : $pathToFolder.DIRECTORY_SEPARATOR;
@@ -114,9 +114,7 @@ class IssueFile
      */
     public function setLastNotification($lastNotification = null)
     {
-        $lastNotification = $lastNotification ?: time();
-
-        $this->lastNotification = $lastNotification;
+        $this->lastNotification = $lastNotification ?: time();
     }
 
     /**
@@ -196,7 +194,7 @@ class IssueFile
     protected static function fileNameCheck($fileName)
     {
         if (!preg_match("/^[A-Za-z]{1,10}-[0-9]{1,10}$/", $fileName)) {
-            throw new IssueFileException("IssueFile: This file name {$fileName} is invalid!");
+            throw new IssueFileException("IssueFile: File name {$fileName} is invalid!");
         }
     }
 
@@ -296,7 +294,7 @@ class IssueFile
         $issueFile = serialize($issueFile);
 
         if (!file_put_contents($pathToFile, $issueFile)) {
-            throw new IssueFileException("IssueFile: Can't write in this file {$pathToFile}");
+            throw new IssueFileException("IssueFile: Can't write in file {$pathToFile}");
         }
     }
 
@@ -321,7 +319,7 @@ class IssueFile
         }
 
         if (!unlink($issue)) {
-            throw new IssueFileException("IssueFile: Can't unlink this file {$issue}");
+            throw new IssueFileException("IssueFile: Can't unlink file {$issue}");
         }
     }
 }

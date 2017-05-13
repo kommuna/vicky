@@ -37,8 +37,8 @@ class VickyClient
     /**
      * VickyClient constructor.
      * 
-     * @param     $vickyUrl     vicky host URL
-     * @param int $vickyTimeout timeout of curl request to vicky
+     * @param string $vickyUrl     vicky host URL
+     * @param int    $vickyTimeout timeout of curl request to vicky
      * 
      * @throws VickyClientException
      */

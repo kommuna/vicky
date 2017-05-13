@@ -126,12 +126,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "8353b3fd857029dbfdb4bdf9676ce0258088ea28"
+                "reference": "0031313a708d4ff027b30dfae605398abaa031cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/8353b3fd857029dbfdb4bdf9676ce0258088ea28",
-                "reference": "8353b3fd857029dbfdb4bdf9676ce0258088ea28",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0031313a708d4ff027b30dfae605398abaa031cc",
+                "reference": "0031313a708d4ff027b30dfae605398abaa031cc",
                 "shasum": ""
             },
             "require": {
@@ -183,7 +183,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2017-05-01T09:44:08+00:00"
+            "time": "2017-05-09T06:57:15+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -242,12 +242,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+                "reference": "8882b252f802cae96f0315c3608faef95af6a7f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
-                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/8882b252f802cae96f0315c3608faef95af6a7f2",
+                "reference": "8882b252f802cae96f0315c3608faef95af6a7f2",
                 "shasum": ""
             },
             "require": {
@@ -299,7 +299,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-03-20T17:10:46+00:00"
+            "time": "2017-05-09T09:16:44+00:00"
         },
         {
             "name": "jclg/php-slack-bot",
@@ -307,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jclg/php-slack-bot.git",
-                "reference": "b9184543a102eb4d7b9c16469656e7f2812c4a5d"
+                "reference": "b23ec2289bca4104c095645dfcbd9b6dd5915069"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jclg/php-slack-bot/zipball/b9184543a102eb4d7b9c16469656e7f2812c4a5d",
-                "reference": "b9184543a102eb4d7b9c16469656e7f2812c4a5d",
+                "url": "https://api.github.com/repos/jclg/php-slack-bot/zipball/b23ec2289bca4104c095645dfcbd9b6dd5915069",
+                "reference": "b23ec2289bca4104c095645dfcbd9b6dd5915069",
                 "shasum": ""
             },
             "require": {
@@ -337,7 +337,7 @@
             ],
             "description": "Slack bot user written in PHP",
             "homepage": "https://github.com/jclg/php-slack-bot",
-            "time": "2017-03-28T20:20:34+00:00"
+            "time": "2017-05-07T13:48:09+00:00"
         },
         {
             "name": "kommuna/jirawebhook",
@@ -740,16 +740,16 @@
         },
         {
             "name": "react/dns",
-            "version": "v0.4.8",
+            "version": "v0.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/dns.git",
-                "reference": "86d3da64ebfbecddf6b940c6e69daa67c0f21a05"
+                "reference": "288b4f36972cdc2f81dae1d1a58a0467e3f625cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/dns/zipball/86d3da64ebfbecddf6b940c6e69daa67c0f21a05",
-                "reference": "86d3da64ebfbecddf6b940c6e69daa67c0f21a05",
+                "url": "https://api.github.com/repos/reactphp/dns/zipball/288b4f36972cdc2f81dae1d1a58a0467e3f625cb",
+                "reference": "288b4f36972cdc2f81dae1d1a58a0467e3f625cb",
                 "shasum": ""
             },
             "require": {
@@ -757,8 +757,8 @@
                 "react/cache": "~0.4.0|~0.3.0",
                 "react/promise": "~2.1|~1.2",
                 "react/promise-timer": "~1.1",
-                "react/socket": "^0.7 || ^0.6 || ^0.5 || ^0.4.4",
-                "react/stream": "^0.6 || ^0.5 || ^0.4.5"
+                "react/socket": "^1.0 || ^0.8 || ^0.7 || ^0.6 || ^0.5 || ^0.4.4",
+                "react/stream": "^1.0 || ^0.7 || ^0.6 || ^0.5 || ^0.4.5"
             },
             "require-dev": {
                 "phpunit/phpunit": "^5.0 || ^4.8.10"
@@ -778,7 +778,7 @@
                 "dns",
                 "dns-resolver"
             ],
-            "time": "2017-04-16T11:20:57+00:00"
+            "time": "2017-05-01T17:21:03+00:00"
         },
         {
             "name": "react/event-loop",
@@ -868,12 +868,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053"
+                "reference": "ec953894782a0366a5533677c68972eea848d848"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/62785ae604c8d69725d693eb370e1d67e94c4053",
-                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/ec953894782a0366a5533677c68972eea848d848",
+                "reference": "ec953894782a0366a5533677c68972eea848d848",
                 "shasum": ""
             },
             "require": {
@@ -906,7 +906,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2017-03-25T12:08:31+00:00"
+            "time": "2017-05-08T18:49:20+00:00"
         },
         {
             "name": "react/promise-timer",
@@ -1642,12 +1642,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "cc5720eadd8b231a522c1740a52d49a1b061b15d"
+                "reference": "50e964917077647edefd7914fd4cc89f10bbe804"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/cc5720eadd8b231a522c1740a52d49a1b061b15d",
-                "reference": "cc5720eadd8b231a522c1740a52d49a1b061b15d",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/50e964917077647edefd7914fd4cc89f10bbe804",
+                "reference": "50e964917077647edefd7914fd4cc89f10bbe804",
                 "shasum": ""
             },
             "require": {
@@ -1684,7 +1684,7 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2017-04-24T16:07:00+00:00"
+            "time": "2017-05-11T14:13:04+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2192,12 +2192,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "e22c131386168fcc045104e2de2d82708d12c855"
+                "reference": "9a228c6857478d8b0f619a4cd3763911705c002a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e22c131386168fcc045104e2de2d82708d12c855",
-                "reference": "e22c131386168fcc045104e2de2d82708d12c855",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9a228c6857478d8b0f619a4cd3763911705c002a",
+                "reference": "9a228c6857478d8b0f619a4cd3763911705c002a",
                 "shasum": ""
             },
             "require": {
@@ -2266,7 +2266,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-04-25T10:39:19+00:00"
+            "time": "2017-05-02T07:14:40+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2846,12 +2846,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "e389c47ccde1cc76d3598a3d10afa6edee355690"
+                "reference": "dcbd318c241341c82444a8d92b7a0ddf6419f496"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/e389c47ccde1cc76d3598a3d10afa6edee355690",
-                "reference": "e389c47ccde1cc76d3598a3d10afa6edee355690",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/dcbd318c241341c82444a8d92b7a0ddf6419f496",
+                "reference": "dcbd318c241341c82444a8d92b7a0ddf6419f496",
                 "shasum": ""
             },
             "require": {
@@ -2893,7 +2893,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-04-12T20:43:31+00:00"
+            "time": "2017-05-01T15:01:29+00:00"
         },
         {
             "name": "webmozart/assert",

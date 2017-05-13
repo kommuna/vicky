@@ -39,7 +39,7 @@ if ($config['environment'] === 'local'){
 
 $start = microtime(true);
 
-$log->info("The script ".__FILE__." started.");
+$log->debug("The script ".__FILE__." started.");
 
 VickyClient::getInstance(
     $config['vickyClient']['url'],
@@ -57,4 +57,4 @@ IssueFile::filesCheck(function(IssueFile $issueFile)
     );
 });
 
-$log->info("Script finished in ".(microtime(true) - $start)." sec.");
+$log->debug("Script finished in ".(microtime(true) - $start)." sec.");

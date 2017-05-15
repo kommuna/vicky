@@ -8,17 +8,19 @@
     "minimum-stability" : "dev",
     "require": {
         "jclg/php-slack-bot": "dev-master",
-        "kommuna/jirawebhook": "dev-master"
+        "kommuna/jirawebhook": "dev-master",
+        "maknz/slack": "^1.7",
+        "monolog/monolog": "1.22.0"
     },
 
     "autoload": {
         "psr-4": {
-            "Vicky\\": ""
+            "kommuna\\vicky\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Vicky\\Tests\\": "tests"
+            "kommuna\\vicky\\Tests\\": "tests"
         }
     },
     "require-dev": {

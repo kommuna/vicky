@@ -9,10 +9,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Vicky\src\modules\Slack;
+
+namespace kommuna\vicky\modules\Slack;
 
 use Maknz\Slack\Client;
-use Vicky\src\exceptions\SlackMessageSenderException;
+use kommuna\vicky\exceptions\SlackMessageSenderException;
 
 class SlackMessageSender
 {
@@ -112,13 +113,14 @@ class SlackMessageSender
      * @param bool   $unfurl
      *
      * @return SlackMessageSender
+     *
      * @throws SlackMessageSenderException
      */
     public static function getInstance($webhookUrl = '', $botUsername = '', $unfurl = false)
     {
         if (!self::$messageSenderClient) {
             if (!$webhookUrl || !$botUsername) {
-                throw new SlackMessageSenderException('Slack webhook url and slack bot username must be defined!');
+                throw new SlackMessageSenderException('SlackMessageSender: Slack webhook url and slack bot username must be defined!');
             }
 
             self::$messageSenderClient = new self($webhookUrl, $botUsername, $unfurl);

@@ -226,6 +226,5 @@ pip-log.txt
 ## Composer
 #############
 
-composer.lock
 vendor
 /logs

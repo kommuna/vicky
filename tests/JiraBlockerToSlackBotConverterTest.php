@@ -6,12 +6,12 @@
  * Time: 16:37
  */
 
-namespace Vicky\Tests;
+namespace kommuna\vicky\Tests;
 
 
 use JiraWebhook\Models\JiraWebhookData;
-use Vicky\Tests\Factories\JiraWebhookPayloadFactory;
-use Vicky\src\modules\Jira\JiraBlockerToSlackBotConverter;
+use kommuna\vicky\Tests\Factories\JiraWebhookPayloadFactory;
+use kommuna\vicky\modules\Jira\JiraBlockerToSlackBotConverter;
 
 
 /**

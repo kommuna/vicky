@@ -318,7 +318,7 @@ class IssueFile
             $issue = IssueFile::getPathToFolder().$issue;
         }
 
-        if (!unlink($issue)) {
+        if (!unlink($issue) && file_exists($issue)) {
             throw new IssueFileException("IssueFile: Can't unlink file {$issue}");
         }
     }

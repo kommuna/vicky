@@ -46,13 +46,13 @@ class Vicky
     }
 
     /**
-     * Return channel name by issue project name from config file
+     * Return channel name by issue project key from config file
      *
-     * @param string $projectName issue project name
+     * @param string $projectKey issue project key
      *
      * @return null
      */
-    public static function getChannelByProject($projectName)
+    public static function getChannelByProject($projectKey)
     {
         /**
          * Check for the key in the config
@@ -66,10 +66,10 @@ class Vicky
         $channel = null;
 
         /**
-         * Get Slack channel name by Jira project name (Jira project name can be empty)
+         * Get Slack channel name by Jira project key (Jira project key can be empty)
          */
-        if (array_key_exists($projectName, $jiraToSlackMapping)) {
-            $channel = $jiraToSlackMapping[$projectName];
+        if (array_key_exists($projectKey, $jiraToSlackMapping)) {
+            $channel = $jiraToSlackMapping[$projectKey];
         /**
          * Get Slack channel for Jira projects by default
          */

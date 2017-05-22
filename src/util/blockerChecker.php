@@ -18,7 +18,7 @@ use kommuna\vicky\modules\Jira\IssueFile;
 use kommuna\vicky\modules\VickyClient;
 
 require dirname(dirname(__DIR__)).'/vendor/autoload.php';
-$config = require '/etc/vicky/config.php';
+$config = require '/etc/vicky-test/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['errorLog']);

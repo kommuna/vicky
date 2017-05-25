@@ -14,7 +14,7 @@ namespace kommuna\vicky\modules\Jira;
 use JiraWebhook\JiraWebhookDataConverter;
 use JiraWebhook\Models\JiraWebhookData;
 
-class JiraDefaultToSlackBotConverter implements JiraWebhookDataConverter
+class JiraDefaultToSlackConverter implements JiraWebhookDataConverter
 {
     /**
      * Converts $data into a formatted string message

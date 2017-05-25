@@ -153,7 +153,7 @@ class SlackMessageSender
      */
     public function toUser($usernames, $message)
     {
-        $usernames = is_array($usernames) ?: [$usernames];
+        $usernames = is_array($usernames) ? $usernames : [$usernames];
 
         foreach ($usernames as $username) {
             $username = (substr($username, 0, 1) === '@') ? $username : "@{$username}";
@@ -170,7 +170,7 @@ class SlackMessageSender
      */
     public function toChannel($channels, $message)
     {
-        $channels = is_array($channels) ?: [$channels];
+        $channels = is_array($channels) ? $channels : [$channels];
 
         foreach ($channels as $channel) {
             $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";

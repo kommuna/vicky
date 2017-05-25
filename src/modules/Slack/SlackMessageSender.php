@@ -146,28 +146,36 @@ class SlackMessageSender
     }
 
     /**
-     * Sends message to slack user
+     * Sends message to slack user or users
      *
-     * @param $username
+     * @param $usernames
      * @param $message
      */
-    public function toUser($username, $message)
+    public function toUser($usernames, $message)
     {
-        $username = (substr($username, 0, 1) === '@') ? $username : "@{$username}";
+        $usernames = is_array($usernames) ?: [$usernames];
 
-        $this->getMessage()->to($username)->send($message);
+        foreach ($usernames as $username) {
+            $username = (substr($username, 0, 1) === '@') ? $username : "@{$username}";
+
+            $this->getMessage()->to($username)->send($message);
+        }
     }
 
     /**
-     * Sends message to slack channel
+     * Sends message to slack channel or channels
      *
-     * @param $channel
+     * @param $channels
      * @param $message
      */
-    public function toChannel($channel, $message)
+    public function toChannel($channels, $message)
     {
-        $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
+        $channels = is_array($channels) ?: [$channels];
 
-        $this->getMessage()->to($channel)->send($message);
+        foreach ($channels as $channel) {
+            $channel = (substr($channel, 0, 1) === '#') ? $channel : "#{$channel}";
+
+            $this->getMessage()->to($channel)->send($message);
+        }
     }
 }

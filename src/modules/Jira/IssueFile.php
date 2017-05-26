@@ -35,7 +35,7 @@ class IssueFile
      *
      * @var
      */
-    protected static $blockerFirstTimeNotificationPeriod;
+    protected static $blockerFirstTimeNotificationInterval;
 
     /**
      * File name
@@ -73,7 +73,11 @@ class IssueFile
      * @param null|int             $lastCommentTime in seconds
      * @param null|int             $lastNotification in seconds
      */
-    public function __construct($fileName, JiraWebhookData $jiraWebhookData, $lastCommentTime = null, $lastNotification = null)
+    public function __construct(
+        $fileName,
+        JiraWebhookData $jiraWebhookData,
+        $lastCommentTime = null,
+        $lastNotification = null)
     {
         $this->setFileName($fileName);
         $this->setJiraWebhookData($jiraWebhookData);
@@ -108,11 +112,11 @@ class IssueFile
     }
 
     /**
-     * @param int $blockerFirstTimeNotificationPeriod in seconds
+     * @param int $blockerFirstTimeNotificationInterval in seconds
      */
-    public static function setBlockerFirstTimeNotificationPeriod($blockerFirstTimeNotificationPeriod)
+    public static function setBlockerFirstTimeNotificationInterval($blockerFirstTimeNotificationInterval)
     {
-        self::$blockerFirstTimeNotificationPeriod = $blockerFirstTimeNotificationPeriod;
+        self::$blockerFirstTimeNotificationInterval = $blockerFirstTimeNotificationInterval;
     }
     
     /**
@@ -168,9 +172,9 @@ class IssueFile
     /**
      * @return mixed
      */
-    public static function getBlockerFirstTimeNotificationPeriod()
+    public static function getBlockerFirstTimeNotificationInterval()
     {
-        return self::$blockerFirstTimeNotificationPeriod;
+        return self::$blockerFirstTimeNotificationInterval;
     }
 
     /**
@@ -222,14 +226,22 @@ class IssueFile
      * with $notificationInterval
      *
      * @param IssueFile $issueFile
-     * @param int       $blockerFirstTimeNotificationPeriod in seconds
+     * @param int       $blockerFirstTimeNotificationInterval in seconds
      * @param int       $notificationInterval               in seconds
      *
      * @return bool
      */
-    protected static function isExpired(IssueFile $issueFile, $blockerFirstTimeNotificationPeriod, $notificationInterval)
+    protected static function isExpired(
+        IssueFile $issueFile,
+        $blockerFirstTimeNotificationInterval,
+        $notificationInterval)
     {
-        return ((time() - $issueFile->getLastCommentTime()) >= $blockerFirstTimeNotificationPeriod) && (!$issueFile->getLastNotification() || (time() - $issueFile->getLastNotification()) >= $notificationInterval);
+        $isFirstIntervalExpired = time() - $issueFile->getLastCommentTime() >= $blockerFirstTimeNotificationInterval;
+
+        $lastNotification = $issueFile->getLastNotification();
+        $isNotificationIntervalExpired = time() - $lastNotification >= $notificationInterval;
+
+        return $isFirstIntervalExpired && (!$lastNotification || $isNotificationIntervalExpired);
     }
 
     /**
@@ -252,20 +264,23 @@ class IssueFile
      * and use $callback on expired files
      *
      * @param callable $callback                           must be a function that takes over IssueFile
-     * @param null|int $blockerFirstTimeNotificationPeriod in seconds
+     * @param null|int $blockerFirstTimeNotificationInterval in seconds
      * @param null|int $notificationInterval               in seconds
      */
-    public static function filesCheck($callback, $blockerFirstTimeNotificationPeriod = null, $notificationInterval = null)
+    public static function filesCheck(
+        $callback,
+        $blockerFirstTimeNotificationInterval = null,
+        $notificationInterval = null)
     {
-        $blockerFirstTimeNotificationPeriod = $blockerFirstTimeNotificationPeriod ?: self::getBlockerFirstTimeNotificationPeriod();
-        $notificationInterval               = $notificationInterval ?: self::getNotificationInterval();
+        $blockerFirstTimeNotificationInterval = $blockerFirstTimeNotificationInterval ?: self::getBlockerFirstTimeNotificationInterval();
+        $notificationInterval                 = $notificationInterval ?: self::getNotificationInterval();
 
         $pathToFolder = self::getPathToFolder();
 
         foreach (glob("{$pathToFolder}*") as $pathToFile) {
             $issueFile = self::get(basename($pathToFile));
 
-            if (self::isExpired($issueFile, $blockerFirstTimeNotificationPeriod, $notificationInterval)) {
+            if (self::isExpired($issueFile, $blockerFirstTimeNotificationInterval, $notificationInterval)) {
                 $callback($issueFile);
             }
         }
@@ -297,7 +312,11 @@ class IssueFile
      *
      * @return mixed|IssueFile
      */
-    public static function create($fileName, JiraWebhookData $jiraWebhookData, $lastCommentTime = null, $lastNotification = null)
+    public static function create(
+        $fileName,
+        JiraWebhookData $jiraWebhookData,
+        $lastCommentTime = null,
+        $lastNotification = null)
     {
         $issueFile = new self($fileName, $jiraWebhookData, $lastCommentTime, $lastNotification);
 

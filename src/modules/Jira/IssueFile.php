@@ -31,6 +31,13 @@ class IssueFile
     protected static $notificationInterval;
 
     /**
+     * Time between last comment and first notification in seconds
+     *
+     * @var
+     */
+    protected static $blockerFirstTimeNotificationPeriod;
+
+    /**
      * File name
      *
      * @var
@@ -52,16 +59,25 @@ class IssueFile
     protected $lastNotification;
 
     /**
+     * Time of last comment (stores in seconds)
+     *
+     * @var
+     */
+    protected $lastCommentTime;
+
+    /**
      * IssueFile constructor.
      *
      * @param                      $fileName
      * @param JiraWebhookData|null $jiraWebhookData
-     * @param null                 $lastNotification in seconds
+     * @param null|int             $lastCommentTime in seconds
+     * @param null|int             $lastNotification in seconds
      */
-    public function __construct($fileName, JiraWebhookData $jiraWebhookData, $lastNotification = null)
+    public function __construct($fileName, JiraWebhookData $jiraWebhookData, $lastCommentTime = null, $lastNotification = null)
     {
         $this->setFileName($fileName);
         $this->setJiraWebhookData($jiraWebhookData);
+        $this->setLastCommentTime($lastCommentTime);
         $this->setLastNotification($lastNotification);
     }
 
@@ -90,6 +106,14 @@ class IssueFile
     {
         self::$notificationInterval = $notificationInterval;
     }
+
+    /**
+     * @param int $blockerFirstTimeNotificationPeriod in seconds
+     */
+    public static function setBlockerFirstTimeNotificationPeriod($blockerFirstTimeNotificationPeriod)
+    {
+        self::$blockerFirstTimeNotificationPeriod = $blockerFirstTimeNotificationPeriod;
+    }
     
     /**
      * @param $fileName
@@ -110,11 +134,19 @@ class IssueFile
     }
 
     /**
+     * @param int $lastCommentTime in seconds
+     */
+    public function setLastCommentTime($lastCommentTime = null)
+    {
+        $this->lastCommentTime = $lastCommentTime ?: time();
+    }
+
+    /**
      * @param int $lastNotification in seconds
      */
     public function setLastNotification($lastNotification = null)
     {
-        $this->lastNotification = $lastNotification ?: time();
+        $this->lastNotification = $lastNotification;
     }
 
     /**
@@ -131,6 +163,14 @@ class IssueFile
     public static function getNotificationInterval()
     {
         return self::$notificationInterval;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getBlockerFirstTimeNotificationPeriod()
+    {
+        return self::$blockerFirstTimeNotificationPeriod;
     }
 
     /**
@@ -158,6 +198,14 @@ class IssueFile
     }
 
     /**
+     * @return mixed
+     */
+    public function getLastCommentTime()
+    {
+        return $this->lastCommentTime;
+    }
+
+    /**
      * Create full path to file
      *
      * @param IssueFile $issueFile
@@ -174,13 +222,14 @@ class IssueFile
      * with $notificationInterval
      *
      * @param IssueFile $issueFile
-     * @param int       $notificationInterval in seconds
+     * @param int       $blockerFirstTimeNotificationPeriod in seconds
+     * @param int       $notificationInterval               in seconds
      *
      * @return bool
      */
-    protected static function isExpired(IssueFile $issueFile, $notificationInterval)
+    protected static function isExpired(IssueFile $issueFile, $blockerFirstTimeNotificationPeriod, $notificationInterval)
     {
-        return (time() - $issueFile->getLastNotification()) >= $notificationInterval;
+        return ((time() - $issueFile->getLastCommentTime()) >= $blockerFirstTimeNotificationPeriod) && (!$issueFile->getLastNotification() || (time() - $issueFile->getLastNotification()) >= $notificationInterval);
     }
 
     /**
@@ -202,19 +251,21 @@ class IssueFile
      * Check all files in $pathToFolder for expired notification period
      * and use $callback on expired files
      *
-     * @param callable $callback             must be a function that takes over IssueFile
-     * @param null|int $notificationInterval in seconds
+     * @param callable $callback                           must be a function that takes over IssueFile
+     * @param null|int $blockerFirstTimeNotificationPeriod in seconds
+     * @param null|int $notificationInterval               in seconds
      */
-    public static function filesCheck($callback, $notificationInterval = null)
+    public static function filesCheck($callback, $blockerFirstTimeNotificationPeriod = null, $notificationInterval = null)
     {
-        $notificationInterval = $notificationInterval ? $notificationInterval : IssueFile::getNotificationInterval();
+        $blockerFirstTimeNotificationPeriod = $blockerFirstTimeNotificationPeriod ?: self::getBlockerFirstTimeNotificationPeriod();
+        $notificationInterval               = $notificationInterval ?: self::getNotificationInterval();
 
-        $pathToFolder = IssueFile::getPathToFolder();
+        $pathToFolder = self::getPathToFolder();
 
         foreach (glob("{$pathToFolder}*") as $pathToFile) {
-            $issueFile = IssueFile::get(basename($pathToFile));
+            $issueFile = self::get(basename($pathToFile));
 
-            if (IssueFile::isExpired($issueFile, $notificationInterval)) {
+            if (self::isExpired($issueFile, $blockerFirstTimeNotificationPeriod, $notificationInterval)) {
                 $callback($issueFile);
             }
         }
@@ -226,11 +277,13 @@ class IssueFile
      * @param        $fileName
      * @param string $now
      */
-    public static function updateNotificationTime($fileName, $now = null)
+    public static function updateLastNotificationTime($fileName, $now = null)
     {
-        $issueFile = IssueFile::get($fileName);
+        $now = $now ?: time();
+
+        $issueFile = self::get($fileName);
         $issueFile->setLastNotification($now);
-        IssueFile::put($issueFile);
+        self::put($issueFile);
     }
 
     /**
@@ -239,20 +292,21 @@ class IssueFile
      *
      * @param                      $fileName
      * @param JiraWebhookData|null $jiraWebhookData
+     * @param null|int             $lastCommentTime in seconds
      * @param null|int             $lastNotification in seconds
      *
      * @return mixed|IssueFile
      */
-    public static function create($fileName, JiraWebhookData $jiraWebhookData, $lastNotification = null)
+    public static function create($fileName, JiraWebhookData $jiraWebhookData, $lastCommentTime = null, $lastNotification = null)
     {
-        $issueFile = new self($fileName, $jiraWebhookData, $lastNotification);
+        $issueFile = new self($fileName, $jiraWebhookData, $lastCommentTime, $lastNotification);
 
-        $pathToFile = IssueFile::getPathToFile($issueFile);
+        $pathToFile = self::getPathToFile($issueFile);
 
         if (file_exists($pathToFile)) {
-            $issueFile = IssueFile::get(basename($pathToFile));
+            $issueFile = self::get(basename($pathToFile));
         } else {
-            IssueFile::put($issueFile);
+            self::put($issueFile);
         }
 
         return $issueFile;
@@ -269,7 +323,7 @@ class IssueFile
      */
     public static function get($fileName)
     {
-        $pathToFile = IssueFile::getPathToFolder().$fileName;
+        $pathToFile = self::getPathToFolder().$fileName;
         $issueFile = unserialize(file_get_contents($pathToFile));
 
         if (!$issueFile) {
@@ -290,7 +344,7 @@ class IssueFile
      */
     public static function put(IssueFile $issueFile)
     {
-        $pathToFile = IssueFile::getPathToFile($issueFile);
+        $pathToFile = self::getPathToFile($issueFile);
         $issueFile = serialize($issueFile);
 
         if (!file_put_contents($pathToFile, $issueFile)) {
@@ -311,11 +365,11 @@ class IssueFile
     public static function delete($issue)
     {
         if ($issue instanceof IssueFile) {
-            $issue = IssueFile::getPathToFile($issue);
+            $issue = self::getPathToFile($issue);
         } else {
             self::fileNameCheck($issue);
 
-            $issue = IssueFile::getPathToFolder().$issue;
+            $issue = self::getPathToFolder().$issue;
         }
 
         if (!unlink($issue) && file_exists($issue)) {

@@ -35,7 +35,7 @@ class IssueFile
      *
      * @var
      */
-    protected static $blockerFirstTimeNotificationInterval;
+    protected static $firstTimeNotificationInterval;
 
     /**
      * File name
@@ -112,11 +112,11 @@ class IssueFile
     }
 
     /**
-     * @param int $blockerFirstTimeNotificationInterval in seconds
+     * @param int $firstTimeNotificationInterval in seconds
      */
-    public static function setBlockerFirstTimeNotificationInterval($blockerFirstTimeNotificationInterval)
+    public static function setFirstTimeNotificationInterval($firstTimeNotificationInterval)
     {
-        self::$blockerFirstTimeNotificationInterval = $blockerFirstTimeNotificationInterval;
+        self::$firstTimeNotificationInterval = $firstTimeNotificationInterval;
     }
     
     /**
@@ -172,9 +172,9 @@ class IssueFile
     /**
      * @return mixed
      */
-    public static function getBlockerFirstTimeNotificationInterval()
+    public static function getFirstTimeNotificationInterval()
     {
-        return self::$blockerFirstTimeNotificationInterval;
+        return self::$firstTimeNotificationInterval;
     }
 
     /**
@@ -226,17 +226,17 @@ class IssueFile
      * with $notificationInterval
      *
      * @param IssueFile $issueFile
-     * @param int       $blockerFirstTimeNotificationInterval in seconds
+     * @param int       $firstTimeNotificationInterval in seconds
      * @param int       $notificationInterval               in seconds
      *
      * @return bool
      */
     protected static function isExpired(
         IssueFile $issueFile,
-        $blockerFirstTimeNotificationInterval,
+        $firstTimeNotificationInterval,
         $notificationInterval)
     {
-        $isFirstIntervalExpired = time() - $issueFile->getLastCommentTime() >= $blockerFirstTimeNotificationInterval;
+        $isFirstIntervalExpired = time() - $issueFile->getLastCommentTime() >= $firstTimeNotificationInterval;
 
         $lastNotification = $issueFile->getLastNotification();
         $isNotificationIntervalExpired = time() - $lastNotification >= $notificationInterval;
@@ -264,15 +264,15 @@ class IssueFile
      * and use $callback on expired files
      *
      * @param callable $callback                           must be a function that takes over IssueFile
-     * @param null|int $blockerFirstTimeNotificationInterval in seconds
+     * @param null|int $firstTimeNotificationInterval in seconds
      * @param null|int $notificationInterval               in seconds
      */
     public static function filesCheck(
         $callback,
-        $blockerFirstTimeNotificationInterval = null,
+        $firstTimeNotificationInterval = null,
         $notificationInterval = null)
     {
-        $blockerFirstTimeNotificationInterval = $blockerFirstTimeNotificationInterval ?: self::getBlockerFirstTimeNotificationInterval();
+        $firstTimeNotificationInterval = $firstTimeNotificationInterval ?: self::getFirstTimeNotificationInterval();
         $notificationInterval                 = $notificationInterval ?: self::getNotificationInterval();
 
         $pathToFolder = self::getPathToFolder();
@@ -280,7 +280,7 @@ class IssueFile
         foreach (glob("{$pathToFolder}*") as $pathToFile) {
             $issueFile = self::get(basename($pathToFile));
 
-            if (self::isExpired($issueFile, $blockerFirstTimeNotificationInterval, $notificationInterval)) {
+            if (self::isExpired($issueFile, $firstTimeNotificationInterval, $notificationInterval)) {
                 $callback($issueFile);
             }
         }

@@ -273,7 +273,7 @@ class IssueFile
         $notificationInterval = null)
     {
         $firstTimeNotificationInterval = $firstTimeNotificationInterval ?: self::getFirstTimeNotificationInterval();
-        $notificationInterval                 = $notificationInterval ?: self::getNotificationInterval();
+        $notificationInterval          = $notificationInterval ?: self::getNotificationInterval();
 
         $pathToFolder = self::getPathToFolder();
 
@@ -380,7 +380,6 @@ class IssueFile
      *
      * @throws IssueFileException
      */
-
     public static function delete($issue)
     {
         if ($issue instanceof IssueFile) {

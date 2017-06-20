@@ -1,7 +1,7 @@
 <?php
 /**
  * Main module of vicky project, that receives data from JIRA webhook
- * (https://developer.atlassian.com/jiradev/jira-apis/webhooks), contains jiraWebhook listeners for events, that sends
+ * https://developer.atlassian.com/jiradev/jira-apis/webhooks), contains jiraWebhook listeners for events, that sends
  * messages to slack by slack client and contains converters declaration.
  *
  * @credits https://github.com/kommuna
@@ -12,62 +12,53 @@
  */
 namespace kommuna\vicky;
 
-use kommuna\vicky\modules\Jira\JiraBlockerNotificationConverter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use kommuna\vicky\modules\Jira\JiraBlockerToSlackBotConverter;
-use kommuna\vicky\modules\Jira\JiraDefaultToSlackBotConverter;
-use kommuna\vicky\modules\Jira\JiraOperationsToSlackBotConverter;
-use kommuna\vicky\modules\Jira\JiraUrgentBugToSlackBotConverter;
-use kommuna\vicky\modules\Slack\SlackBotSender;
+
+use kommuna\vicky\modules\Jira\JiraDefaultToSlackConverter;
+
+use kommuna\vicky\modules\Jira\IssueFile;
 use kommuna\vicky\modules\Slack\SlackMessageSender;
 use kommuna\vicky\modules\Vicky;
+
 use JiraWebhook\JiraWebhook;
 use JiraWebhook\Models\JiraWebhookData;
 use JiraWebhook\Exceptions\JiraWebhookException;
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 $config = require '/etc/vicky/config.php';
 
 ini_set('log_errors', 'On');
-ini_set('error_log', $config['error_log']);
+ini_set('error_log', $config['errorLog']);
+ini_set('error_reporting', $config['errorReporting']);
 date_default_timezone_set($config['timeZone']);
 
 $log = new Logger('vicky');
-
 $log->pushHandler(
     new StreamHandler(
-        $config['error_log'],
+        $config['errorLog'],
         $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
     )
 );
 
-if ($config['environment'] === 'local'){
-    $log->pushHandler(new StreamHandler('php://output', Logger::DEBUG)); // <<< uses a stream
-}
-
 $start = microtime(true);
 
-$log->info("The script ".__FILE__." started.");
+$log->debug("The script ".__FILE__." started.");
 
-SlackBotSender::getInstance(
-    $config['slackBot']['url'],
-    $config['slackBot']['auth'],
-    $config['slackBot']['timeout']
+SlackMessageSender::getInstance(
+    $config['slackMessageSender']['webhookUrl'],
+    $config['slackMessageSender']['botUsername'],
+    $config['slackMessageSender']['unfurl']
 );
 
-new Vicky($config);
+Vicky::setConfig($config);
 $jiraWebhook = new JiraWebhook();
 
 /**
  * Set the converters Vicky will use to "translate" JIRA webhook
  * payload into formatted, human readable Slack messages
  */
-JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
-JiraWebhook::setConverter('JiraBlockerToSlack', new JiraBlockerToSlackBotConverter());
-JiraWebhook::setConverter('JiraOperationsToSlack', new JiraOperationsToSlackBotConverter());
-JiraWebhook::setConverter('JiraUrgentBugToSlack', new JiraUrgentBugToSlackBotConverter());
-JiraWebhook::setConverter('JiraBlockerNotification', new JiraBlockerNotificationConverter());
+JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackConverter());
 
 /*
 |--------------------------------------------------------------------------
@@ -79,98 +70,145 @@ JiraWebhook::setConverter('JiraBlockerNotification', new JiraBlockerNotification
 |
 */
 
+$jiraWebhook->addListener('*', function($e, $data)
+{
+    $issue = $data->getIssue();
+    $eventName = $e->getName();
+
+    /**
+     * Sets path to folder where would be stores issue files
+     */
+    IssueFile::setPathToFolder(Vicky::getConfig()['blockersIssues']['folder']);
+
+    /**
+     * If file for this issue don't exists creates file with parsed for this issue,
+     * or returning data from file
+     */
+    IssueFile::create($issue->getKey(), $data);
+
+    /**
+     * Stores object with parsed data from JIRA and current time
+     */
+    IssueFile::put(new IssueFile($issue->getKey(), $data));
+
+    /**
+     * Delete issue file if issue deleted, issue has status Resolved
+     */
+    if ($eventName === 'jira:issue_deleted' || $issue->isStatusResolved()) {
+        IssueFile::delete($issue->getKey());
+    }
+});
+
 /**
- * Send a message to the project's channel when a blocker issue is created or updated
+ * Listener with custom event for notification about issue file with way that you'd like,
+ * and updating information about last notification in that issue file
+ */
+$jiraWebhook->addListener('custom:event_name', function($e, $data)
+{
+    $issue = $data->getIssue();
+    $assigneeName = $issue->getAssignee()->getName();
+
+    if ($assigneeName) {
+        SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
+    }
+
+    IssueFile::setPathToFolder(Vicky::getConfig()['blockersIssues']['folder']);
+    IssueFile::updateLastNotificationTime($issue->getKey());
+});
+
+/**
+ * Send a message to the project's channel when issue is created or updated
  */
 $jiraWebhook->addListener('*', function($e, JiraWebhookData $data)
 {
     if($e->getName() === 'jira:issue_created' || $e->getName() === 'jira:issue_updated') {
         $issue = $data->getIssue();
-        if ($issue->isPriorityBlocker()) {
-            $slackClientMessage = SlackMessageSender::getMessage();
-            JiraWebhook::convert('JiraBlockerToSlack', $data, $slackClientMessage);
-            $slackClientMessage->to(Vicky::getChannelByProject($issue->getProjectName()));
-            $slackClientMessage->send();
-        }
+
+        SlackMessageSender::getInstance()->toChannel(
+            Vicky::getChannelByProject($issue->getProjectKey()),
+            JiraWebhook::convert('JiraDefaultToSlack', $data)
+        );
     }
 });
 
 /**
  * Send message to user if a newly created issue
- * was assigned to them
+ * was assigned to them, but if assigned user is not the creator
  */
 $jiraWebhook->addListener('jira:issue_created', function ($e, JiraWebhookData $data)
 {
-    $assignee = $data->getIssue()->getAssignee();
-    if ($assignee->getName()) {
-        $slackClientMessage = SlackMessageSender::getMessage();
-        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
-        $slackClientMessage->to('@' . $assignee->getName());
-        $slackClientMessage->send();
+    $assigneeName = $data->getIssue()->getAssignee()->getName();
+    $userName = $data->getUser()->getName();
+
+    if ($assigneeName && $userName != $assigneeName) {
+        SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
 });
 
 /**
- * Send message to user's channel if an issue gets assigned to them
+ * Send message to user's channel if an issue gets assigned to them,
+ * but if the user has not assigned himself
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
-    $issue = $data->getIssue();
-    if ($data->isIssueAssigned()) {
-        $data->overrideIssueEventDescription("An issue has been assigned to you");
-        $slackClientMessage = SlackMessageSender::getMessage();
-        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
-        $slackClientMessage->to('@' . $issue->getAssignee()->getName());
-        $slackClientMessage->send();
+    $changelog = $data->getChangelog();
+    $userName = $data->getUser()->getName();
+    $assigneeName = $data->getIssue()->getAssignee()->getName();
+
+    if ($changelog->isIssueAssigned() && $userName != $assigneeName) {
+        SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
 });
 
 /**
  * Send message to user's channel if someone comments on an issue
- * assigned to them
+ * assigned to them, but if the author of the comment is not assigned user
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
     $issue = $data->getIssue();
-    if ($data->isIssueCommented()) {
-        $data->overrideIssueEventDescription("A new comment has been posted on your issue");
-        $slackClientMessage = SlackMessageSender::getMessage();
-        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
-        $slackClientMessage->to('@' . $issue->getAssignee()->getName());
-        $slackClientMessage->send();
+    $assigneeName = $issue->getAssignee()->getName();
+    $issueComments = $issue->getIssueComments();
+    $commentAuthorName = $issueComments->getComments() ? $issueComments->getLastCommenterName() : '';
+
+    if ($data->isIssueCommented() && $assigneeName && $commentAuthorName != $assigneeName) {
+        SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
     }
 });
 
 /**
- * Send message to user's channel if someone mentions them in a new comment
+ * Send message to user's channel if someone mentions them in a new comment,
+ * but if mentioned user not assigned to this issue
  */
 $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
 {
     $issue = $data->getIssue();
+
     if ($data->isIssueCommented()) {
         $users = $issue->getIssueComments()->getLastComment()->getMentionedUsersNicknames();
-        $data->overrideIssueEventDescription("You've been mentioned in a comment");
+        $assigneeName = $issue->getAssignee()->getName();
+
         foreach ($users as $user) {
-            $slackClientMessage = SlackMessageSender::getMessage();
-            JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
-            $slackClientMessage->to('@' . $user);
-            $slackClientMessage->send();
+            if ($user != $assigneeName) {
+                SlackMessageSender::getInstance()->toUser($user, JiraWebhook::convert('JiraDefaultToSlack', $data));
+            }
         }
     }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Custom listeners
-|--------------------------------------------------------------------------
-| ADD YOUR CUSTOM LISTENERS HERE
-|
-*/
-
-/*
- * ------------------------------------------------------------------------
- * ------------------------------------------------------------------------
+/**
+ * Send message to channel if someone referenced channel label in a new comment
  */
+$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
+{
+    if ($data->isIssueCommented()) {
+        $commentBody = $data->getIssue()->getIssueComments()->getLastComment()->bodyParsing();
+        $labels = JiraWebhookData::getReferencedLabels($commentBody);
+
+        SlackMessageSender::getInstance()->toChannel($labels, JiraWebhook::convert('JiraDefaultToSlack', $data));
+    }
+});
+
 try {
     /**
      * Get raw data from JIRA webhook
@@ -178,9 +216,11 @@ try {
     $f = fopen('php://input', 'r');
     $data = stream_get_contents($f);
     if (!$data) {
+
         $log->error('There is no data in the Jira webhook');
         throw new JiraWebhookException('There is no data in the Jira webhook');
     }
+
     $jiraWebhook->run($data);
 } catch (\Exception $e) {
     $log->error($e->getMessage());
@@ -188,4 +228,5 @@ try {
     $log->error($e->getFile());
     $log->error($e->getCode());
 }
-$log->info("Script finished in ".(microtime(true) - $start)." sec.");
+
+$log->debug("Script finished in ".(microtime(true) - $start)." sec.");

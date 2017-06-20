@@ -68,15 +68,6 @@ Let's look at the most basic parts:
      * payload into formatted, human readable Slack messages
      */
     JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackConverter());
-
-    /*
-    |--------------------------------------------------------------------------
-    | Register listeners
-    |--------------------------------------------------------------------------
-    |
-    | We're providing a few default listeners that would make sense for most teams.
-    |
-    */
     
     /**
      * Send message to user's channel if an issue gets assigned to them,

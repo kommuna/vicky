@@ -19,7 +19,7 @@ use kommuna\vicky\bot\modules\ToUserWebhook;
 use kommuna\vicky\bot\modules\ToChannelWebhook;
 
 require dirname(__DIR__).'/vendor/autoload.php';
-$config = require '/etc/slackBot/config.php';
+$config = require '/etc/slackBot-test/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['errorLog']);

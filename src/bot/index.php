@@ -18,7 +18,7 @@ use PhpSlackBot\Bot;
 use kommuna\vicky\bot\modules\ToUserWebhook;
 use kommuna\vicky\bot\modules\ToChannelWebhook;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require dirname(dirname(__DIR__)).'/vendor/autoload.php';
 $config = require '/etc/slackBot-test/config.php';
 
 ini_set('log_errors', 'On');

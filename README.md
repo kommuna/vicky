@@ -5,7 +5,6 @@ It sends notification about JIRA ticket updates to Slack.
 This library can receive and parse data from JIRA webhook, convert it into easily readable messages and send them off to the appropriate (configurable) user or channel in Slack.
 It comes loaded with a few default listeners for the most common scenarios, but you can extend it with your own custom logic too.
 
-
 # Installation and configuration
 To install this library simply pull it in through composer
 ```        
@@ -16,21 +15,24 @@ To install this library simply pull it in through composer
 and run `composer install`.
 
 #### 1. Config files  
-Copy `bot/config.example.php` to `/etc/SlackBot/config.php` and `client/config.example.php` to `/etc/vicky/config.php` and follow the instructions in them to set your values.
+Copy `src/config.example.php` to `/etc/vicky/config.php` and follow the instructions in them to set your values.
 
-The slack bot token can be obtained [here](https://my.slack.com/services/new/bot).  
-A new Slack incoming webhook can be created [here](https://devadmin.slack.com/apps/new/). 
+How create a new Slack incoming webhook can be learned from [here](https://api.slack.com/incoming-webhooks).
 
->IMPORTANT: Please make sure that you have the webserver and the slackbot running on different ports. The slackbot port is configurable and you can set it in the `/etc/slackBot/config.php` file. 
+[//]: # (Bot is not using in last release)
+[//]: # (>IMPORTANT: Please make sure that you have the webserver and the slackbot running on different ports.)
+[//]: # (>The slackbot port is configurable and you can set it in the `/etc/slackBot/config.php` file.)
 
 #### 2. Jira
-Register your [webhooks in JIRA](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
+How to register a new webhooks in JIRA cna be learned from [here](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
 #### 3. Slackbot daemon
 > NOTE: Vicky currently doesn't implement any bot commands, so if you don't have any yourself either you can safely skip this step.
 
-The slackbot can be run by cd-ing to the root folder and then running `php bot/index.php`. That's good enough for local development, but you'll need a more stable way to do this in production.
-We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html) and then follow these steps:
+The slackbot can be run by cd-ing to the root folder and then running `php bot/index.php`.
+That's good enough for local development, but you'll need a more stable way to do this in production.
+We suggest installing the [start-stop-daemon](http://manpages.ubuntu.com/manpages/trusty/man8/start-stop-daemon.8.html)
+and then follow these steps:
 
  - Copy the `init.d/slackbotservice` script to your init.d folder. 
  - chmod +x the script
@@ -42,7 +44,7 @@ To stop the service run `service slackbotservice stop` or `/etc/init.d/slackbots
 >Note: Another way to run slackbot in the background and restart it in case of failure would be to have [supervisord](http://supervisord.org/) monitor it.  
 
 # Usage
-Use the provided `index.example.php` file to see how to setup the listeners for specific JIRA events in your project and how to handle those webhooks.
+Use the provided `index.example.php` file to see how to setup the listeners for specific JIRA events in your project and how to handle different situations.
 It already comes loaded with some basic events (listed below), but you can also add your own, following the example of the provided ones.
 
 Let's look at the most basic parts:
@@ -51,78 +53,86 @@ Let's look at the most basic parts:
     require __DIR__ . '/vendor/autoload.php';
     $config = require '/etc/vicky/config.php';
     
-    // Get an instance of the Slackbot so we can send messages to Slack
-    SlackBotSender::getInstance(
-        $config['slackBot']['url'],
-        $config['slackBot']['auth'],
-        $config['slackBot']['timeout']
+    // Setting up configs for Slack Message sender
+    SlackMessageSender::getInstance(
+        $config['slackMessageSender']['webhookUrl'],
+        $config['slackMessageSender']['botUsername'],
+        $config['slackMessageSender']['unfurl']
     );
     
-    new Vicky($config);
+    Vicky::setConfig($config);
     $jiraWebhook = new JiraWebhook();
     
     /**
      * Set the converters Vicky will use to "translate" JIRA webhook
      * payload into formatted, human readable Slack messages
      */
-    JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackBotConverter());
-
-    /*
-    |--------------------------------------------------------------------------
-    | Register listeners
-    |--------------------------------------------------------------------------
-    |
-    | We're providing a few default listeners that would make sense for most teams.
-    | To add your own check out the "Adding custom listeners" section
-    |
-    */
+    JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackConverter());
     
     /**
-     * Send message to a user's channel if an issue gets assigned to them
+     * Send message to user's channel if an issue gets assigned to them,
+     * but if the user has not assigned himself
      */
-    $jiraWebhook->addListener('jira:issue_updated', function ($e, \JiraWebhook\Models\JiraWebhookData $data)
+    $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
     {
-        $issue = $data->getIssue();
-    
-        if ($data->isIssueAssigned()) {
-            SlackBotSender::getInstance()->toUser(
-                $issue->getAssignee()->getName(),
-                JiraWebhook::convert('JiraDefaultToSlack', $data)
-            );
+        $changelog = $data->getChangelog();
+        $userName = $data->getUser()->getName();
+        $assigneeName = $data->getIssue()->getAssignee()->getName();
+
+        if ($changelog->isIssueAssigned() && $userName != $assigneeName) {
+            SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
         }
     });
 
-    //Get the incoming data from the webhook
+    /**
+     * Get incoming raw data from JIRA webhook
+     */
     $f = fopen('php://input', 'r');
     $data = stream_get_contents($f);
 
-    // Start the webhook processing
+    /**
+     * Start the raw webhook data processing
+     */
     $jiraWebhook->run($data);
-
 ```
 
-Currently the following default events are set in the index.php file:
+Currently the following default events are set in the index.example.php file:
+- Any event:
+    - Creating and deleting issue file
+
+- Custom event:
+    - Custom listener for notification about issue file with way that you'd like,
+    and updating information about last notification in that issue file
+
+- Issue created or updated:
+    - Send a message to the project's channel when issue is created or updated
 
 - Issue created:  
-        - A message is sent to the user the issue is assigned to.
+    - Send message to user if a newly created issue was assigned to them,
+    but if assigned user is not the creator
   
 - Issue updated  
-        - If an issue gets assigned - a message is sent to the assignee
+    - Send message to user's channel if an issue gets assigned to them,
+    but if the user has not assigned himself
         
-- Comments  
-        - Send message to a user's channel if someone mentions them in a new comment  
-        - Send a message to user in slack if someone comments on an issue assigned to them
+- Issue commented
+    - Send message to user's channel if someone comments on an issue
+    assigned to them, but if the author of the comment is not assigned user
+    - Send message to user's channel if someone mentions them in a new comment,
+    but if mentioned user not assigned to this issue
+    - Send message to channel if someone referenced channel label in a new comment
 
 ### Adding custom listeners
 If you need to handle specific JIRA situations in your own, specific ways, you can register your own listeners. This is how to do it:
 
 ```php
-    use Vicky\src\modules\Vicky;
+    use kommuna\vicky\modules\Vicky;
+    use kommuna\vicky\modules\Slack\SlackMessageSender;
     use JiraWebhook\JiraWebhook;
     use JiraWebhook\Models\JiraWebhookData;
-    use Vicky\bot\modules\Slack\SlackBotSender
+
     
-    $jiraWebhook->addListener({jira-event-name}, function ($e, JiraWebhookData $data)
+    $jiraWebhook->addListener("jira-event-name", function ($e, JiraWebhookData $data)
     {
         $issue = $data->getIssue();
     
@@ -132,27 +142,23 @@ If you need to handle specific JIRA situations in your own, specific ways, you c
 
         // Example for getting the appropriate Slack channel to send the message to
         // (reffer to the "Jira to Slack mapping" section for details )
-        $channelName = Vicky::getChannelByProject($issue->getProjectName())
-        
-        // Instantiate a new Slack Client (refer to https://github.com/maknz/slack for documentation)
-        $slackClient = new Client($incomingWebhookUrl, $clientSettings);
-        
-        // Get Slack Client message object
-        $slackClientMessage = $slackClient->createMessage();
+        $channelName = Vicky::getChannelByProject($issue->getProjectKey());
         
         // Set up the slack message format:
         // Use one of the provided formatters "JiraDefaultToSlack" to convert your 
         // data into a readable, slack-formatted message. You can also create your own.
-        JiraWebhook::convert('JiraDefaultToSlack', $data, $slackClientMessage);
+        $message = JiraWebhook::convert('JiraDefaultToSlack', $data);
         
-        // Send off the message to Slack's API
-        $slackClientMessage->to($channelName);  // or $slackUsername
-        $slackClientMessage->send();
+        // Send off the message to Slack's user channel
+        SlackMessageSender::getInstance()->toUser($slackUsername, $message);
+
+        // Send off the message to Slack's user channel
+        SlackMessageSender::getInstance()->toChannel($channelName, $message);
     });
 ```
 
 >For more details about JIRA data, JIRA data converters and events check out the [JiraWebhook package](https://github.com/kommuna/jirawebhook)
-and [this JIRA doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
+and [this JIRA docs](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssue).
 
 ## Jira to Slack mapping
 Vicky allows to configure mapping of JIRA projects to Slack channels. This configuration is done in the `/etc/vicky/config.php` file.
@@ -164,12 +170,11 @@ For example: to send all tickets of project FOO to Slack channel #foo you need t
 return [
    ...
    'jiraToSlackMapping' => [
-       'FOO' => '#foo'
+       'FOOProjectKey' => 'foo'
    ]
    ...
 ];
 ```
-
 
 If you want to disable all notifications for a project just set its mapping key to false instead of a slack channel name:
 
@@ -177,12 +182,11 @@ If you want to disable all notifications for a project just set its mapping key 
 <?php
 return [
    'jiraToSlackMapping' => [
-       'FOO' => '#foo',
-       'BAR' => false,
+       'FOOProjectKey' => 'foo',
+       'BARProjectKey' => false,
    ]
 ];
 ```
-
 
 You can also configure a backup channel where all the messages from projects that aren't mapped in Slack would go:
 
@@ -190,9 +194,9 @@ You can also configure a backup channel where all the messages from projects tha
 <?php
 return [
    'jiraToSlackMapping' => [
-       'FOO' => '#foo',
-       'BAR' => false,
-       '*' => '#'
+       'FOOProjectKey' => 'foo',
+       'BARProjectKey' => false,
+       '*' => 'backupChannel'
    ]
 ];
 ```
@@ -203,8 +207,8 @@ To disable notifications for all unmapped projects set the '*' mapping key to `f
 <?php
 return [
    'jiraToSlackMapping' => [
-       'FOO' => '#bar',
-       'DUMP' => false
+       'FOOProjectKey' => 'foo',
+       'BARProjectKey' => false
        '*' => false
    ]
 ];
@@ -212,5 +216,4 @@ return [
 
 Please note that if a project doesn't have any mapping settings and the default channel is not configured, messages will not be sent.
 
-
->Important note: The bot must be invited to the channel in order to be able to send messages to it.
+[//]: # (>Important note: The bot must be invited to the channel in order to be able to send messages to it.)

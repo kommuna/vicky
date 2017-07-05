@@ -1,6 +1,6 @@
 <?php
 /**
- * JiraWebhookData converter of default messages into a Slack Client Message Object
+ * JiraWebhookData converter of default messages into into formatted string message
  *
  * @credits https://github.com/kommuna
  * @author  Chewbacca chewbacca@devadmin.com

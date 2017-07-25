@@ -13,7 +13,7 @@ use kommuna\vicky\modules\Slack\JiraIssueToSlackConverter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-require dirname(dirname(__DIR__)).'/vendor/autoload.php';
+require dirname(dirname(dirname(__DIR__))).'/vendor/autoload.php';
 $config = require '/etc/vicky-test/config.php';
 
 ini_set('log_errors', 'On');

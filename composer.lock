@@ -128,12 +128,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "526d8ef63e8701e02216b621e4a3a16085e2286f"
+                "reference": "811b676fbab9c99e359885032e5ebc70e442f5b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/526d8ef63e8701e02216b621e4a3a16085e2286f",
-                "reference": "526d8ef63e8701e02216b621e4a3a16085e2286f",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/811b676fbab9c99e359885032e5ebc70e442f5b8",
+                "reference": "811b676fbab9c99e359885032e5ebc70e442f5b8",
                 "shasum": ""
             },
             "require": {
@@ -185,7 +185,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-06-19T13:30:27+00:00"
+            "time": "2017-07-17T09:11:21+00:00"
         },
         {
             "name": "kommuna/jirawebhook",
@@ -193,12 +193,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kommuna/jirawebhook.git",
-                "reference": "84a47aada9beba0e74e56b1b2411cd32181c8371"
+                "reference": "c4bc7616fb2dc636ff6f6535b4792fecd5c11d53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kommuna/jirawebhook/zipball/84a47aada9beba0e74e56b1b2411cd32181c8371",
-                "reference": "84a47aada9beba0e74e56b1b2411cd32181c8371",
+                "url": "https://api.github.com/repos/kommuna/jirawebhook/zipball/c4bc7616fb2dc636ff6f6535b4792fecd5c11d53",
+                "reference": "c4bc7616fb2dc636ff6f6535b4792fecd5c11d53",
                 "shasum": ""
             },
             "require": {
@@ -227,7 +227,7 @@
                 "reflection",
                 "webhook"
             ],
-            "time": "2017-06-04T12:01:09+00:00"
+            "time": "2017-07-25T08:20:45+00:00"
         },
         {
             "name": "league/event",
@@ -281,16 +281,16 @@
         },
         {
             "name": "lesstif/php-jira-rest-client",
-            "version": "1.13.0",
+            "version": "1.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lesstif/php-jira-rest-client.git",
-                "reference": "af86b397c9cc2443cd986e516b903024d9d8dbe3"
+                "reference": "fbc6138b12ca6fff7023fbd7a2db9dfdbf31a44a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lesstif/php-jira-rest-client/zipball/af86b397c9cc2443cd986e516b903024d9d8dbe3",
-                "reference": "af86b397c9cc2443cd986e516b903024d9d8dbe3",
+                "url": "https://api.github.com/repos/lesstif/php-jira-rest-client/zipball/fbc6138b12ca6fff7023fbd7a2db9dfdbf31a44a",
+                "reference": "fbc6138b12ca6fff7023fbd7a2db9dfdbf31a44a",
                 "shasum": ""
             },
             "require": {
@@ -328,7 +328,7 @@
                 "jira-rest",
                 "rest"
             ],
-            "time": "2017-06-09T10:48:14+00:00"
+            "time": "2017-07-05T14:18:09+00:00"
         },
         {
             "name": "maknz/slack",
@@ -463,12 +463,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/botman/botman.git",
-                "reference": "3f63674456de3875a7199b2fb185414477a0eb2b"
+                "reference": "0e8013d696ba397c8a02740511b1597c67473cee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/botman/botman/zipball/3f63674456de3875a7199b2fb185414477a0eb2b",
-                "reference": "3f63674456de3875a7199b2fb185414477a0eb2b",
+                "url": "https://api.github.com/repos/botman/botman/zipball/0e8013d696ba397c8a02740511b1597c67473cee",
+                "reference": "0e8013d696ba397c8a02740511b1597c67473cee",
                 "shasum": ""
             },
             "require": {
@@ -522,20 +522,20 @@
                 "slack",
                 "telegram"
             ],
-            "time": "2017-06-29T19:23:50+00:00"
+            "time": "2017-07-18T17:00:03+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "8d0b6d5b9f5940757b44bc0ee2f930aae6d4a6c7"
+                "reference": "899cf21e40f35b664b5366f7710d20d9d8abf7b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/8d0b6d5b9f5940757b44bc0ee2f930aae6d4a6c7",
-                "reference": "8d0b6d5b9f5940757b44bc0ee2f930aae6d4a6c7",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/899cf21e40f35b664b5366f7710d20d9d8abf7b0",
+                "reference": "899cf21e40f35b664b5366f7710d20d9d8abf7b0",
                 "shasum": ""
             },
             "require-dev": {
@@ -561,7 +561,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2017-01-27T21:01:41+00:00"
+            "time": "2017-07-13T19:08:45+00:00"
         },
         {
             "name": "opis/closure",
@@ -720,12 +720,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "f347a5f561b03db95ed666959db42bbbf429b7e5"
+                "reference": "49e8cd2d59a7aa9bfab19e46de680c76e500a031"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/f347a5f561b03db95ed666959db42bbbf429b7e5",
-                "reference": "f347a5f561b03db95ed666959db42bbbf429b7e5",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/49e8cd2d59a7aa9bfab19e46de680c76e500a031",
+                "reference": "49e8cd2d59a7aa9bfab19e46de680c76e500a031",
                 "shasum": ""
             },
             "require": {
@@ -765,7 +765,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2017-06-24T09:29:48+00:00"
+            "time": "2017-07-21T11:04:46+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -828,16 +828,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.4.27",
+            "version": "v5.4.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "16a16f2214f2ef251e6cbd3efd47b422bace5f58"
+                "reference": "15251e73d8fe21b5c458bc3c20bf12ada3be6b24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/16a16f2214f2ef251e6cbd3efd47b422bace5f58",
-                "reference": "16a16f2214f2ef251e6cbd3efd47b422bace5f58",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/15251e73d8fe21b5c458bc3c20bf12ada3be6b24",
+                "reference": "15251e73d8fe21b5c458bc3c20bf12ada3be6b24",
                 "shasum": ""
             },
             "require": {
@@ -871,7 +871,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2017-06-15T20:17:56+00:00"
+            "time": "2017-07-19T15:27:31+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -927,16 +927,16 @@
     "packages-dev": [
         {
             "name": "doctrine/instantiator",
-            "version": "dev-master",
+            "version": "1.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/instantiator.git",
-                "reference": "5acd2bd8c2b600ad5cc4c9180ebf0a930604d6a5"
+                "reference": "8e884e78f9f0eb1329e445619e04456e64d8051d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/5acd2bd8c2b600ad5cc4c9180ebf0a930604d6a5",
-                "reference": "5acd2bd8c2b600ad5cc4c9180ebf0a930604d6a5",
+                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/8e884e78f9f0eb1329e445619e04456e64d8051d",
+                "reference": "8e884e78f9f0eb1329e445619e04456e64d8051d",
                 "shasum": ""
             },
             "require": {
@@ -977,7 +977,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2017-02-16T16:15:51+00:00"
+            "time": "2015-06-14T21:17:01+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -985,26 +985,26 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "ff1ce3321922821ec54943a9b1c270e8af365a72"
+                "reference": "ea4244d0354634e020042278478c9842524b0459"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/ff1ce3321922821ec54943a9b1c270e8af365a72",
-                "reference": "ff1ce3321922821ec54943a9b1c270e8af365a72",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/ea4244d0354634e020042278478c9842524b0459",
+                "reference": "ea4244d0354634e020042278478c9842524b0459",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3|^7.0"
+                "php": "^5.3.3 || ^7.0"
             },
             "require-dev": {
                 "ext-intl": "*",
-                "phpunit/phpunit": "~4.0||~5.0",
-                "squizlabs/php_codesniffer": "~1.5"
+                "phpunit/phpunit": "^4.0 || ^5.0",
+                "squizlabs/php_codesniffer": "^1.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6.x-dev"
+                    "dev-master": "1.7-dev"
                 }
             },
             "autoload": {
@@ -1027,7 +1027,7 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2017-07-03T15:50:13+00:00"
+            "time": "2017-07-19T13:05:01+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1127,22 +1127,22 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "3.1.1",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "8331b5efe816ae05461b7ca1e721c01b46bafb3e"
+                "reference": "46f7e8bb075036c92695b15a1ddb6971c751e585"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/8331b5efe816ae05461b7ca1e721c01b46bafb3e",
-                "reference": "8331b5efe816ae05461b7ca1e721c01b46bafb3e",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/46f7e8bb075036c92695b15a1ddb6971c751e585",
+                "reference": "46f7e8bb075036c92695b15a1ddb6971c751e585",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.5",
                 "phpdocumentor/reflection-common": "^1.0@dev",
-                "phpdocumentor/type-resolver": "^0.2.0",
+                "phpdocumentor/type-resolver": "^0.4.0",
                 "webmozart/assert": "^1.0"
             },
             "require-dev": {
@@ -1168,24 +1168,24 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2016-09-30T07:12:33+00:00"
+            "time": "2017-07-15T11:38:20+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "0.2.1",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "e224fb2ea2fba6d3ad6fdaef91cd09a172155ccb"
+                "reference": "9c977708995954784726e25d0cd1dddf4e65b0f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/e224fb2ea2fba6d3ad6fdaef91cd09a172155ccb",
-                "reference": "e224fb2ea2fba6d3ad6fdaef91cd09a172155ccb",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/9c977708995954784726e25d0cd1dddf4e65b0f7",
+                "reference": "9c977708995954784726e25d0cd1dddf4e65b0f7",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5",
+                "php": "^5.5 || ^7.0",
                 "phpdocumentor/reflection-common": "^1.0"
             },
             "require-dev": {
@@ -1215,7 +1215,7 @@
                     "email": "me@mikevanriel.com"
                 }
             ],
-            "time": "2016-11-25T06:54:22+00:00"
+            "time": "2017-07-14T14:27:02+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -1223,12 +1223,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "79db5dd907ee977039f77ac8471a739497463429"
+                "reference": "420d44c5534bbf269e85e6213446e8284d53c6c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/79db5dd907ee977039f77ac8471a739497463429",
-                "reference": "79db5dd907ee977039f77ac8471a739497463429",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/420d44c5534bbf269e85e6213446e8284d53c6c7",
+                "reference": "420d44c5534bbf269e85e6213446e8284d53c6c7",
                 "shasum": ""
             },
             "require": {
@@ -1278,7 +1278,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2017-05-31T16:22:32+00:00"
+            "time": "2017-07-19T07:44:25+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1486,12 +1486,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "9ddb181faa4a3841fe131c357fd01de75cbb4da9"
+                "reference": "a6ce111630a5eea291d13c273295853ac1a7bf1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/9ddb181faa4a3841fe131c357fd01de75cbb4da9",
-                "reference": "9ddb181faa4a3841fe131c357fd01de75cbb4da9",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/a6ce111630a5eea291d13c273295853ac1a7bf1f",
+                "reference": "a6ce111630a5eea291d13c273295853ac1a7bf1f",
                 "shasum": ""
             },
             "require": {
@@ -1527,7 +1527,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2017-03-07T07:36:57+00:00"
+            "time": "2017-07-25T09:28:19+00:00"
         },
         {
             "name": "phpunit/phpunit",

@@ -5,19 +5,16 @@
 namespace kommuna\vicky\modules\Slack;
 
 use Mpociot\BotMan\BotManFactory;
-use Mpociot\BotMan\BotMan;
 
 use JiraRestApi\Configuration\ArrayConfiguration;
 use JiraRestApi\Issue\IssueService;
-use JiraRestApi\Project\ProjectService;
-use JiraRestApi\JiraException;
 use kommuna\vicky\modules\Slack\JiraIssueToSlackConverter;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 require dirname(dirname(__DIR__)).'/vendor/autoload.php';
-$config = require '/etc/vicky/config.php';
+$config = require '/etc/vicky-test/config.php';
 
 ini_set('log_errors', 'On');
 ini_set('error_log', $config['errorLog']);
@@ -43,6 +40,7 @@ $issueService = new IssueService(new ArrayConfiguration(
         'jiraPassword' => $config['jiraPassword']
     ]
 ));
+$jiraIssueToSlackConverter = new JiraIssueToSlackConverter();
 
 $botConfig = [
     'slack_token' => $config['slackToken'],
@@ -55,6 +53,9 @@ $botman = BotManFactory::create($botConfig);
  */
 $botman->hears('(.*?)', function ($bot, $number)
 {
+    global $issueService;
+    global $jiraIssueToSlackConverter;
+
     preg_match_all('/[A-Z]{1,10}-[0-9]{1,10}/', $number, $matches);
     $matches = $matches[0];
 
@@ -66,13 +67,9 @@ $botman->hears('(.*?)', function ($bot, $number)
             ],
         ];
 
-        $issue = $issueService->get('TL-63', $queryParam);
+        $issue = $issueService->get($match, $queryParam);
 
-        /**
-         * Putting data into converter to get $message
-         */
-
-        $bot->reply('Issue key is: '.$message);
+        $bot->reply($jiraIssueToSlackConverter->convert($issue));
     }
 });
 

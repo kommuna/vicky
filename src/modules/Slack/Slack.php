@@ -35,15 +35,15 @@ $log->debug("The script ".__FILE__." started.");
 
 $issueService = new IssueService(new ArrayConfiguration(
     [
-        'jiraHost'     => $config['jiraHost'],
-        'jiraUser'     => $config['jiraUser'],
-        'jiraPassword' => $config['jiraPassword']
+        'jiraHost'     => $config['jiraClient']['jiraHost'],
+        'jiraUser'     => $config['jiraClient']['jiraUser'],
+        'jiraPassword' => $config['jiraClient']['jiraPassword']
     ]
 ));
 $jiraIssueToSlackConverter = new JiraIssueToSlackConverter();
 
 $botConfig = [
-    'slack_token' => $config['slackToken'],
+    'slack_token' => $config['slackBotToken'],
 ];
 
 $botman = BotManFactory::create($botConfig);

@@ -8,7 +8,7 @@
     "minimum-stability" : "dev",
     "require": {
         "jclg/php-slack-bot": "dev-master",
-        "kommuna/jirawebhook": "dev-TL-81",
+        "kommuna/jirawebhook": "dev-master",
         "maknz/slack": "^1.7",
         "monolog/monolog": "1.22.0"
     },

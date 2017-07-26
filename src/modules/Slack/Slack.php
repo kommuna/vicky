@@ -40,6 +40,7 @@ $issueService = new IssueService(new ArrayConfiguration(
         'jiraPassword' => $config['jiraClient']['jiraPassword']
     ]
 ));
+
 $jiraIssueToSlackConverter = new JiraIssueToSlackConverter();
 
 $botConfig = [
@@ -60,14 +61,7 @@ $botman->hears('(.*?)', function ($bot, $number)
     $matches = $matches[0];
 
     foreach ($matches as $match) {
-        $queryParam = [
-            'fields' => [
-                'summary',
-                'comment',
-            ],
-        ];
-
-        $issue = $issueService->get($match, $queryParam);
+        $issue = $issueService->get($match);
 
         $bot->reply($jiraIssueToSlackConverter->convert($issue));
     }

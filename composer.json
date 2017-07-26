@@ -11,6 +11,7 @@
         "maknz/slack": "^1.7",
         "monolog/monolog": "1.22.0",
         "mpociot/botman": "^1.5",
+        "mpociot/slack-client": "^0.3.1",
         "lesstif/php-jira-rest-client": "^1.7.0"
     },
 

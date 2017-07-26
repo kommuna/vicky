@@ -58,11 +58,8 @@ $botConfig = [
 $loop = Factory::create();
 $botman = BotManFactory::createForRTM($botConfig, $loop);
 
-$botman->hears('(.*?)', function ($bot, $number)
+$botman->hears('(.*?)', function ($bot, $number) use ($issueService, $jiraIssueToSlackConverter)
 {
-    global $issueService;
-    global $jiraIssueToSlackConverter;
-
     preg_match_all('/[A-Z]{1,10}-[0-9]{1,10}/', $number, $matches);
     $matches = $matches[0];
 

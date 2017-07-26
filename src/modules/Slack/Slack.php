@@ -1,6 +1,7 @@
 <?php
 /**
- * 
+ * Vicky module, that listening JIRA issue keys in slack channels
+ * and sending notifications
  */
 namespace kommuna\vicky\modules\Slack;
 
@@ -50,11 +51,7 @@ $botConfig = [
 
 $loop = Factory::create();
 $botman = BotManFactory::createForRTM($botConfig, $loop);
-//$botman = BotManFactory::create($botConfig);
 
-/**
- * I cant change name of $numbers in case of Bot functionality
- */
 $botman->hears('(.*?)', function ($bot, $number)
 {
     global $issueService;
@@ -70,7 +67,6 @@ $botman->hears('(.*?)', function ($bot, $number)
     }
 });
 
-//$botman->listen();
 $loop->run();
 
 $log->debug("Script finished in ".(microtime(true) - $start)." sec.");

@@ -5,6 +5,7 @@
 namespace kommuna\vicky\modules\Slack;
 
 use Mpociot\BotMan\BotManFactory;
+use React\EventLoop\Factory;
 
 use JiraRestApi\Configuration\ArrayConfiguration;
 use JiraRestApi\Issue\IssueService;
@@ -47,7 +48,9 @@ $botConfig = [
     'slack_token' => $config['slackBotToken'],
 ];
 
-$botman = BotManFactory::create($botConfig);
+$loop = Factory::create();
+$botman = BotManFactory::createForRTM($botConfig, $loop);
+//$botman = BotManFactory::create($botConfig);
 
 /**
  * I cant change name of $numbers in case of Bot functionality
@@ -67,6 +70,7 @@ $botman->hears('(.*?)', function ($bot, $number)
     }
 });
 
-$botman->listen();
+//$botman->listen();
+$loop->run();
 
 $log->debug("Script finished in ".(microtime(true) - $start)." sec.");

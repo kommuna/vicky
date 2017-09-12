@@ -8,9 +8,9 @@ It comes loaded with a few default listeners for the most common scenarios, but 
 # Installation and configuration
 To install this library simply pull it in through composer
 ```        
-    "require": {
-        "kommuna/vicky": "dev-master",
-    },
+"require": {
+    "kommuna/vicky": "dev-master",
+},
 ```   
 and run `composer install`.
 
@@ -24,7 +24,7 @@ How create a new Slack incoming webhook can be learned from [here](https://api.s
 [//]: # (>The slackbot port is configurable and you can set it in the `/etc/slackBot/config.php` file.)
 
 #### 2. Jira
-How to register a new webhooks in JIRA cna be learned from [here](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
+How to register a new webhooks in JIRA can be learned from [here](https://developer.atlassian.com/jiradev/jira-apis/webhooks).
 
 #### 3. Slackbot daemon
 > NOTE: Vicky currently doesn't implement any bot commands, so if you don't have any yourself either you can safely skip this step.
@@ -44,56 +44,64 @@ To stop the service run `service slackbotservice stop` or `/etc/init.d/slackbots
 >Note: Another way to run slackbot in the background and restart it in case of failure would be to have [supervisord](http://supervisord.org/) monitor it.  
 
 # Usage
-Use the provided `index.example.php` file to see how to setup the listeners for specific JIRA events in your project and how to handle different situations.
+Use the provided `index.example.php` file to see how to setup the listeners for specific JIRA events in your project and how to handle those webhooks.
 It already comes loaded with some basic events (listed below), but you can also add your own, following the example of the provided ones.
 
 Let's look at the most basic parts:
 
 ```php
-    require __DIR__ . '/vendor/autoload.php';
-    $config = require '/etc/vicky/config.php';
-    
-    // Setting up configs for Slack Message sender
-    SlackMessageSender::getInstance(
-        $config['slackMessageSender']['webhookUrl'],
-        $config['slackMessageSender']['botUsername'],
-        $config['slackMessageSender']['unfurl']
-    );
-    
-    Vicky::setConfig($config);
-    $jiraWebhook = new JiraWebhook();
-    
-    /**
-     * Set the converters Vicky will use to "translate" JIRA webhook
-     * payload into formatted, human readable Slack messages
-     */
-    JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackConverter());
-    
-    /**
-     * Send message to user's channel if an issue gets assigned to them,
-     * but if the user has not assigned himself
-     */
-    $jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
-    {
-        $changelog = $data->getChangelog();
-        $userName = $data->getUser()->getName();
-        $assigneeName = $data->getIssue()->getAssignee()->getName();
+require __DIR__ . '/vendor/autoload.php';
+$config = require '/etc/vicky/config.php';
 
-        if ($changelog->isIssueAssigned() && $userName != $assigneeName) {
-            SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
-        }
-    });
+// Setting up configs for Slack Message sender
+SlackMessageSender::getInstance(
+    $config['slackMessageSender']['webhookUrl'],
+    $config['slackMessageSender']['botUsername'],
+    $config['slackMessageSender']['unfurl']
+);
 
+Vicky::setConfig($config);
+$jiraWebhook = new JiraWebhook();
+
+/**
+ * Set the converters Vicky will use to "translate" JIRA webhook
+ * payload into formatted, human readable Slack messages
+ */
+JiraWebhook::setConverter('JiraDefaultToSlack', new JiraDefaultToSlackConverter());
+
+/**
+ * Send message to user's channel if an issue gets assigned to them,
+ * but if the user has not assigned himself
+ */
+$jiraWebhook->addListener('jira:issue_updated', function ($e, JiraWebhookData $data)
+{
+    $changelog = $data->getChangelog();
+    $userName = $data->getUser()->getName();
+    $assigneeName = $data->getIssue()->getAssignee()->getName();
+
+    if ($changelog->isIssueAssigned() && $userName != $assigneeName) {
+        SlackMessageSender::getInstance()->toUser($assigneeName, JiraWebhook::convert('JiraDefaultToSlack', $data));
+    }
+});
+
+try {
     /**
      * Get incoming raw data from JIRA webhook
      */
     $f = fopen('php://input', 'r');
     $data = stream_get_contents($f);
 
+    if (!$data) {
+        throw new JiraWebhookException('There is no data in the Jira webhook');
+    }
+
     /**
      * Start the raw webhook data processing
      */
     $jiraWebhook->run($data);
+} catch (\Exception $e) {
+    $log->error($e->getMessage());
+}
 ```
 
 Currently the following default events are set in the index.example.php file:
@@ -126,35 +134,36 @@ Currently the following default events are set in the index.example.php file:
 If you need to handle specific JIRA situations in your own, specific ways, you can register your own listeners. This is how to do it:
 
 ```php
-    use kommuna\vicky\modules\Vicky;
-    use kommuna\vicky\modules\Slack\SlackMessageSender;
-    use JiraWebhook\JiraWebhook;
-    use JiraWebhook\Models\JiraWebhookData;
+use kommuna\vicky\modules\Vicky;
+use kommuna\vicky\modules\Slack\SlackMessageSender;
 
+use JiraWebhook\JiraWebhook;
+use JiraWebhook\Models\JiraWebhookData;
+
+
+$jiraWebhook->addListener("jira:event_name", function ($e, JiraWebhookData $data)
+{
+    $issue = $data->getIssue();
+
+    // Example for getting the username of the user to send the message to in Slack 
+    // (in this particular case slack and jira usernames must be the same)
+    $slackUsername = $issue->getAssignee()->getName();
+
+    // Example for getting the appropriate Slack channel to send the message to
+    // (reffer to the "Jira to Slack mapping" section for details )
+    $channelName = Vicky::getChannelByProject($issue->getProjectKey());
     
-    $jiraWebhook->addListener("jira-event-name", function ($e, JiraWebhookData $data)
-    {
-        $issue = $data->getIssue();
+    // Set up the slack message format:
+    // Use one of the provided formatters "JiraDefaultToSlack" to convert your 
+    // data into a readable, slack-formatted message. You can also create your own.
+    $message = JiraWebhook::convert('JiraDefaultToSlack', $data);
     
-        // Example for getting the username of the user to send the message to in Slack 
-        // (in this particular case slack and jira usernames must be the same)
-        $slackUsername = $issue->getAssignee()->getName();
+    // Send off the message to Slack's user channel
+    SlackMessageSender::getInstance()->toUser($slackUsername, $message);
 
-        // Example for getting the appropriate Slack channel to send the message to
-        // (reffer to the "Jira to Slack mapping" section for details )
-        $channelName = Vicky::getChannelByProject($issue->getProjectKey());
-        
-        // Set up the slack message format:
-        // Use one of the provided formatters "JiraDefaultToSlack" to convert your 
-        // data into a readable, slack-formatted message. You can also create your own.
-        $message = JiraWebhook::convert('JiraDefaultToSlack', $data);
-        
-        // Send off the message to Slack's user channel
-        SlackMessageSender::getInstance()->toUser($slackUsername, $message);
-
-        // Send off the message to Slack's user channel
-        SlackMessageSender::getInstance()->toChannel($channelName, $message);
-    });
+    // Send off the message to Slack's user channel
+    SlackMessageSender::getInstance()->toChannel($channelName, $message);
+});
 ```
 
 >For more details about JIRA data, JIRA data converters and events check out the [JiraWebhook package](https://github.com/kommuna/jirawebhook)

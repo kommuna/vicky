@@ -12,7 +12,8 @@ return [
     'errorLog'         => '/path/to/log/file.log',
     'errorReporting'   => E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED,
     'timeZone'         => 'Your/TimeZone',
-    'loggerDebugLevel' => true/false,
+    /* Set true for turn on debug messages logging */
+    'loggerDebugLevel' => false,
     /* Bot is not using in latest release */
     'slackBot' => [
         'url'     => 'http://url were you host slack bot:port',
@@ -26,7 +27,7 @@ return [
         'webhookUrl'  => 'incoming webhook url',
         'botUsername' => 'botName',
         /* Whether Slack should unfurl text-based URLs */
-        'unfurl'      => true/false
+        'unfurl'      => true
     ],
     'vickyClient' => [
         'url'     => 'http://url were you host vicky/',

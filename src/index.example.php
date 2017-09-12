@@ -76,12 +76,12 @@ $jiraWebhook->addListener('*', function($e, $data)
     $eventName = $e->getName();
 
     /**
-     * Sets path to folder where would be stores issue files
+     * Sets path to folder where would be stores issues files
      */
     IssueFile::setPathToFolder(Vicky::getConfig()['blockersIssues']['folder']);
 
     /**
-     * If file for this issue don't exists creates file with parsed for this issue,
+     * If file for this issue don't exists creates file with parsed data for this issue,
      * or returning data from file
      */
     IssueFile::create($issue->getKey(), $data);
@@ -215,8 +215,8 @@ try {
      */
     $f = fopen('php://input', 'r');
     $data = stream_get_contents($f);
-    if (!$data) {
 
+    if (!$data) {
         $log->error('There is no data in the Jira webhook');
         throw new JiraWebhookException('There is no data in the Jira webhook');
     }

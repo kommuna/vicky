@@ -9,30 +9,42 @@
  * file that was distributed with this source code.
  */
 return [
-    'environment'      => 'local/staging/production',
-    'error_log'        => '/path/to/log/file.log',
+    'errorLog'         => '/path/to/log/file.log',
+    'errorReporting'   => E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED,
     'timeZone'         => 'Your/TimeZone',
-    'loggerDebugLevel' => true/false,
+    /* Set true for turn on debug messages logging */
+    'loggerDebugLevel' => false,
+    /* Bot is not using in latest release */
     'slackBot' => [
         'url'     => 'http://url were you host slack bot:port',
         'auth'    => 'secret key for slack bot if needed',
-        'botName'    => 'bot name',
         /* The time-out of requests to the bot is specified in seconds */
-        'timeout' => 10
+        'timeout' => 10,
+        'botName' => 'botName'
+    ],
+    'slackMessageSender' => [
+        /* Get it here https://api.slack.com/incoming-webhooks */
+        'webhookUrl'  => 'incoming webhook url',
+        'botUsername' => 'botName',
+        /* Whether Slack should unfurl text-based URLs */
+        'unfurl'      => true
     ],
     'vickyClient' => [
-        'url' => 'http://url were you host vicky/',
+        'url'     => 'http://url were you host vicky/',
         /* The time-out of requests to the bot is specified in seconds */
         'timeout' => 10
     ],
-    'slackIncomingWebhookUrl' => 'incoming webhook url',  // Get it here: https://chewyteamgroup.slack.com/apps/A0F7XDUAZ-incoming-webhooks
+    /* JIRA to slack mapping works by JIRA project keys */
     'jiraToSlackMapping' => [
-        'ProjectName' => '#channelName',
-        '*'           => '#defaultChannelName'
+        'ProjectKey' => 'ChannelName',
+        /* Use '*' symbol for setting up default channel for notification */
+        '*'          => 'DefaultChannelName'
     ],
     'blockersIssues' => [
-        'folder'               => '/path/to/blockers/issue/file/folder/',
-        /* The time interval for blockers issues notification is specified in seconds */
-        'notificationInterval' => 6 * 3600
+        'folder'                        => '/path/to/issues/files/folder/',
+        /* Time interval between notifications is specified in seconds */
+        'notificationInterval'          => 6 * 3600,
+        /* Time interval before first notification is specified in seconds */
+        'firstTimeNotificationInterval' => 86400
     ]
 ];

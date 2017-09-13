@@ -33,9 +33,6 @@ $log->pushHandler(
         $config['loggerDebugLevel'] ? Logger::DEBUG : Logger::ERROR
     )
 );
-if ($config['environment'] === 'local'){
-    $log->pushHandler(new StreamHandler('php://output', Logger::DEBUG)); // <<< uses a stream
-}
 
 $start = microtime(true);
 

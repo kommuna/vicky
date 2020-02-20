@@ -1,3 +1,7 @@
+# [-> INFO SITE](https://devadmin-com.github.io/vicky/)
+
+_[-> SEE NEWER, JAVA VERSION](https://github.com/devadmin-com/vicky)_
+
 # What is this?
 This is Vicky - a friendly PHP JIRA to Slack robot.
 It sends notification about JIRA ticket updates to Slack.
